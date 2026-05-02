@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outreach CRM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0f0f0f;
+            --bg-surface: #1a1a1a;
+            --bg-elevated: #242424;
+            --bg-hover: #2a2a2a;
+            --border: #2e2e2e;
+            --border-subtle: #1e1e1e;
+            --text-primary: #f0f0f0;
+            --text-secondary: #888;
+            --text-muted: #555;
+            --accent: #22c55e;
+            --accent-hover: #16a34a;
+            --amber: #f59e0b;
+            --red: #ef4444;
+            --blue: #3b82f6;
+            --pink: #ec4899;
+            --whatsapp: #22c55e;
+            --font-inter: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-inter);
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            font-size: 14px;
+        }
+
+        /* Utility */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { display: flex; flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-1 { gap: 4px; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 12px; }
+        .gap-4 { gap: 16px; }
+        .mt-2 { margin-top: 8px; }
+        .mt-4 { margin-top: 16px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mb-4 { margin-bottom: 16px; }
+        .w-full { width: 100%; }
+        .text-muted { color: var(--text-muted); }
+        .text-secondary { color: var(--text-secondary); }
+        .text-sm { font-size: 12px; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* Buttons & Inputs */
+        input, select, textarea {
+            background-color: var(--bg-base);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+        }
+        button {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        button:hover:not(:disabled) {
+            background-color: var(--bg-hover);
+            border-color: var(--text-muted);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-primary {
+            background-color: var(--accent);
+            color: #000;
+            border: none;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--accent-hover);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 200px;
+            background-color: var(--bg-surface);
+            border-right: 1px solid var(--border);
+            transition: width 0.2s;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+        .sidebar.collapsed { width: 56px; }
+        .sidebar-header {
+            height: 56px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .sidebar-header:hover { background-color: var(--bg-hover); }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 2px solid transparent;
+            overflow: hidden;
+        }
+        .nav-item:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .nav-item.active {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+            border-left-color: var(--accent);
+        }
+        .nav-icon { width: 24px; min-width: 24px; text-align: center; }
+        .nav-label { margin-left: 12px; white-space: nowrap; }
+        .sidebar.collapsed .nav-label { opacity: 0; pointer-events: none; }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Stats Bar */
+        .stats-bar {
+            height: 56px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 24px;
+            background-color: var(--bg-surface);
+            overflow-x: auto;
+        }
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-value { font-size: 16px; font-weight: 600; }
+        .stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* View Container */
+        .view-container {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        /* Badges & Pills */
+        .badge {
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .pill-status { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; display: inline-block; }
+        .status-new { background-color: rgba(59, 130, 246, 0.2); color: var(--blue); }
+        .status-contacted { background-color: rgba(245, 158, 11, 0.2); color: var(--amber); }
+        .status-replied { background-color: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
+        .status-booked { background-color: rgba(34, 197, 94, 0.2); color: var(--accent); }
+        .status-closed { background-color: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .status-not-interested { background-color: rgba(107, 114, 128, 0.2); color: #9ca3af; }
+
+        .pill-source { padding: 2px 6px; border-radius: 12px; font-size: 10px; border: 1px solid; }
+        .source-real { border-color: rgba(34, 197, 94, 0.5); color: var(--accent); background: rgba(34, 197, 94, 0.1); }
+        .source-ai { border-color: rgba(136, 136, 136, 0.5); color: var(--text-secondary); background: rgba(136, 136, 136, 0.1); }
+
+        .channel-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+        .channel-whatsapp { background-color: var(--whatsapp); }
+        .channel-linkedin { background-color: var(--blue); }
+        .channel-instagram { background-color: var(--pink); }
+
+        /* Kanban Pipeline */
+        .kanban-board {
+            display: flex;
+            gap: 16px;
+            height: 100%;
+            overflow-x: auto;
+            padding-bottom: 16px;
+        }
+        .kanban-col {
+            flex: 0 0 280px;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-surface);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            height: 100%;
+        }
+        .kanban-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        .kanban-cards {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .lead-card {
+            background-color: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lead-card:hover {
+            border-color: var(--text-muted);
+            transform: translateY(-1px);
+        }
+        .lead-card.dragging { opacity: 0.5; }
+
+        /* Table View */
+        .table-controls { display: flex; gap: 12px; margin-bottom: 16px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); color: var(--text-secondary); font-weight: 500; cursor: pointer; }
+        th:hover { color: var(--text-primary); }
+        td { padding: 12px; border-bottom: 1px solid var(--border-subtle); }
+        tr:hover td { background-color: var(--bg-hover); }
+        tr.overdue td:first-child { border-left: 2px solid var(--amber); }
+        .table-container { background-color: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; }
+
+        /* Lead Engine */
+        .engine-tabs { display: flex; gap: 2px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+        .engine-tab { padding: 12px 24px; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; }
+        .engine-tab.active { color: var(--text-primary); border-bottom-color: var(--accent); }
+        .engine-card { max-width: 640px; margin: 0 auto; background-color: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; }
+        .engine-results { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; }
+        .result-card { background-color: var(--bg-elevated); border: 1px solid var(--border); border-radius: 6px; padding: 16px; display: flex; gap: 16px; }
+        .result-checkbox { margin-top: 4px; }
+        .result-content { flex: 1; }
+        .message-preview { background-color: var(--bg-base); padding: 8px; border-radius: 4px; margin-top: 8px; font-family: monospace; font-size: 12px; color: var(--text-secondary); border: 1px solid var(--border-subtle); }
+
+        /* Drawer */
+        .drawer-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 40; display: none;
+        }
+        .drawer {
+            position: fixed; top: 0; right: -400px; width: 400px; height: 100vh;
+            background-color: var(--bg-surface); border-left: 1px solid var(--border);
+            z-index: 50; transition: right 0.3s ease; display: flex; flex-direction: column;
+        }
+        .drawer.open { right: 0; }
+        .drawer-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; }
+        .drawer-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 24px; }
+        .drawer-close { background: none; border: none; font-size: 20px; color: var(--text-secondary); cursor: pointer; padding: 0; }
+        .drawer-close:hover { color: var(--text-primary); }
+
+        /* Code Block */
+        .code-block { position: relative; background: var(--bg-base); border: 1px solid var(--border); border-radius: 4px; padding: 12px; font-family: monospace; white-space: pre-wrap; font-size: 13px; color: var(--text-primary); }
+        .btn-copy { position: absolute; top: 8px; right: 8px; padding: 4px 8px; font-size: 11px; background: var(--bg-elevated); }
+
+        /* Tabs inside drawer */
+        .drawer-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+        .drawer-tab { padding: 8px 16px; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-secondary); font-size: 13px; }
+        .drawer-tab.active { color: var(--text-primary); border-bottom-color: var(--accent); }
+
+        /* Activity Log */
+        .activity-log { display: flex; flex-direction: column; gap: 12px; border-left: 1px solid var(--border); margin-left: 6px; padding-left: 16px; }
+        .log-item { position: relative; font-size: 12px; color: var(--text-secondary); }
+        .log-item::before { content: ''; position: absolute; left: -20px; top: 4px; width: 7px; height: 7px; border-radius: 50%; background: var(--border); border: 2px solid var(--bg-surface); }
+
+        /* Settings */
+        .settings-section { background-color: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 24px; max-width: 600px; }
+        .password-input-group { position: relative; display: flex; }
+        .password-input-group input { padding-right: 40px; }
+        .toggle-password { position: absolute; right: 8px; top: 8px; cursor: pointer; color: var(--text-secondary); background: none; border: none; padding: 0; }
+        .test-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+
+        /* Toasts */
+        #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 100; display: flex; flex-direction: column; gap: 8px; }
+        .toast { padding: 12px 16px; border-radius: 6px; color: #fff; font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); animation: slideIn 0.3s ease forwards; }
+        .toast.success { background-color: var(--bg-elevated); border-left: 4px solid var(--accent); }
+        .toast.error { background-color: var(--bg-elevated); border-left: 4px solid var(--red); }
+        .toast.warning { background-color: var(--bg-elevated); border-left: 4px solid var(--amber); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; } }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 200; display: flex; align-items: center; justify-content: center; }
+        .modal { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; width: 400px; max-width: 90%; }
+        
+        .spinner { border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--accent); border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header" onclick="toggleSidebar()">
+            <div class="nav-icon">⚡</div>
+            <div class="nav-label font-semibold">CRM System</div>
+        </div>
+        <div class="nav-item active" onclick="switchView('pipeline')" id="nav-pipeline">
+            <div class="nav-icon">▤</div>
+            <div class="nav-label">Pipeline</div>
+        </div>
+        <div class="nav-item" onclick="switchView('table')" id="nav-table">
+            <div class="nav-icon">☰</div>
+            <div class="nav-label">All Leads</div>
+        </div>
+        <div class="nav-item" onclick="switchView('engine')" id="nav-engine">
+            <div class="nav-icon">✨</div>
+            <div class="nav-label">Lead Engine</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="nav-item" onclick="switchView('settings')" id="nav-settings">
+            <div class="nav-icon">⚙</div>
+            <div class="nav-label">Settings</div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main-content">
+        <!-- Stats -->
+        <div class="stats-bar" id="stats-bar">
+            <!-- Populated via JS -->
+        </div>
+
+        <!-- Views -->
+        <div class="view-container">
+            
+            <!-- PIPELINE VIEW -->
+            <div id="view-pipeline" class="h-full">
+                <div class="kanban-board" id="kanban-board">
+                    <!-- Columns generated by JS -->
+                </div>
+            </div>
+
+            <!-- TABLE VIEW -->
+            <div id="view-table" class="hidden">
+                <div class="table-controls">
+                    <input type="text" id="filter-search" placeholder="Search name or phone..." oninput="renderTable()" style="max-width: 200px;">
+                    <select id="filter-status" onchange="renderTable()" style="max-width: 150px;">
+                        <option value="All">All Statuses</option>
+                        <option value="New">New</option>
+                        <option value="Contacted">Contacted</option>
+                        <option value="Replied">Replied</option>
+                        <option value="Call Booked">Call Booked</option>
+                        <option value="Closed">Closed</option>
+                        <option value="Not Interested">Not Interested</option>
+                    </select>
+                    <select id="filter-source" onchange="renderTable()" style="max-width: 120px;">
+                        <option value="All">All Sources</option>
+                        <option value="places">Real</option>
+                        <option value="ai_generated">AI</option>
+                    </select>
+                    <div style="flex:1"></div>
+                    <button onclick="exportCSV()">Export CSV</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('name')">Name ↕</th>
+                                <th>Phone</th>
+                                <th>Area</th>
+                                <th>Source</th>
+                                <th>Channel</th>
+                                <th>Status</th>
+                                <th onclick="sortTable('follow_up_date')">Follow-up ↕</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- JS rows -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-2 text-sm text-secondary" id="table-count">Total: 0</div>
+            </div>
+
+            <!-- ENGINE VIEW -->
+            <div id="view-engine" class="hidden">
+                <div class="engine-tabs">
+                    <div class="engine-tab active" onclick="switchEngineTab('real')" id="tab-real">🗺 Find Real Leads</div>
+                    <div class="engine-tab" onclick="switchEngineTab('ai')" id="tab-ai">✨ Generate AI Leads</div>
+                </div>
+
+                <!-- Real Leads -->
+                <div id="engine-real" class="engine-card">
+                    <div class="mb-4">
+                        <label class="text-sm text-secondary block mb-1">Niche / Keyword</label>
+                        <input type="text" id="real-niche" placeholder="dental clinic, dermatology, pharmacy">
+                    </div>
+                    <div class="flex gap-4 mb-4">
+                        <div class="flex-1">
+                            <label class="text-sm text-secondary block mb-1">Area</label>
+                            <input type="text" id="real-area" placeholder="Heliopolis, Maadi, New Cairo">
+                        </div>
+                        <div style="width: 120px;">
+                            <label class="text-sm text-secondary block mb-1">Radius</label>
+                            <select id="real-radius">
+                                <option value="500">500m</option>
+                                <option value="1000" selected>1km</option>
+                                <option value="2000">2km</option>
+                                <option value="5000">5km</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-sm text-secondary block mb-1">Offer Type</label>
+                        <select id="real-offer">
+                            <option value="WhatsApp Bot">WhatsApp Bot</option>
+                            <option value="Appointment Recovery">Appointment Recovery</option>
+                            <option value="Lead Follow-up System">Lead Follow-up System</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary w-full" id="btn-find-real" onclick="findRealLeads()">Find Real Leads (Limit: 10)</button>
+                    
+                    <div id="real-results" class="engine-results hidden">
+                        <!-- JS populated -->
+                    </div>
+                    <button class="btn-primary w-full mt-4 hidden" id="btn-import-real" onclick="importRealLeads()">Import Selected</button>
+                </div>
+
+                <!-- AI Leads -->
+                <div id="engine-ai" class="engine-card hidden">
+                    <div class="mb-4">
+                        <label class="text-sm text-secondary block mb-1">Niche</label>
+                        <input type="text" id="ai-niche" placeholder="e.g. Real Estate Brokers">
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-sm text-secondary block mb-1">Area</label>
+                        <input type="text" id="ai-area" placeholder="e.g. Sheikh Zayed">
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-sm text-secondary block mb-1">Offer Type</label>
+                        <select id="ai-offer">
+                            <option value="WhatsApp Bot">WhatsApp Bot</option>
+                            <option value="Appointment Recovery">Appointment Recovery</option>
+                            <option value="Lead Follow-up System">Lead Follow-up System</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary w-full" id="btn-gen-ai" onclick="generateAILeads()">Generate AI Leads (5)</button>
+                    
+                    <div id="ai-results" class="engine-results hidden">
+                        <!-- JS populated -->
+                    </div>
+                    <button class="btn-primary w-full mt-4 hidden" id="btn-import-ai" onclick="importAILeads()">Import All to CRM</button>
+                </div>
+            </div>
+
+            <!-- SETTINGS VIEW -->
+            <div id="view-settings" class="hidden">
+                <div class="settings-section">
+                    <h3 class="mb-4 font-semibold">API Configuration</h3>
+                    <div class="mb-4">
+                        <label class="text-sm text-secondary block mb-1">Gemini API Key</label>
+                        <div class="password-input-group">
+                            <input type="password" id="set-gemini" placeholder="AIza...">
+                            <button class="toggle-password" onclick="toggleVisibility('set-gemini')">👁</button>
+                        </div>
+                        <div class="test-row">
+                            <button onclick="testGemini()">Test Gemini</button>
+                            <span id="test-gemini-res" class="text-sm"></span>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-sm text-secondary block mb-1">Google Places API Key</label>
+                        <div class="password-input-group">
+                            <input type="password" id="set-places" placeholder="AIza...">
+                            <button class="toggle-password" onclick="toggleVisibility('set-places')">👁</button>
+                        </div>
+                        <div class="test-row">
+                            <button onclick="testPlaces()">Test Places</button>
+                            <span id="test-places-res" class="text-sm"></span>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-sm text-secondary block mb-1">Google Sheets Webhook URL</label>
+                        <input type="text" id="set-webhook" placeholder="https://script.google.com/macros/s/...">
+                        <div class="test-row">
+                            <button onclick="testWebhook()">Test Webhook</button>
+                            <span id="test-webhook-res" class="text-sm"></span>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="saveSettings()">Save Configuration</button>
+                </div>
+
+                <div class="settings-section">
+                    <h3 class="mb-4 font-semibold">Your Agency</h3>
+                    <div class="mb-4">
+                        <label class="text-sm text-secondary block mb-1">Agency Name</label>
+                        <input type="text" id="set-agency" placeholder="My AI Agency">
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-sm text-secondary block mb-1">Default Target Niche</label>
+                        <input type="text" id="set-niche" placeholder="Clinics">
+                    </div>
+                    <button class="btn-primary" onclick="saveSettings()">Save Agency Info</button>
+                </div>
+
+                <div class="settings-section" style="border-color: rgba(239, 68, 68, 0.3);">
+                    <h3 class="mb-4 font-semibold text-red">Danger Zone</h3>
+                    <p class="text-sm text-secondary mb-4">Export your data before clearing.</p>
+                    <div class="flex gap-2">
+                        <button onclick="exportCSV()">Export Data</button>
+                        <button onclick="promptClearData()" style="color: var(--red); border-color: rgba(239, 68, 68, 0.5);">Clear All Data</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Lead Detail Drawer -->
+    <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <div>
+                <h3 id="drawer-name" class="font-semibold" style="font-size: 18px; margin-bottom: 4px;"></h3>
+                <div class="flex gap-2 items-center text-sm">
+                    <span id="drawer-channel" class="flex items-center"><span class="channel-dot"></span><span id="drawer-channel-text"></span></span>
+                    <span id="drawer-source" class="pill-source"></span>
+                </div>
+            </div>
+            <button class="drawer-close" onclick="closeDrawer()">×</button>
+        </div>
+        <div class="drawer-body">
+            <!-- Info -->
+            <div class="flex-col gap-2 text-sm">
+                <div class="flex justify-between items-center">
+                    <span class="text-secondary">Status</span>
+                    <select id="drawer-status" onchange="updateLeadStatus()" style="width: 140px; padding: 4px;">
+                        <option value="New">New</option>
+                        <option value="Contacted">Contacted</option>
+                        <option value="Replied">Replied</option>
+                        <option value="Call Booked">Call Booked</option>
+                        <option value="Closed">Closed</option>
+                        <option value="Not Interested">Not Interested</option>
+                    </select>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-secondary">Phone</span>
+                    <span id="drawer-phone" style="cursor:pointer;" onclick="copyText(this.innerText)"></span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-secondary">Area</span>
+                    <span id="drawer-area"></span>
+                </div>
+                <div class="flex justify-between items-start" id="drawer-rating-row">
+                    <span class="text-secondary">Rating</span>
+                    <div class="flex-col" style="align-items: flex-end;">
+                        <span id="drawer-rating"></span>
+                        <a id="drawer-maps-link" target="_blank" style="color: var(--blue); text-decoration: none; font-size: 11px;">View on Maps</a>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <span class="text-secondary block mb-1">Pain Point</span>
+                    <div id="drawer-pain" class="text-muted" style="line-height: 1.4;"></div>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div>
+                <div class="drawer-tabs">
+                    <div class="drawer-tab active" onclick="switchMessageTab('en')" id="drawer-tab-en">English</div>
+                    <div class="drawer-tab" onclick="switchMessageTab('ar')" id="drawer-tab-ar">Arabic</div>
+                </div>
+                <div class="code-block" id="drawer-message-en">
+                    <button class="btn-copy" onclick="copyText(document.getElementById('drawer-msg-text-en').innerText)">Copy</button>
+                    <span id="drawer-msg-text-en"></span>
+                </div>
+                <div class="code-block hidden" id="drawer-message-ar" style="direction: rtl; text-align: right;">
+                    <button class="btn-copy" style="left: 8px; right: auto;" onclick="copyText(document.getElementById('drawer-msg-text-ar').innerText)">Copy</button>
+                    <span id="drawer-msg-text-ar"></span>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div>
+                <span class="text-secondary block mb-1 text-sm">Notes</span>
+                <textarea id="drawer-notes" rows="3" placeholder="Add notes here..."></textarea>
+            </div>
+
+            <!-- Follow up -->
+            <div>
+                <span class="text-secondary block mb-1 text-sm">Follow-up Date</span>
+                <div class="flex gap-2">
+                    <input type="date" id="drawer-follow-date">
+                    <button onclick="saveFollowUp()">Save</button>
+                </div>
+            </div>
+
+            <!-- Activity -->
+            <div>
+                <span class="text-secondary block mb-2 text-sm">Activity Log</span>
+                <div class="activity-log" id="drawer-activity"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toasts -->
+    <div id="toast-container"></div>
+
+    <script>
+        // --- DataStore ---
+        const DataStore = {
+            getLeads: () => JSON.parse(localStorage.getItem('crm_leads') || '[]'),
+            saveLeads: (leads) => localStorage.setItem('crm_leads', JSON.stringify(leads)),
+            saveLead: (lead) => {
+                const leads = DataStore.getLeads();
+                const idx = leads.findIndex(l => l.id === lead.id);
+                lead.updated_at = new Date().toISOString();
+                if(idx > -1) leads[idx] = lead;
+                else leads.push(lead);
+                DataStore.saveLeads(leads);
+                refreshUI();
+            },
+            deleteLead: (id) => {
+                const leads = DataStore.getLeads().filter(l => l.id !== id);
+                DataStore.saveLeads(leads);
+                refreshUI();
+            },
+            getSettings: () => JSON.parse(localStorage.getItem('crm_settings') || '{"geminiKey":"","placesKey":"","webhookUrl":"","agency":"","niche":""}'),
+            saveSettings: (settings) => {
+                localStorage.setItem('crm_settings', JSON.stringify(settings));
+            }
+        };
+
+        // --- State ---
+        let currentLeadId = null;
+        let currentSortCol = '';
+        let sortAsc = true;
+        let tempEngineResults = [];
+
+        // --- Init ---
+        window.onload = () => {
+            loadSettingsToUI();
+            refreshUI();
+            
+            // Notes debounce
+            let noteTimeout;
+            document.getElementById('drawer-notes').addEventListener('input', (e) => {
+                clearTimeout(noteTimeout);
+                noteTimeout = setTimeout(() => {
+                    if(currentLeadId) {
+                        const lead = DataStore.getLeads().find(l => l.id === currentLeadId);
+                        if(lead) {
+                            lead.notes = e.target.value;
+                            DataStore.saveLead(lead);
+                        }
+                    }
+                }, 500);
+            });
+        };
+
+        // --- Core UI Functions ---
+        function showToast(msg, type='success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : '⚠';
+            toast.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        function switchView(view) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`nav-${view}`).classList.add('active');
+            
+            ['pipeline', 'table', 'engine', 'settings'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+            });
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            
+            if(view === 'pipeline') renderPipeline();
+            if(view === 'table') renderTable();
+        }
+
+        function refreshUI() {
+            renderStats();
+            renderPipeline();
+            renderTable();
+        }
+
+        // --- Stats ---
+        function renderStats() {
+            const leads = DataStore.getLeads();
+            const total = leads.length;
+            const real = leads.filter(l => l.source === 'places').length;
+            const ai = leads.filter(l => l.source === 'ai_generated').length;
+            const booked = leads.filter(l => l.status === 'Call Booked').length;
+            const closed = leads.filter(l => l.status === 'Closed').length;
+            
+            const todayStr = new Date().toISOString().split('T')[0];
+            const due = leads.filter(l => l.follow_up_date && l.follow_up_date <= todayStr && !['Closed', 'Not Interested'].includes(l.status)).length;
+
+            document.getElementById('stats-bar').innerHTML = `
+                <div class="stat-item"><span class="stat-value">${total}</span><span class="stat-label">Total Leads</span></div>
+                <div class="stat-item"><span class="stat-value">${real}</span><span class="stat-label text-accent">Real Leads</span></div>
+                <div class="stat-item"><span class="stat-value">${ai}</span><span class="stat-label">AI Leads</span></div>
+                <div class="stat-item"><span class="stat-value">${due}</span><span class="stat-label text-amber">Follow-ups Due</span></div>
+                <div class="stat-item"><span class="stat-value">${booked}</span><span class="stat-label text-accent">Calls Booked</span></div>
+                <div class="stat-item"><span class="stat-value">${closed}</span><span class="stat-label text-blue">Closed</span></div>
+            `;
+        }
+
+        // --- Pipeline ---
+        function renderPipeline() {
+            const leads = DataStore.getLeads();
+            const cols = ['New', 'Contacted', 'Replied', 'Call Booked', 'Closed'];
+            const board = document.getElementById('kanban-board');
+            board.innerHTML = '';
+            
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            cols.forEach(status => {
+                const colLeads = leads.filter(l => l.status === status);
+                const col = document.createElement('div');
+                col.className = 'kanban-col';
+                col.innerHTML = `
+                    <div class="kanban-header">
+                        <span>${status}</span>
+                        <span class="badge" style="background:var(--bg-elevated); border:1px solid var(--border)">${colLeads.length}</span>
+                    </div>
+                    <div class="kanban-cards" ondragover="allowDrop(event)" ondrop="drop(event, '${status}')">
+                        ${colLeads.map(l => {
+                            const isReal = l.source === 'places';
+                            const sourceBadge = `<span class="pill-source ${isReal ? 'source-real' : 'source-ai'}">${isReal ? 'Real 🟢' : 'AI ⚪'}</span>`;
+                            const channelClass = 'channel-' + l.channel.toLowerCase();
+                            const timeAgo = getTimeAgo(l.created_at);
+                            const overdue = (l.follow_up_date && l.follow_up_date <= todayStr) ? '<span style="color:var(--amber)">●</span>' : '';
+                            
+                            return `
+                            <div class="lead-card" draggable="true" ondragstart="drag(event, '${l.id}')" onclick="openDrawer('${l.id}')">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="font-semibold truncate" style="max-width:160px;" title="${l.name}">${l.name}</div>
+                                    ${sourceBadge}
+                                </div>
+                                <div class="text-xs text-muted truncate mb-2">${l.pain || 'No pain point recorded'}</div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <div class="flex items-center"><span class="channel-dot ${channelClass}"></span>${l.channel}</div>
+                                    <div class="text-muted flex items-center gap-1">${timeAgo} ${overdue}</div>
+                                </div>
+                            </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                board.appendChild(col);
+            });
+        }
+
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev, id) { 
+            ev.dataTransfer.setData("text", id); 
+            setTimeout(() => ev.target.classList.add('dragging'), 0);
+        }
+        document.addEventListener('dragend', e => { if(e.target.classList) e.target.classList.remove('dragging'); });
+        
+        function drop(ev, newStatus) {
+            ev.preventDefault();
+            const id = ev.dataTransfer.getData("text");
+            const lead = DataStore.getLeads().find(l => l.id === id);
+            if(lead && lead.status !== newStatus) {
+                const oldStatus = lead.status;
+                lead.status = newStatus;
+                addActivity(lead, `Moved from ${oldStatus} to ${newStatus}`);
+                DataStore.saveLead(lead);
+                syncToSheets(lead);
+            }
+        }
+
+        // --- Table ---
+        function sortTable(col) {
+            if(currentSortCol === col) sortAsc = !sortAsc;
+            else { currentSortCol = col; sortAsc = true; }
+            renderTable();
+        }
+
+        function renderTable() {
+            let leads = DataStore.getLeads();
+            
+            // Filter
+            const search = document.getElementById('filter-search').value.toLowerCase();
+            const status = document.getElementById('filter-status').value;
+            const source = document.getElementById('filter-source').value;
+            
+            leads = leads.filter(l => {
+                const matchSearch = l.name.toLowerCase().includes(search) || l.phone.includes(search);
+                const matchStatus = status === 'All' || l.status === status;
+                const matchSource = source === 'All' || l.source === source;
+                return matchSearch && matchStatus && matchSource;
+            });
+
+            // Sort
+            if(currentSortCol) {
+                leads.sort((a,b) => {
+                    let valA = a[currentSortCol] || '';
+                    let valB = b[currentSortCol] || '';
+                    if(valA < valB) return sortAsc ? -1 : 1;
+                    if(valA > valB) return sortAsc ? 1 : -1;
+                    return 0;
+                });
+            }
+
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            leads.forEach(l => {
+                const tr = document.createElement('tr');
+                const isOverdue = l.follow_up_date && l.follow_up_date <= todayStr && !['Closed', 'Not Interested'].includes(l.status);
+                if(isOverdue) tr.classList.add('overdue');
+                
+                const isReal = l.source === 'places';
+                const sourceBadge = `<span class="pill-source ${isReal ? 'source-real' : 'source-ai'}">${isReal ? 'Real 🟢' : 'AI ⚪'}</span>`;
+                const statusClass = 'status-' + l.status.toLowerCase().replace(' ', '-');
+                const channelClass = 'channel-' + l.channel.toLowerCase();
+
+                tr.innerHTML = `
+                    <td class="font-medium">${l.name}</td>
+                    <td>${l.phone}</td>
+                    <td>${l.area}</td>
+                    <td>${sourceBadge}</td>
+                    <td><span class="channel-dot ${channelClass}"></span>${l.channel}</td>
+                    <td><span class="pill-status ${statusClass}">${l.status}</span></td>
+                    <td style="${isOverdue ? 'color:var(--amber)' : ''}">${l.follow_up_date || '-'}</td>
+                    <td>
+                        <button style="padding:4px 8px; font-size:11px;" onclick="openDrawer('${l.id}')">Open</button>
+                        <button style="padding:4px 8px; font-size:11px; color:var(--red); background:none; border:none;" onclick="deleteLead('${l.id}')">Del</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('table-count').innerText = `Total: ${leads.length}`;
+        }
+
+        function deleteLead(id) {
+            if(confirm("Delete this lead?")) {
+                DataStore.deleteLead(id);
+                showToast("Lead deleted");
+            }
+        }
+
+        function exportCSV() {
+            const leads = DataStore.getLeads();
+            if(!leads.length) return showToast("No leads to export", "warning");
+            
+            const cols = ['id', 'name', 'phone', 'area', 'source', 'channel', 'status', 'pain', 'follow_up_date', 'place_id', 'created_at'];
+            let csv = cols.join(',') + '\n';
+            
+            leads.forEach(l => {
+                csv += cols.map(c => {
+                    let val = l[c] || '';
+                    if(typeof val === 'string') val = val.replace(/"/g, '""');
+                    return `"${val}"`;
+                }).join(',') + '\n';
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `crm_leads_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        // --- Drawer ---
+        function openDrawer(id) {
+            currentLeadId = id;
+            const lead = DataStore.getLeads().find(l => l.id === id);
+            if(!lead) return;
+
+            document.getElementById('drawer-name').innerText = lead.name;
+            document.getElementById('drawer-channel-text').innerText = lead.channel;
+            document.getElementById('drawer-channel').querySelector('.channel-dot').className = `channel-dot channel-${lead.channel.toLowerCase()}`;
+            
+            const isReal = lead.source === 'places';
+            document.getElementById('drawer-source').className = `pill-source ${isReal ? 'source-real' : 'source-ai'}`;
+            document.getElementById('drawer-source').innerText = isReal ? 'Real 🟢' : 'AI ⚪';
+
+            document.getElementById('drawer-status').value = lead.status;
+            document.getElementById('drawer-phone').innerText = lead.phone;
+            document.getElementById('drawer-area').innerText = lead.area;
+            document.getElementById('drawer-pain').innerText = lead.pain;
+            
+            if(isReal && lead.place_id) {
+                document.getElementById('drawer-rating-row').classList.remove('hidden');
+                document.getElementById('drawer-rating').innerText = lead.rating ? `★ ${lead.rating}` : 'No rating';
+                document.getElementById('drawer-maps-link').href = `https://www.google.com/maps/place/?q=place_id:${lead.place_id}`;
+            } else {
+                document.getElementById('drawer-rating-row').classList.add('hidden');
+            }
+
+            document.getElementById('drawer-msg-text-en').innerText = lead.en_message || '';
+            document.getElementById('drawer-msg-text-ar').innerText = lead.ar_message || '';
+            document.getElementById('drawer-notes').value = lead.notes || '';
+            document.getElementById('drawer-follow-date').value = lead.follow_up_date || '';
+
+            renderActivity(lead.activity_log);
+            switchMessageTab('en');
+
+            document.getElementById('drawer-overlay').style.display = 'block';
+            document.getElementById('drawer').classList.add('open');
+        }
+
+        function closeDrawer() {
+            document.getElementById('drawer-overlay').style.display = 'none';
+            document.getElementById('drawer').classList.remove('open');
+            currentLeadId = null;
+        }
+
+        function switchMessageTab(lang) {
+            document.getElementById('drawer-tab-en').classList.toggle('active', lang === 'en');
+            document.getElementById('drawer-tab-ar').classList.toggle('active', lang === 'ar');
+            document.getElementById('drawer-message-en').classList.toggle('hidden', lang !== 'en');
+            document.getElementById('drawer-message-ar').classList.toggle('hidden', lang !== 'ar');
+        }
+
+        function copyText(txt) {
+            navigator.clipboard.writeText(txt).then(() => showToast("Copied to clipboard"));
+        }
+
+        function updateLeadStatus() {
+            if(!currentLeadId) return;
+            const newStatus = document.getElementById('drawer-status').value;
+            const lead = DataStore.getLeads().find(l => l.id === currentLeadId);
+            if(lead.status !== newStatus) {
+                const old = lead.status;
+                lead.status = newStatus;
+                addActivity(lead, `Status changed from ${old} to ${newStatus}`);
+                DataStore.saveLead(lead);
+                syncToSheets(lead);
+                renderActivity(lead.activity_log);
+            }
+        }
+
+        function saveFollowUp() {
+            if(!currentLeadId) return;
+            const date = document.getElementById('drawer-follow-date').value;
+            const lead = DataStore.getLeads().find(l => l.id === currentLeadId);
+            lead.follow_up_date = date;
+            addActivity(lead, `Set follow-up date to ${date || 'none'}`);
+            DataStore.saveLead(lead);
+            renderActivity(lead.activity_log);
+            showToast("Follow-up saved");
+        }
+
+        function addActivity(lead, action) {
+            if(!lead.activity_log) lead.activity_log = [];
+            lead.activity_log.unshift({ action, timestamp: new Date().toISOString() });
+        }
+
+        function renderActivity(log) {
+            const container = document.getElementById('drawer-activity');
+            if(!log || !log.length) {
+                container.innerHTML = '<div class="text-sm text-muted">No activity yet.</div>';
+                return;
+            }
+            container.innerHTML = log.map(item => `
+                <div class="log-item">
+                    <div class="font-medium" style="color:var(--text-primary)">${item.action}</div>
+                    <div style="font-size:10px">${getTimeAgo(item.timestamp)}</div>
+                </div>
+            `).join('');
+        }
+
+        function getTimeAgo(dateStr) {
+            const diff = (new Date() - new Date(dateStr)) / 1000;
+            if(diff < 60) return 'just now';
+            if(diff < 3600) return Math.floor(diff/60) + 'm ago';
+            if(diff < 86400) return Math.floor(diff/3600) + 'h ago';
+            return Math.floor(diff/86400) + 'd ago';
+        }
+
+        // --- Lead Engine UI ---
+        function switchEngineTab(tab) {
+            document.getElementById('tab-real').classList.toggle('active', tab === 'real');
+            document.getElementById('tab-ai').classList.toggle('active', tab === 'ai');
+            document.getElementById('engine-real').classList.toggle('hidden', tab !== 'real');
+            document.getElementById('engine-ai').classList.toggle('hidden', tab !== 'ai');
+        }
+
+        // --- Proxy Utils ---
+        const CORS_PROXY = "https://corsproxy.io/?";
+        async function fetchProxied(url) {
+            const res = await fetch(CORS_PROXY + encodeURIComponent(url));
+            if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            return res.json();
+        }
+
+        // --- Real Leads Logic ---
+        async function findRealLeads() {
+            const settings = DataStore.getSettings();
+            if(!settings.placesKey) return showToast("No Places API Key set", "error");
+            if(!settings.geminiKey) return showToast("No Gemini API Key set (needed for messages)", "error");
+
+            const niche = document.getElementById('real-niche').value || 'clinic';
+            const area = document.getElementById('real-area').value || 'Cairo';
+            const radius = document.getElementById('real-radius').value;
+            const offer = document.getElementById('real-offer').value;
+            
+            const btn = document.getElementById('btn-find-real');
+            btn.innerHTML = '<span class="spinner"></span> Searching...';
+            btn.disabled = true;
+
+            try {
+                // 1. Geocode Area
+                const geoUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(area+',Egypt')}&key=${settings.placesKey}`;
+                const geoRes = await fetchProxied(geoUrl);
+                let loc = "30.0444,31.2357"; // Cairo default
+                if(geoRes.results && geoRes.results.length > 0) {
+                    const l = geoRes.results[0].geometry.location;
+                    loc = `${l.lat},${l.lng}`;
+                }
+
+                // 2. Nearby Search
+                const searchUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${loc}&radius=${radius}&keyword=${encodeURIComponent(niche)}&type=establishment&key=${settings.placesKey}`;
+                const searchRes = await fetchProxied(searchUrl);
+                if(!searchRes.results || searchRes.results.length === 0) {
+                    throw new Error("No results found in this area.");
+                }
+
+                const placesToProcess = searchRes.results.slice(0, 10);
+                
+                // 3. Place Details (parallel)
+                const detailsPromises = placesToProcess.map(p => {
+                    const dUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${p.place_id}&fields=name,formatted_phone_number,rating,user_ratings_total,formatted_address&key=${settings.placesKey}`;
+                    return fetchProxied(dUrl).catch(e => ({ result: { name: p.name } }));
+                });
+                const detailsResults = await Promise.all(detailsPromises);
+                
+                const businessesForGemini = detailsResults.map((d, i) => {
+                    const r = d.result;
+                    return {
+                        id: 'temp_' + i,
+                        name: r.name,
+                        address: r.formatted_address || area,
+                        phone: r.formatted_phone_number || "No phone",
+                        rating: r.rating || null,
+                        place_id: placesToProcess[i].place_id,
+                        niche: niche
+                    };
+                }).filter(b => b.phone !== "No phone"); // Only leads with phone
+
+                if(businessesForGemini.length === 0) throw new Error("Found places, but none had phone numbers.");
+
+                // 4. Batch Gemini Generation
+                const prompt = `
+You are an outreach copywriter for an AI automation agency in Egypt.
+Write personalized outreach messages for each of these real businesses.
+Offer being pitched: ${offer}
+
+Businesses:
+${JSON.stringify(businessesForGemini.map(b => ({id: b.id, name: b.name, address: b.address, niche: b.niche})))}
+
+For each business, write a Hormozi-style 4-line message:
+Line 1: Specific observation about their likely problem (reference their niche/location)
+Line 2: What we do (done-for-you AI automation)
+Line 3: A concrete result (number-based)
+Line 4: One soft yes/no question
+
+Return ONLY a valid JSON array, same order as input. No markdown. No code fences.
+Schema:
+[{
+  "id": "match with input id",
+  "pain": "One specific pain point for this business type",
+  "channel": "WhatsApp OR LinkedIn OR Instagram",
+  "en_message": "4-line English message",
+  "ar_message": "4-line Egyptian Arabic (عامية) message"
+}]
+`;
+                const geminiBody = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { temperature: 0.7, response_mime_type: "application/json" }
+                };
+                
+                const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${settings.geminiKey}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(geminiBody)
+                });
+                const geminiData = await geminiRes.json();
+                const textOutput = geminiData.candidates[0].content.parts[0].text;
+                const aiOutputs = JSON.parse(textOutput.replace(/```json/g,'').replace(/```/g,'').trim());
+
+                // Merge
+                tempEngineResults = businessesForGemini.map(b => {
+                    const aiMatch = aiOutputs.find(a => a.id === b.id) || aiOutputs[0];
+                    return {
+                        ...b,
+                        pain: aiMatch.pain,
+                        channel: aiMatch.channel || 'WhatsApp',
+                        en_message: aiMatch.en_message,
+                        ar_message: aiMatch.ar_message,
+                        source: 'places'
+                    };
+                });
+
+                renderEngineResults('real');
+
+            } catch (err) {
+                console.error(err);
+                showToast(err.message || "Failed to fetch real leads", "error");
+            } finally {
+                btn.innerHTML = 'Find Real Leads (Limit: 10)';
+                btn.disabled = false;
+            }
+        }
+
+        // --- AI Leads Logic ---
+        async function generateAILeads() {
+            const settings = DataStore.getSettings();
+            if(!settings.geminiKey) return showToast("No Gemini API Key set", "error");
+
+            const niche = document.getElementById('ai-niche').value || 'Real Estate';
+            const area = document.getElementById('ai-area').value || 'Cairo';
+            const offer = document.getElementById('ai-offer').value;
+            
+            const btn = document.getElementById('btn-gen-ai');
+            btn.innerHTML = '<span class="spinner"></span> Generating...';
+            btn.disabled = true;
+
+            const prompt = `
+You are a lead research assistant for an AI automation agency in Egypt.
+Generate exactly 5 realistic business leads for:
+- Niche: ${niche}
+- Area: ${area}
+- Offer: ${offer}
+
+For each lead, create a personalized Hormozi-style outreach message (4 lines):
+Line 1: Specific observation about their likely business problem
+Line 2: What we do (done-for-you AI automation), in their language
+Line 3: A concrete result (number-based)
+Line 4: One soft yes/no question
+
+Return ONLY a valid JSON array. No markdown. No code fences.
+Schema:
+[{
+  "name": "Business name (realistic Egyptian business name)",
+  "phone": "Egyptian mobile number (010/011/012 XXXXXXXX format)",
+  "area": "${area}",
+  "pain": "One specific pain point sentence",
+  "channel": "WhatsApp OR LinkedIn OR Instagram",
+  "en_message": "4-line English message",
+  "ar_message": "4-line Egyptian Arabic (عامية) message"
+}]`;
+
+            try {
+                const geminiBody = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { temperature: 0.8, response_mime_type: "application/json" }
+                };
+                
+                const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${settings.geminiKey}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(geminiBody)
+                });
+                const data = await geminiRes.json();
+                const textOutput = data.candidates[0].content.parts[0].text;
+                const leads = JSON.parse(textOutput.replace(/```json/g,'').replace(/```/g,'').trim());
+                
+                tempEngineResults = leads.map(l => ({...l, source: 'ai_generated', id: 'temp_'+Math.random()}));
+                renderEngineResults('ai');
+
+            } catch (err) {
+                console.error(err);
+                showToast("Failed to generate leads", "error");
+            } finally {
+                btn.innerHTML = 'Generate AI Leads (5)';
+                btn.disabled = false;
+            }
+        }
+
+        function renderEngineResults(type) {
+            const containerId = type === 'real' ? 'real-results' : 'ai-results';
+            const btnId = type === 'real' ? 'btn-import-real' : 'btn-import-ai';
+            const container = document.getElementById(containerId);
+            const btn = document.getElementById(btnId);
+            
+            container.innerHTML = tempEngineResults.map((l, i) => `
+                <div class="result-card">
+                    <input type="checkbox" class="result-checkbox" data-idx="${i}" checked>
+                    <div class="result-content">
+                        <div class="font-semibold">${l.name} <span class="pill-source ${l.source==='places'?'source-real':'source-ai'}">${l.source==='places'?'Real 🟢':'AI ⚪'}</span></div>
+                        <div class="text-xs text-muted mt-1">
+                            ${l.phone} • ${l.address || l.area} 
+                            ${l.rating ? `• ★ ${l.rating}` : ''}
+                        </div>
+                        <div class="message-preview truncate">${l.en_message.split('\n')[0]}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.classList.remove('hidden');
+            btn.classList.remove('hidden');
+            if(type === 'real') btn.innerText = `Import Selected (${tempEngineResults.length})`;
+            
+            // Add listeners to checkboxes
+            document.querySelectorAll(`#${containerId} .result-checkbox`).forEach(cb => {
+                cb.addEventListener('change', () => {
+                    if(type === 'real') {
+                        const checked = document.querySelectorAll(`#${containerId} .result-checkbox:checked`).length;
+                        btn.innerText = `Import Selected (${checked})`;
+                    }
+                });
+            });
+        }
+
+        function importRealLeads() {
+            const checkboxes = document.querySelectorAll('#real-results .result-checkbox');
+            let imported = 0;
+            checkboxes.forEach(cb => {
+                if(cb.checked) {
+                    const l = tempEngineResults[cb.getAttribute('data-idx')];
+                    saveNewLead(l);
+                    imported++;
+                }
+            });
+            document.getElementById('real-results').innerHTML = '';
+            document.getElementById('real-results').classList.add('hidden');
+            document.getElementById('btn-import-real').classList.add('hidden');
+            showToast(`Imported ${imported} real leads`);
+            switchView('pipeline');
+        }
+
+        function importAILeads() {
+            tempEngineResults.forEach(l => saveNewLead(l));
+            document.getElementById('ai-results').innerHTML = '';
+            document.getElementById('ai-results').classList.add('hidden');
+            document.getElementById('btn-import-ai').classList.add('hidden');
+            showToast(`Imported ${tempEngineResults.length} AI leads`);
+            switchView('pipeline');
+        }
+
+        function saveNewLead(l) {
+            const lead = {
+                id: crypto.randomUUID(),
+                name: l.name,
+                phone: l.phone,
+                area: l.area || l.address,
+                pain: l.pain,
+                channel: l.channel,
+                en_message: l.en_message,
+                ar_message: l.ar_message,
+                status: 'New',
+                notes: '',
+                follow_up_date: '',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                source: l.source,
+                place_id: l.place_id || null,
+                rating: l.rating || null,
+                activity_log: [{ action: "Imported to CRM", timestamp: new Date().toISOString() }]
+            };
+            DataStore.saveLead(lead);
+            syncToSheets(lead);
+        }
+
+        // --- Settings & Webhook ---
+        function loadSettingsToUI() {
+            const s = DataStore.getSettings();
+            document.getElementById('set-gemini').value = s.geminiKey || '';
+            document.getElementById('set-places').value = s.placesKey || '';
+            document.getElementById('set-webhook').value = s.webhookUrl || '';
+            document.getElementById('set-agency').value = s.agency || '';
+            document.getElementById('set-niche').value = s.niche || '';
+            
+            // Apply defaults to engine
+            if(s.niche) {
+                document.getElementById('real-niche').value = s.niche;
+                document.getElementById('ai-niche').value = s.niche;
+            }
+        }
+
+        function saveSettings() {
+            const s = {
+                geminiKey: document.getElementById('set-gemini').value,
+                placesKey: document.getElementById('set-places').value,
+                webhookUrl: document.getElementById('set-webhook').value,
+                agency: document.getElementById('set-agency').value,
+                niche: document.getElementById('set-niche').value
+            };
+            DataStore.saveSettings(s);
+            showToast("Settings saved");
+        }
+
+        function toggleVisibility(id) {
+            const el = document.getElementById(id);
+            el.type = el.type === 'password' ? 'text' : 'password';
+        }
+
+        async function testGemini() {
+            const key = document.getElementById('set-gemini').value;
+            const resEl = document.getElementById('test-gemini-res');
+            if(!key) return resEl.innerHTML = '<span class="text-red">Missing Key</span>';
+            resEl.innerText = "Testing...";
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: "Hi" }] }] })
+                });
+                if(res.ok) resEl.innerHTML = '<span class="text-accent">✓ Success</span>';
+                else throw new Error('API Error');
+            } catch(e) { resEl.innerHTML = '<span class="text-red">✗ Failed</span>'; }
+        }
+
+        async function testPlaces() {
+            const key = document.getElementById('set-places').value;
+            const resEl = document.getElementById('test-places-res');
+            if(!key) return resEl.innerHTML = '<span class="text-red">Missing Key</span>';
+            resEl.innerText = "Testing...";
+            try {
+                const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=30.0444,31.2357&radius=500&keyword=clinic&key=${key}`;
+                const res = await fetchProxied(url);
+                if(res.status === 'OK' || res.status === 'ZERO_RESULTS') resEl.innerHTML = '<span class="text-accent">✓ Success</span>';
+                else throw new Error(res.error_message || 'API Error');
+            } catch(e) { resEl.innerHTML = '<span class="text-red">✗ Failed</span>'; }
+        }
+
+        async function testWebhook() {
+            const url = document.getElementById('set-webhook').value;
+            const resEl = document.getElementById('test-webhook-res');
+            if(!url) return resEl.innerHTML = '<span class="text-red">Missing URL</span>';
+            resEl.innerText = "Testing...";
+            try {
+                // Using no-cors just to test if endpoint is reachable without failing on preflight
+                await fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify({action:'test'})});
+                resEl.innerHTML = '<span class="text-accent">✓ Sent</span>';
+            } catch(e) { resEl.innerHTML = '<span class="text-red">✗ Failed</span>'; }
+        }
+
+        function promptClearData() {
+            const code = prompt("Type 'DELETE' to clear all CRM data:");
+            if(code === 'DELETE') {
+                localStorage.removeItem('crm_leads');
+                refreshUI();
+                showToast("All data cleared", "warning");
+            }
+        }
+
+        function syncToSheets(lead) {
+            const url = DataStore.getSettings().webhookUrl;
+            if(!url) return;
+            fetch(url, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: "upsert_lead",
+                    lead: {
+                        id: lead.id, name: lead.name, phone: lead.phone, area: lead.area,
+                        pain: lead.pain, status: lead.status, source: lead.source,
+                        timestamp: new Date().toISOString()
+                    }
+                })
+            }).then(() => showToast("Synced to Sheets"))
+              .catch(() => showToast("Sheets sync failed — saved locally", "warning"));
+        }
+
+    </script>
+</body>
+</html>
