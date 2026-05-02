@@ -1094,25 +1094,7 @@
             document.getElementById('engine-ai').classList.toggle('hidden', tab !== 'ai');
         }
 
-        // --- Google Maps SDK Loader ---
-        let mapsLoaded = false;
-        function loadGoogleMapsSDK(apiKey) {
-            return new Promise((resolve, reject) => {
-                if (mapsLoaded && window.google && window.google.maps) return resolve();
-                if (document.getElementById('gmaps-script')) return resolve(); // Already injecting
-                
-                const script = document.createElement('script');
-                script.id = 'gmaps-script';
-                script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-                script.async = true;
-                script.defer = true;
-                script.onload = () => { mapsLoaded = true; resolve(); };
-                script.onerror = () => reject(new Error("Failed to load Google Maps SDK. Check your API key or internet connection."));
-                document.head.appendChild(script);
-            });
-        }
-
-        // --- Real Leads Logic ---
+        // --- Real Leads Logic (Using New Places API - No Proxies Required) ---
         async function findRealLeads() {
             const settings = DataStore.getSettings();
             if(!settings.placesKey) return showToast("No Places API Key set", "error");
@@ -1128,66 +1110,63 @@
             btn.disabled = true;
 
             try {
-                await loadGoogleMapsSDK(settings.placesKey);
-                
                 // 1. Geocode Area
-                const geocoder = new google.maps.Geocoder();
-                const geoResult = await new Promise((resolve) => {
-                    geocoder.geocode({ address: area + ', Egypt' }, (results, status) => {
-                        if (status === 'OK') resolve(results[0].geometry.location);
-                        else resolve(new google.maps.LatLng(30.0444, 31.2357)); // Fallback Cairo
-                    });
-                });
-
-                // 2. Nearby Search
-                const dummyDiv = document.createElement('div');
-                const service = new google.maps.places.PlacesService(dummyDiv);
+                const geoUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(area+',Egypt')}&key=${settings.placesKey}`;
+                const geoRes = await fetch(geoUrl).then(r => r.json());
                 
-                const searchResults = await new Promise((resolve, reject) => {
-                    service.nearbySearch({
-                        location: geoResult,
-                        radius: parseInt(radius),
-                        keyword: niche,
-                        type: 'establishment'
-                    }, (results, status) => {
-                        if (status === google.maps.places.PlacesServiceStatus.OK) resolve(results);
-                        else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) resolve([]);
-                        else reject(new Error(`Places API Error: ${status}`));
-                    });
-                });
-
-                if(!searchResults || searchResults.length === 0) {
-                    throw new Error("No results found in this area.");
+                if (geoRes.error_message) {
+                    throw new Error(`Geocoding Error: ${geoRes.error_message}`);
+                }
+                
+                let lat = 30.0444, lng = 31.2357; // Cairo default
+                if(geoRes.results && geoRes.results.length > 0) {
+                    lat = geoRes.results[0].geometry.location.lat;
+                    lng = geoRes.results[0].geometry.location.lng;
                 }
 
-                const placesToProcess = searchResults.slice(0, 10);
-                
-                // 3. Place Details (parallel)
-                const detailsPromises = placesToProcess.map(p => {
-                    return new Promise((resolve) => {
-                        service.getDetails({
-                            placeId: p.place_id,
-                            fields: ['name', 'formatted_phone_number', 'rating', 'formatted_address']
-                        }, (place, status) => {
-                            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                                resolve({
-                                    id: 'temp_' + Math.random().toString(36).substring(7),
-                                    name: place.name || p.name,
-                                    address: place.formatted_address || area,
-                                    phone: place.formatted_phone_number || "No phone",
-                                    rating: place.rating || p.rating || null,
-                                    place_id: p.place_id,
-                                    niche: niche
-                                });
-                            } else {
-                                resolve({ id: 'temp_' + Math.random().toString(36).substring(7), name: p.name, phone: "No phone", niche });
-                            }
-                        });
-                    });
+                // 2. New Places API (Nearby Search)
+                const searchUrl = 'https://places.googleapis.com/v1/places:searchNearby';
+                const searchReq = {
+                    maxResultCount: 10,
+                    locationRestriction: {
+                        circle: {
+                            center: { latitude: lat, longitude: lng },
+                            radius: parseFloat(radius)
+                        }
+                    }
+                };
+
+                const placesRes = await fetch(searchUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Goog-Api-Key': settings.placesKey,
+                        'X-Goog-FieldMask': 'places.displayName.text,places.formattedAddress,places.nationalPhoneNumber,places.rating,places.id'
+                    },
+                    body: JSON.stringify(searchReq)
                 });
-                const detailsResults = await Promise.all(detailsPromises);
                 
-                const businessesForGemini = detailsResults.filter(b => b.phone !== "No phone");
+                const placesData = await placesRes.json();
+                
+                if(placesData.error) {
+                    throw new Error(`Places API Error: ${placesData.error.message}`);
+                }
+
+                if(!placesData.places || placesData.places.length === 0) {
+                    throw new Error("No results found in this area.");
+                }
+                
+                const businessesForGemini = placesData.places
+                    .filter(p => p.nationalPhoneNumber) // Only leads with phone
+                    .map((p, i) => ({
+                        id: 'temp_' + i,
+                        name: p.displayName?.text || "Unknown Business",
+                        address: p.formattedAddress || area,
+                        phone: p.nationalPhoneNumber,
+                        rating: p.rating || null,
+                        place_id: p.id,
+                        niche: niche
+                    }));
 
                 if(businessesForGemini.length === 0) throw new Error("Found places, but none had public phone numbers listed on Maps.");
 
@@ -1454,25 +1433,35 @@ Schema:
             const key = document.getElementById('set-places').value;
             const resEl = document.getElementById('test-places-res');
             if(!key) return resEl.innerHTML = '<span class="text-red">Missing Key</span>';
-            resEl.innerText = "Loading API...";
+            resEl.innerText = "Testing API...";
             try {
-                await loadGoogleMapsSDK(key);
-                resEl.innerText = "Searching...";
-                
-                const dummyDiv = document.createElement('div');
-                const service = new google.maps.places.PlacesService(dummyDiv);
-                
-                service.nearbySearch({
-                    location: {lat: 30.0444, lng: 31.2357},
-                    radius: 500,
-                    keyword: 'clinic'
-                }, (results, status) => {
-                    if(status === google.maps.places.PlacesServiceStatus.OK || status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
-                        resEl.innerHTML = '<span class="text-accent">✓ Success</span>';
-                    } else {
-                        resEl.innerHTML = `<span class="text-red" style="font-size:10px;">✗ API Error: ${status}</span>`;
+                const searchUrl = 'https://places.googleapis.com/v1/places:searchNearby';
+                const searchReq = {
+                    maxResultCount: 1,
+                    locationRestriction: {
+                        circle: {
+                            center: { latitude: 30.0444, longitude: 31.2357 },
+                            radius: 500.0
+                        }
                     }
+                };
+
+                const placesRes = await fetch(searchUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Goog-Api-Key': key,
+                        'X-Goog-FieldMask': 'places.id'
+                    },
+                    body: JSON.stringify(searchReq)
                 });
+                
+                const placesData = await placesRes.json();
+                
+                if(placesData.error) {
+                    throw new Error(placesData.error.message);
+                }
+                resEl.innerHTML = '<span class="text-accent">✓ Success</span>';
             } catch(e) { resEl.innerHTML = `<span class="text-red" style="font-size:10px;">✗ ${e.message}</span>`; }
         }
 
