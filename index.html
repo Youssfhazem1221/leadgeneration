@@ -130,6 +130,7 @@
         /* Sidebar */
         .sidebar {
             width: 200px;
+            flex-shrink: 0;
             background-color: var(--bg-surface);
             backdrop-filter: var(--glass-blur);
             border-right: 1px solid var(--border);
@@ -172,11 +173,11 @@
             color: var(--accent);
             font-weight: 500;
         }
-        .nav-icon { width: 24px; min-width: 24px; text-align: center; font-size: 16px; }
+        .nav-icon { width: 24px; min-width: 24px; text-align: center; font-size: 16px; display: flex; align-items: center; justify-content: center; }
         .nav-label { margin-left: 12px; white-space: nowrap; transition: opacity 0.2s; }
-        .sidebar.collapsed .nav-label { opacity: 0; pointer-events: none; }
-        .sidebar.collapsed .nav-item { padding: 14px; justify-content: center; margin: 4px; }
-        .sidebar.collapsed .nav-icon { text-align: center; margin: 0; }
+        .sidebar.collapsed .nav-label { opacity: 0; display: none; }
+        .sidebar.collapsed .nav-item { padding: 14px; justify-content: center; margin: 4px; border: none; }
+        .sidebar.collapsed .nav-icon { margin: 0; }
 
         /* Main Content */
         .main-content {
@@ -1094,10 +1095,10 @@
         }
 
         // --- Proxy Utils ---
-        const CORS_PROXY = "https://corsproxy.io/?";
+        const CORS_PROXY = "https://api.allorigins.win/raw?url=";
         async function fetchProxied(url) {
             const res = await fetch(CORS_PROXY + encodeURIComponent(url));
-            if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            if(!res.ok) throw new Error(`Proxy error! status: ${res.status}`);
             return res.json();
         }
 
@@ -1120,6 +1121,9 @@
                 // 1. Geocode Area
                 const geoUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(area+',Egypt')}&key=${settings.placesKey}`;
                 const geoRes = await fetchProxied(geoUrl);
+                if (geoRes.status !== 'OK' && geoRes.status !== 'ZERO_RESULTS') {
+                    throw new Error(geoRes.error_message || `Geocoding API Error: ${geoRes.status}`);
+                }
                 let loc = "30.0444,31.2357"; // Cairo default
                 if(geoRes.results && geoRes.results.length > 0) {
                     const l = geoRes.results[0].geometry.location;
@@ -1129,6 +1133,9 @@
                 // 2. Nearby Search
                 const searchUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${loc}&radius=${radius}&keyword=${encodeURIComponent(niche)}&type=establishment&key=${settings.placesKey}`;
                 const searchRes = await fetchProxied(searchUrl);
+                if (searchRes.status !== 'OK' && searchRes.status !== 'ZERO_RESULTS') {
+                    throw new Error(searchRes.error_message || `Places API Error: ${searchRes.status}`);
+                }
                 if(!searchRes.results || searchRes.results.length === 0) {
                     throw new Error("No results found in this area.");
                 }
@@ -1425,8 +1432,8 @@ Schema:
                 const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=30.0444,31.2357&radius=500&keyword=clinic&key=${key}`;
                 const res = await fetchProxied(url);
                 if(res.status === 'OK' || res.status === 'ZERO_RESULTS') resEl.innerHTML = '<span class="text-accent">✓ Success</span>';
-                else throw new Error(res.error_message || 'API Error');
-            } catch(e) { resEl.innerHTML = '<span class="text-red">✗ Failed</span>'; }
+                else throw new Error(res.error_message || res.status || 'API Error');
+            } catch(e) { resEl.innerHTML = `<span class="text-red" style="font-size:10px;">✗ ${e.message}</span>`; }
         }
 
         async function testWebhook() {
