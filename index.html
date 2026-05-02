@@ -493,15 +493,6 @@
                             <label class="text-sm text-secondary block mb-1">Area</label>
                             <input type="text" id="real-area" placeholder="Heliopolis, Maadi, New Cairo">
                         </div>
-                        <div style="width: 120px;">
-                            <label class="text-sm text-secondary block mb-1">Radius</label>
-                            <select id="real-radius">
-                                <option value="500">500m</option>
-                                <option value="1000" selected>1km</option>
-                                <option value="2000">2km</option>
-                                <option value="5000">5km</option>
-                            </select>
-                        </div>
                     </div>
                     <div class="mb-4">
                         <label class="text-sm text-secondary block mb-1">Offer Type</label>
@@ -559,17 +550,6 @@
                         <div class="test-row">
                             <button onclick="testGemini()">Test Gemini</button>
                             <span id="test-gemini-res" class="text-sm"></span>
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <label class="text-sm text-secondary block mb-1">Google Places API Key</label>
-                        <div class="password-input-group">
-                            <input type="password" id="set-places" placeholder="AIza...">
-                            <button class="toggle-password" onclick="toggleVisibility('set-places')">👁</button>
-                        </div>
-                        <div class="test-row">
-                            <button onclick="testPlaces()">Test Places</button>
-                            <span id="test-places-res" class="text-sm"></span>
                         </div>
                     </div>
                     <div class="mb-4">
@@ -1094,138 +1074,89 @@
             document.getElementById('engine-ai').classList.toggle('hidden', tab !== 'ai');
         }
 
-        // --- Real Leads Logic (Using New Places API - No Proxies Required) ---
+        // --- Real Leads Logic (Using Gemini Web Search Grounding) ---
         async function findRealLeads() {
             const settings = DataStore.getSettings();
-            if(!settings.placesKey) return showToast("No Places API Key set", "error");
-            if(!settings.geminiKey) return showToast("No Gemini API Key set (needed for messages)", "error");
+            if(!settings.geminiKey) return showToast("No Gemini API Key set", "error");
 
             const niche = document.getElementById('real-niche').value || 'clinic';
             const area = document.getElementById('real-area').value || 'Cairo';
-            const radius = document.getElementById('real-radius').value;
             const offer = document.getElementById('real-offer').value;
             
             const btn = document.getElementById('btn-find-real');
-            btn.innerHTML = '<span class="spinner"></span> Searching...';
+            btn.innerHTML = '<span class="spinner"></span> Searching Web & Generating...';
             btn.disabled = true;
 
             try {
-                // 1. Geocode Area
-                const geoUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(area+',Egypt')}&key=${settings.placesKey}`;
-                const geoRes = await fetch(geoUrl).then(r => r.json());
-                
-                if (geoRes.error_message) {
-                    throw new Error(`Geocoding Error: ${geoRes.error_message}`);
-                }
-                
-                let lat = 30.0444, lng = 31.2357; // Cairo default
-                if(geoRes.results && geoRes.results.length > 0) {
-                    lat = geoRes.results[0].geometry.location.lat;
-                    lng = geoRes.results[0].geometry.location.lng;
-                }
-
-                // 2. New Places API (Nearby Search)
-                const searchUrl = 'https://places.googleapis.com/v1/places:searchNearby';
-                const searchReq = {
-                    maxResultCount: 10,
-                    locationRestriction: {
-                        circle: {
-                            center: { latitude: lat, longitude: lng },
-                            radius: parseFloat(radius)
-                        }
-                    }
-                };
-
-                const placesRes = await fetch(searchUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Goog-Api-Key': settings.placesKey,
-                        'X-Goog-FieldMask': 'places.displayName.text,places.formattedAddress,places.nationalPhoneNumber,places.rating,places.id'
-                    },
-                    body: JSON.stringify(searchReq)
-                });
-                
-                const placesData = await placesRes.json();
-                
-                if(placesData.error) {
-                    throw new Error(`Places API Error: ${placesData.error.message}`);
-                }
-
-                if(!placesData.places || placesData.places.length === 0) {
-                    throw new Error("No results found in this area.");
-                }
-                
-                const businessesForGemini = placesData.places
-                    .filter(p => p.nationalPhoneNumber) // Only leads with phone
-                    .map((p, i) => ({
-                        id: 'temp_' + i,
-                        name: p.displayName?.text || "Unknown Business",
-                        address: p.formattedAddress || area,
-                        phone: p.nationalPhoneNumber,
-                        rating: p.rating || null,
-                        place_id: p.id,
-                        niche: niche
-                    }));
-
-                if(businessesForGemini.length === 0) throw new Error("Found places, but none had public phone numbers listed on Maps.");
-
-                // 4. Batch Gemini Generation
                 const prompt = `
-You are an outreach copywriter for an AI automation agency in Egypt.
-Write personalized outreach messages for each of these real businesses.
-Offer being pitched: ${offer}
+You are an expert lead researcher and outreach copywriter for an AI automation agency in Egypt.
+Use Google Search to find exactly 10 REAL businesses matching the niche: "${niche}" in the area: "${area}, Egypt".
+For each business you find, you MUST extract their REAL phone number from the search results. If you cannot find a phone number, skip that business and find another one.
 
-Businesses:
-${JSON.stringify(businessesForGemini.map(b => ({id: b.id, name: b.name, address: b.address, niche: b.niche})))}
-
-For each business, write a Hormozi-style 4-line message:
+For each of the 10 real businesses, generate a personalized Hormozi-style outreach message pitching: "${offer}".
 Line 1: Specific observation about their likely problem (reference their niche/location)
 Line 2: What we do (done-for-you AI automation)
 Line 3: A concrete result (number-based)
 Line 4: One soft yes/no question
 
-Return ONLY a valid JSON array, same order as input. No markdown. No code fences.
+Return ONLY a valid JSON array. No markdown. No code fences.
 Schema:
 [{
-  "id": "match with input id",
+  "id": "generate_a_unique_id",
+  "name": "Exact Business Name from Google Search",
+  "phone": "Real extracted phone number",
+  "address": "Extracted address or neighborhood",
+  "niche": "${niche}",
   "pain": "One specific pain point for this business type",
   "channel": "WhatsApp OR LinkedIn OR Instagram",
   "en_message": "4-line English message",
   "ar_message": "4-line Egyptian Arabic (عامية) message"
 }]
 `;
+
                 const geminiBody = {
                     contents: [{ parts: [{ text: prompt }] }],
+                    tools: [{ googleSearch: {} }],
                     generationConfig: { temperature: 0.7, response_mime_type: "application/json" }
                 };
                 
-                const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${settings.geminiKey}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${settings.geminiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(geminiBody)
                 });
-                const geminiData = await geminiRes.json();
-                const textOutput = geminiData.candidates[0].content.parts[0].text;
-                const aiOutputs = JSON.parse(textOutput.replace(/```json/g,'').replace(/```/g,'').trim());
+                
+                const data = await res.json();
+                
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
 
-                // Merge
-                tempEngineResults = businessesForGemini.map(b => {
-                    const aiMatch = aiOutputs.find(a => a.id === b.id) || aiOutputs[0];
-                    return {
-                        ...b,
-                        pain: aiMatch.pain,
-                        channel: aiMatch.channel || 'WhatsApp',
-                        en_message: aiMatch.en_message,
-                        ar_message: aiMatch.ar_message,
-                        source: 'places'
-                    };
-                });
+                const textOutput = data.candidates[0].content.parts[0].text;
+                let parsedLeads = [];
+                try {
+                    parsedLeads = JSON.parse(textOutput.replace(/```json/g,'').replace(/```/g,'').trim());
+                } catch(e) {
+                    throw new Error("Failed to parse Gemini output into JSON.");
+                }
+
+                if (parsedLeads.length === 0) {
+                    throw new Error("Gemini could not find any real businesses with phone numbers in that area.");
+                }
+
+                tempEngineResults = parsedLeads.map((b, i) => ({
+                    ...b,
+                    id: 'temp_' + i,
+                    rating: null,
+                    place_id: null,
+                    source: 'places'
+                }));
 
                 renderEngineResults('real');
 
             } catch (err) {
                 console.error(err);
-                showToast(err.message || "Failed to fetch real leads", "error");
+                showToast(err.message || "Failed to fetch real leads via Gemini Search", "error");
             } finally {
                 btn.innerHTML = 'Find Real Leads (Limit: 10)';
                 btn.disabled = false;
@@ -1400,7 +1331,6 @@ Schema:
         function saveSettings() {
             const s = {
                 geminiKey: document.getElementById('set-gemini').value,
-                placesKey: document.getElementById('set-places').value,
                 webhookUrl: document.getElementById('set-webhook').value,
                 agency: document.getElementById('set-agency').value,
                 niche: document.getElementById('set-niche').value
@@ -1429,41 +1359,7 @@ Schema:
             } catch(e) { resEl.innerHTML = '<span class="text-red">✗ Failed</span>'; }
         }
 
-        async function testPlaces() {
-            const key = document.getElementById('set-places').value;
-            const resEl = document.getElementById('test-places-res');
-            if(!key) return resEl.innerHTML = '<span class="text-red">Missing Key</span>';
-            resEl.innerText = "Testing API...";
-            try {
-                const searchUrl = 'https://places.googleapis.com/v1/places:searchNearby';
-                const searchReq = {
-                    maxResultCount: 1,
-                    locationRestriction: {
-                        circle: {
-                            center: { latitude: 30.0444, longitude: 31.2357 },
-                            radius: 500.0
-                        }
-                    }
-                };
 
-                const placesRes = await fetch(searchUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Goog-Api-Key': key,
-                        'X-Goog-FieldMask': 'places.id'
-                    },
-                    body: JSON.stringify(searchReq)
-                });
-                
-                const placesData = await placesRes.json();
-                
-                if(placesData.error) {
-                    throw new Error(placesData.error.message);
-                }
-                resEl.innerHTML = '<span class="text-accent">✓ Success</span>';
-            } catch(e) { resEl.innerHTML = `<span class="text-red" style="font-size:10px;">✗ ${e.message}</span>`; }
-        }
 
         async function testWebhook() {
             const url = document.getElementById('set-webhook').value;
