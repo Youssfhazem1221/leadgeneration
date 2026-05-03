@@ -247,7 +247,7 @@ export async function testGemini() {
             if (res.ok) return true;
             if (res.status === 429) { 
                 lastError = "API is busy. Please wait 1 minute and click test again."; 
-                return false; 
+                return "429"; 
             }
             const errData = await res.json();
             lastError = errData.error?.message || `HTTP ${res.status}`;
@@ -265,10 +265,13 @@ export async function testGemini() {
     ];
 
     for (const item of modelsToTry) {
-        if (await tryModel(item.m, item.v)) {
+        const result = await tryModel(item.m, item.v);
+        if (result === true) {
             const source = (keyToTry === masterKey) ? " (Master Key)" : "";
             resEl.innerHTML = `<span class="text-accent">✓ Success: ${item.m}${source}</span>`;
             return;
+        } else if (result === "429") {
+            break;
         }
     }
     
