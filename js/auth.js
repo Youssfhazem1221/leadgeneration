@@ -53,7 +53,7 @@ function applyRoleRestrictions(role) {
         document.querySelectorAll('.lead-card').forEach(c => c.removeAttribute('draggable'));
         
         // Hide delete buttons, settings, engine
-        const adminElements = document.querySelectorAll('button[onclick*="delete"], #nav-engine, #nav-settings, #btn-find-real, .admin-only');
+        const adminElements = document.querySelectorAll('button[onclick*="delete"], .delete-btn, .delete-card-btn, #nav-engine, #nav-settings, #btn-find-real, .admin-only');
         adminElements.forEach(el => el.classList.add('hidden'));
         
         // Disable inputs in drawer

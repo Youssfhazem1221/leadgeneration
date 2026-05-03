@@ -1,4 +1,5 @@
 import { DataStore } from './datastore.js?v=7';
+import { deleteLead } from './table.js?v=7';
 
 export function showToast(msg, type='success') {
     const container = document.getElementById('toast-container');
@@ -126,6 +127,16 @@ export function closeDrawer() {
     document.getElementById('drawer').classList.remove('open');
     currentLeadId = null;
     window.currentLeadId = null;
+}
+
+export async function handleDeleteFromDrawer() {
+    if (!currentLeadId) return;
+    await deleteLead(currentLeadId);
+    // Wait a bit for the removal to reflect and close drawer if lead is gone
+    setTimeout(() => {
+        const lead = DataStore.getLeads().find(l => l.id === currentLeadId);
+        if (!lead) closeDrawer();
+    }, 300);
 }
 
 export function switchMessageTab(lang) {

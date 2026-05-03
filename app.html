@@ -188,6 +188,7 @@
         .edit-btn:hover { background: var(--apple-blue); color: white; border-color: transparent; }
         .delete-btn { color: var(--apple-red) !important; border: 1px solid rgba(255, 69, 58, 0.2) !important; background: rgba(255, 69, 58, 0.05) !important; }
         .delete-btn:hover { background: var(--apple-red) !important; color: white !important; border-color: transparent !important; }
+        .delete-card-btn:hover { color: var(--apple-red) !important; transform: scale(1.1); }
 
         /* Pills */
         .pill-source { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.03em; }
@@ -699,6 +700,10 @@
                 <div class="section-label">Activity Timeline</div>
                 <div class="activity-log" id="drawer-activity" style="padding-top: 8px;"></div>
             </div>
+
+            <div class="drawer-section admin-only" style="margin-top: 40px; border-top: 1px solid var(--apple-border); padding-top: 32px;">
+                <button onclick="handleDeleteFromDrawer()" class="delete-btn w-full" style="padding: 14px; border-radius: 12px; font-weight: 600;">🗑 Delete Lead</button>
+            </div>
         </div>
     </div>
 
@@ -713,7 +718,7 @@
             switchMessageTab, updateLeadStatus, saveFollowUp, 
             loadSettingsToUI, saveSettings, toggleVisibility, 
             testGemini, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
-            showModal, setUserInfo
+            showModal, setUserInfo, handleDeleteFromDrawer
         } from './js/ui.js?v=7';
         import { renderPipeline, renderStats } from './js/pipeline.js?v=7';
         import { renderTable, sortTable, deleteLead, exportCSV, handleFileSelect } from './js/table.js?v=7';
@@ -726,7 +731,7 @@
             switchMessageTab, updateLeadStatus, saveFollowUp,
             loadSettingsToUI, saveSettings, toggleVisibility,
             testGemini, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
-            showModal, setUserInfo,
+            showModal, setUserInfo, handleDeleteFromDrawer,
             DataStore, renderPipeline, renderStats, renderTable, sortTable,
             deleteLead, exportCSV, handleFileSelect, findRealLeads, importRealLeads,
             syncToSheets, syncAllToSheets, refreshUI, clearAllData
