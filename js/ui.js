@@ -1,4 +1,4 @@
-import { DataStore } from './datastore.js?v=8';
+import { DataStore } from './datastore.js?v=12';
 
 export async function deleteLead(id) {
     const ok = await showModal("Delete Lead", "Are you sure you want to delete this lead? This action cannot be undone.", { type: 'confirm', danger: true });
@@ -226,18 +226,30 @@ export function toggleVisibility(id) {
 }
 
 export async function testGemini() {
-    const key = document.getElementById('set-gemini').value;
+    const key = document.getElementById('set-gemini').value.trim();
     const resEl = document.getElementById('test-gemini-res');
     if(!key) return resEl.innerHTML = '<span class="text-red">Missing Key</span>';
     resEl.innerText = "Testing...";
-    try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: "Hi" }] }] })
-        });
-        if(res.ok) resEl.innerHTML = '<span class="text-accent">✓ Success</span>';
-        else throw new Error('API Error');
-    } catch(e) { resEl.innerHTML = '<span class="text-red">✗ Failed</span>'; }
+    
+    const tryModel = async (model, version='v1') => {
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent?key=${key}`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: "Hi" }] }] })
+            });
+            return res.ok;
+        } catch(e) { return false; }
+    };
+
+    if (await tryModel('gemini-1.5-flash', 'v1')) {
+        resEl.innerHTML = '<span class="text-accent">✓ Success (1.5 Flash)</span>';
+    } else if (await tryModel('gemini-1.5-flash', 'v1beta')) {
+        resEl.innerHTML = '<span class="text-accent">✓ Success (1.5 Beta)</span>';
+    } else if (await tryModel('gemini-pro', 'v1')) {
+        resEl.innerHTML = '<span class="text-accent">✓ Success (Gemini Pro)</span>';
+    } else {
+        resEl.innerHTML = '<span class="text-red">✗ Failed: Model not found or Key invalid</span>';
+    }
 }
 
 export async function testWebhook() {

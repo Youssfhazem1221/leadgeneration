@@ -1,6 +1,6 @@
-import { DataStore } from './datastore.js?v=8';
-import { showToast, switchView } from './ui.js?v=8';
-import { normalizePhone } from './table.js?v=8';
+import { DataStore } from './datastore.js?v=12';
+import { showToast, switchView } from './ui.js?v=12';
+import { normalizePhone } from './table.js?v=12';
 
 let tempEngineResults = [];
 
@@ -63,11 +63,19 @@ Schema:
             body: JSON.stringify(geminiBody)
         });
         
-        // Fallback to v1 if v1beta is not found or search tool fails
+        // Fallback 1: Try v1 of 1.5-flash (without tools)
         if (res.status === 404) {
-            console.warn("v1beta endpoint not found, falling back to v1 (search disabled)");
-            delete geminiBody.tools; // Remove search tool for v1
+            delete geminiBody.tools;
             res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(geminiBody)
+            });
+        }
+
+        // Fallback 2: Try gemini-pro (legacy)
+        if (res.status === 404) {
+            res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(geminiBody)
