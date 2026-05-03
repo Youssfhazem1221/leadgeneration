@@ -241,7 +241,6 @@ export async function testGemini() {
             if (res.ok) return true;
             const errData = await res.json();
             lastError = errData.error?.message || `HTTP ${res.status}`;
-            console.error(`Gemini Test (${model}):`, lastError);
             return false;
         } catch(e) { 
             lastError = e.message;
@@ -249,15 +248,31 @@ export async function testGemini() {
         }
     };
 
-    if (await tryModel('gemini-1.5-flash', 'v1')) {
-        resEl.innerHTML = '<span class="text-accent">✓ Success (1.5 Flash)</span>';
-    } else if (await tryModel('gemini-1.5-flash', 'v1beta')) {
-        resEl.innerHTML = '<span class="text-accent">✓ Success (1.5 Beta)</span>';
-    } else if (await tryModel('gemini-pro', 'v1')) {
-        resEl.innerHTML = '<span class="text-accent">✓ Success (Gemini Pro)</span>';
-    } else if (await tryModel('gemini-1.0-pro', 'v1')) {
-        resEl.innerHTML = '<span class="text-accent">✓ Success (1.0 Pro)</span>';
-    } else {
+    const modelsToTry = [
+        {m:'gemini-1.5-flash', v:'v1'},
+        {m:'gemini-1.5-flash-latest', v:'v1beta'},
+        {m:'gemini-1.5-pro', v:'v1'},
+        {m:'gemini-pro', v:'v1'}
+    ];
+
+    for (const item of modelsToTry) {
+        if (await tryModel(item.m, item.v)) {
+            resEl.innerHTML = `<span class="text-accent">✓ Success (${item.m})</span>`;
+            return;
+        }
+    }
+
+    // If all failed, try to list models to see what's available
+    try {
+        const listRes = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${key}`);
+        if (listRes.ok) {
+            const listData = await listRes.json();
+            const names = listData.models.map(m => m.name.replace('models/', '')).join(', ');
+            resEl.innerHTML = `<span class="text-red">✗ Available models: ${names}</span>`;
+        } else {
+            resEl.innerHTML = `<span class="text-red">✗ Failed: ${lastError}</span>`;
+        }
+    } catch(e) {
         resEl.innerHTML = `<span class="text-red">✗ Failed: ${lastError}</span>`;
     }
 }
