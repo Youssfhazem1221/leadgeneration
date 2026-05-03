@@ -57,11 +57,22 @@ Schema:
             generationConfig: { temperature: 0.7 }
         };
         
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(geminiBody)
         });
+        
+        // Fallback to v1 if v1beta is not found or search tool fails
+        if (res.status === 404) {
+            console.warn("v1beta endpoint not found, falling back to v1 (search disabled)");
+            delete geminiBody.tools; // Remove search tool for v1
+            res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(geminiBody)
+            });
+        }
         
         const data = await res.json();
         
