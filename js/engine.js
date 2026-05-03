@@ -6,17 +6,13 @@ let tempEngineResults = [];
 
 export async function findRealLeads() {
     let settings = DataStore.getSettings();
-    let apiKey = settings.geminiKey;
-    
-    // Hardcoded master key as final fallback
     const masterKey = "AIzaSyD38q_gh54Pgx0yAT09vRsrB5EUtem28RE";
     
-    if (!apiKey || apiKey.trim() === "") {
-        apiKey = masterKey;
-    }
+    // Priority: 1. Input field (active typing), 2. Cloud settings, 3. Master key
+    const inputKey = document.getElementById('set-gemini')?.value.trim();
+    let apiKey = inputKey || settings.geminiKey || masterKey;
     
-    // Log to verify which key is being used (masked for security)
-    console.log("Engine: Using API Key starting with:", apiKey.substring(0, 7) + "...");
+    console.log("Engine: Attempting with key ending in:", apiKey.slice(-4));
     
     if(!apiKey) return showToast("No Gemini API Key set. Please add it in Settings.", "error");
 

@@ -227,15 +227,20 @@ export function toggleVisibility(id) {
 }
 
 export async function testGemini() {
-    const key = document.getElementById('set-gemini').value.trim();
+    const inputKey = document.getElementById('set-gemini').value.trim();
+    const masterKey = "AIzaSyD38q_gh54Pgx0yAT09vRsrB5EUtem28RE";
     const resEl = document.getElementById('test-gemini-res');
-    if(!key) return resEl.innerHTML = '<span class="text-red">Missing Key</span>';
+    
+    const keyToTry = inputKey || masterKey;
+    if(!keyToTry) return resEl.innerHTML = '<span class="text-red">Missing Key</span>';
+    
     resEl.innerText = "Testing...";
+    console.log("UI: Testing key ending in:", keyToTry.slice(-4));
     
     let lastError = "All models failed";
     const tryModel = async (model, version='v1') => {
         try {
-            const res = await fetch(`https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent?key=${key}`, {
+            const res = await fetch(`https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent?key=${keyToTry}`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: "Hi" }] }] })
             });
@@ -251,31 +256,19 @@ export async function testGemini() {
 
     const modelsToTry = [
         {m:'gemini-2.5-flash', v:'v1beta'},
-        {m:'gemini-2.5-flash', v:'v1'},
         {m:'gemini-2.0-flash', v:'v1'},
         {m:'gemini-1.5-flash', v:'v1'}
     ];
 
     for (const item of modelsToTry) {
         if (await tryModel(item.m, item.v)) {
-            resEl.innerHTML = `<span class="text-accent">✓ Success (${item.m})</span>`;
+            const source = (keyToTry === masterKey) ? " (Master Key)" : "";
+            resEl.innerHTML = `<span class="text-accent">✓ Success: ${item.m}${source}</span>`;
             return;
         }
     }
-
-    // If all failed, try to list models to see what's available
-    try {
-        const listRes = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${key}`);
-        if (listRes.ok) {
-            const listData = await listRes.json();
-            const names = listData.models.map(m => m.name.replace('models/', '')).join(', ');
-            resEl.innerHTML = `<span class="text-red">✗ Available models: ${names}</span>`;
-        } else {
-            resEl.innerHTML = `<span class="text-red">✗ Failed: ${lastError}</span>`;
-        }
-    } catch(e) {
-        resEl.innerHTML = `<span class="text-red">✗ Failed: ${lastError}</span>`;
-    }
+    
+    resEl.innerHTML = `<span class="text-red">✗ Failed: ${lastError}</span>`;
 }
 
 export async function testWebhook() {
