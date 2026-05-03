@@ -409,6 +409,23 @@
         .status-booked    { background: rgba(94,92,230,0.15);   color: #a78bfa; }
         .status-closed    { background: rgba(48,209,88,0.2);    color: var(--apple-green); }
         .status-notinter  { background: rgba(255,69,58,0.15);   color: var(--apple-red); }
+        /* ─── Responsive Adjustments ─── */
+        @media (max-width: 768px) {
+            #mobile-menu-btn { display: flex !important; }
+            #sidebar { 
+                position: fixed; left: -260px; transition: left 0.3s ease; 
+                box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            }
+            #sidebar.mobile-open { left: 0; }
+            main { padding: 20px; }
+            header { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .kanban-board { flex-direction: column; overflow-x: hidden; }
+            .kanban-column { width: 100%; min-width: 100%; height: auto; min-height: 200px; }
+            .table-controls { flex-direction: column; align-items: stretch; }
+            .table-controls input[type="text"] { max-width: none; }
+            .settings-grid { grid-template-columns: 1fr; }
+            .engine-card { padding: 24px; border-radius: 16px; }
+        }
     </style>
 </head>
 <body>
@@ -444,9 +461,12 @@
     <!-- Main Content Area -->
     <main>
         <header>
-            <div>
-                <div class="header-title" id="header-page-title">Pipeline</div>
-                <div class="header-subtitle" id="header-page-subtitle">Drag cards to update lead status</div>
+            <div class="flex items-center gap-4">
+                <button id="mobile-menu-btn" class="btn-toolbar" style="display: none; padding: 8px;">☰</button>
+                <div>
+                    <div class="header-title" id="header-page-title">Pipeline</div>
+                    <div class="header-subtitle" id="header-page-subtitle">Drag cards to update lead status</div>
+                </div>
             </div>
             <div class="user-badge">
                 <div class="user-avatar" id="user-avatar-initials">?</div>
@@ -726,6 +746,22 @@
         import { syncToSheets, syncAllToSheets } from './js/sheets.js?v=18';
 
         // Expose to window for inline onclick handlers
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn').onclick = (e) => {
+            e.stopPropagation();
+            document.getElementById('sidebar').classList.toggle('mobile-open');
+        };
+        document.addEventListener('click', (e) => {
+            if (!document.getElementById('sidebar').contains(e.target)) {
+                document.getElementById('sidebar').classList.remove('mobile-open');
+            }
+        });
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.getElementById('sidebar').classList.remove('mobile-open');
+            });
+        });
+
         Object.assign(window, {
             logout, switchView, copyText, openDrawer, closeDrawer,
             switchMessageTab, updateLeadStatus, saveFollowUp,
