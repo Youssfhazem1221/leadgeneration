@@ -647,84 +647,128 @@
 
             <!-- SETTINGS VIEW -->
             <div id="view-settings" class="hidden view-pane">
-                <div class="settings-grid">
-                    <div class="settings-section">
-                        <h3>API Configuration</h3>
-                        <div class="form-group mb-4">
-                            <label>Gemini API Key (Master Search)</label>
-                            <div class="flex gap-2">
-                                <div class="password-wrapper flex-1">
-                                    <input type="password" id="set-gemini" placeholder="AIzaSy...">
-                                    <button class="toggle-password" onclick="toggleVisibility('set-gemini')">👁</button>
+                <div style="max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; padding-bottom: 60px;">
+                    
+                    <!-- Section: API Configuration -->
+                    <div>
+                        <div style="font-size: 11px; font-weight: 600; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; margin-left: 4px;">API Configuration</div>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--apple-border); border-radius: 14px; overflow: hidden;">
+                            <!-- Gemini Row -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--apple-border);">
+                                <div style="flex: 1;">
+                                    <div style="font-size: 14px; font-weight: 500;">Gemini API Key</div>
+                                    <div style="font-size: 12px; color: var(--apple-secondary);">Primary search engine (Master)</div>
                                 </div>
-                                <button class="btn-toolbar" onclick="testGemini()">Test Key</button>
-                            </div>
-                            <div id="test-gemini-res" class="text-xs mt-1 text-secondary"></div>
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label>Groq API Key (Fallback for when Gemini is busy)</label>
-                            <div class="flex gap-2">
-                                <div class="password-wrapper flex-1">
-                                    <input type="password" id="set-groq" placeholder="gsk_...">
-                                    <button class="toggle-password" onclick="toggleVisibility('set-groq')">👁</button>
+                                <div style="display: flex; gap: 8px; align-items: center; width: 340px;">
+                                    <div class="password-wrapper flex-1">
+                                        <input type="password" id="set-gemini" placeholder="AIzaSy..." style="background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--apple-border); padding: 8px 12px; font-size: 13px; color: white; width: 100%;">
+                                        <button class="toggle-password" onclick="toggleVisibility('set-gemini')">👁</button>
+                                    </div>
+                                    <button class="btn-toolbar" onclick="testGemini()" style="height: 35px; white-space: nowrap;">Test</button>
                                 </div>
                             </div>
-                            <div class="text-xs mt-1 text-secondary">Used automatically if Gemini returns a 429 error.</div>
-                        </div>
-
-                        <div class="field-row">
-                            <label>Google Sheets Webhook URL</label>
-                            <input type="text" id="set-webhook" placeholder="https://script.google.com/macros/s/...">
-                            <div class="test-row">
-                                <button onclick="testWebhook()">Test Webhook</button>
-                                <span id="test-webhook-res" class="text-sm"></span>
+                            <!-- Groq Row -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--apple-border);">
+                                <div style="flex: 1;">
+                                    <div style="font-size: 14px; font-weight: 500;">Groq API Key</div>
+                                    <div style="font-size: 12px; color: var(--apple-secondary);">Fallback (429 Rate Limiting)</div>
+                                </div>
+                                <div style="width: 340px;">
+                                    <div class="password-wrapper" style="width: 100%;">
+                                        <input type="password" id="set-groq" placeholder="gsk_..." style="background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--apple-border); padding: 8px 12px; font-size: 13px; color: white; width: 100%;">
+                                        <button class="toggle-password" onclick="toggleVisibility('set-groq')">👁</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Webhook Row -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px;">
+                                <div style="flex: 1;">
+                                    <div style="font-size: 14px; font-weight: 500;">Google Sheets Webhook</div>
+                                    <div style="font-size: 12px; color: var(--apple-secondary);">App Script deployment URL</div>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center; width: 340px;">
+                                    <input type="text" id="set-webhook" placeholder="https://script.google.com/..." style="flex: 1; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--apple-border); padding: 8px 12px; font-size: 13px; color: white;">
+                                    <button class="btn-toolbar" onclick="testWebhook()" style="height: 35px; white-space: nowrap;">Test</button>
+                                </div>
                             </div>
                         </div>
-                        <button class="btn-primary" onclick="saveSettings()">Save Configuration</button>
                     </div>
 
-                    <div class="settings-section">
-                        <h3>Your Agency</h3>
-                        <div class="field-row">
-                            <label>Agency Name</label>
-                            <input type="text" id="set-agency" placeholder="My AI Agency">
-                        </div>
-                        <div class="field-row">
-                            <label>Default Target Niche</label>
-                            <input type="text" id="set-niche" placeholder="Clinics">
-                        </div>
-                        <button class="btn-primary" onclick="saveSettings()">Save Agency Info</button>
-                    </div>
-
-                    <div class="settings-section admin-only" style="grid-column: 1 / -1;">
-                        <h3>Team Management</h3>
-                        <p class="text-sm text-secondary mb-4">Manage who has access to your CRM. Changes take effect on their next login.</p>
-                        <div class="table-container mb-4" style="background:rgba(0,0,0,0.2);">
-                            <table style="width:100%;text-align:left;">
-                                <thead><tr><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
-                                <tbody id="team-table-body"></tbody>
-                            </table>
-                        </div>
-                        <div class="flex gap-2 items-center">
-                            <input type="email" id="invite-email" placeholder="colleague@gmail.com" style="flex:1;">
-                            <select id="invite-role" style="max-width:120px;">
-                                <option value="viewer">Viewer</option>
-                                <option value="admin">Admin</option>
-                            </select>
-                            <button class="btn-primary" onclick="inviteUser()">Add User</button>
+                    <!-- Section: Your Agency -->
+                    <div>
+                        <div style="font-size: 11px; font-weight: 600; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; margin-left: 4px;">Your Agency</div>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--apple-border); border-radius: 14px; overflow: hidden;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--apple-border);">
+                                <div style="font-size: 14px; font-weight: 500;">Agency Name</div>
+                                <input type="text" id="set-agency" placeholder="My AI Agency" style="width: 340px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--apple-border); padding: 8px 12px; font-size: 13px; color: white;">
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px;">
+                                <div style="font-size: 14px; font-weight: 500;">Default Target Niche</div>
+                                <input type="text" id="set-niche" placeholder="Clinics, Real Estate..." style="width: 340px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--apple-border); padding: 8px 12px; font-size: 13px; color: white;">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="settings-section danger-zone" style="grid-column: 1 / -1;">
-                        <h3>Danger Zone</h3>
-                        <p class="text-sm text-secondary mb-4">Export your data before clearing.</p>
-                        <div class="flex gap-2">
-                            <button onclick="exportCSV()">↓ Export Data (CSV)</button>
-                            <button onclick="syncAllToSheets()">↑ Force Sync to Sheets</button>
-                            <button onclick="clearAllData()" style="color:var(--apple-red);border:1px solid rgba(255,69,58,0.4);">🗑 Clear All Data</button>
+                    <!-- Actions -->
+                    <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px;">
+                        <button class="btn-primary" onclick="saveSettings()" style="padding: 12px 24px; font-size: 14px; font-weight: 600;">Save All Settings</button>
+                    </div>
+
+                    <!-- Section: Team Management -->
+                    <div class="admin-only">
+                        <div style="font-size: 11px; font-weight: 600; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; margin-left: 4px;">Team Management</div>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--apple-border); border-radius: 14px; padding: 20px;">
+                            <p style="font-size: 13px; color: var(--apple-secondary); margin-bottom: 20px;">Manage who has access to your CRM. Changes take effect on their next login.</p>
+                            
+                            <div class="table-container" style="background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 20px;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr>
+                                            <th style="padding: 12px 16px; font-size: 11px; border-bottom: 1px solid var(--apple-border);">Email</th>
+                                            <th style="padding: 12px 16px; font-size: 11px; border-bottom: 1px solid var(--apple-border);">Role</th>
+                                            <th style="padding: 12px 16px; font-size: 11px; border-bottom: 1px solid var(--apple-border); text-align: right;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="team-table-body"></tbody>
+                                </table>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="email" id="invite-email" placeholder="colleague@gmail.com" style="flex: 1; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--apple-border); padding: 10px 14px; font-size: 13px; color: white;">
+                                <select id="invite-role" style="background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--apple-border); padding: 10px; color: white; font-size: 13px; width: 100px;">
+                                    <option value="viewer">Viewer</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                                <button class="btn-primary" onclick="inviteUser()" style="height: 40px; padding: 0 16px;">Add User</button>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Section: Danger Zone -->
+                    <div class="danger-zone-container">
+                        <div style="font-size: 11px; font-weight: 600; color: var(--apple-red); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; margin-left: 4px;">Danger Zone</div>
+                        <div style="background: rgba(255, 69, 58, 0.05); border: 1px solid rgba(255, 69, 58, 0.2); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <div style="font-size: 14px; font-weight: 600; color: white;">Export & Sync</div>
+                                    <div style="font-size: 13px; color: var(--apple-secondary);">Ensure your data is backed up before clearing.</div>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button onclick="exportCSV()" class="btn-toolbar" style="font-size: 12px;">↓ Export CSV</button>
+                                    <button onclick="syncAllToSheets()" class="btn-toolbar" style="font-size: 12px;">↑ Force Sync</button>
+                                </div>
+                            </div>
+                            <div style="width: 100%; height: 1px; background: rgba(255, 69, 58, 0.1);"></div>
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <div style="font-size: 14px; font-weight: 600; color: white;">Delete All Leads</div>
+                                    <div style="font-size: 13px; color: var(--apple-secondary);">Permanently clear all data from the database.</div>
+                                </div>
+                                <button class="delete-btn" onclick="clearAllData()" style="padding: 10px 20px; border-radius: 10px; font-weight: 600;">Clear All Data</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
