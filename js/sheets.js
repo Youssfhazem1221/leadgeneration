@@ -1,4 +1,4 @@
-import { DataStore } from './datastore.js?v=22';
+import { DataStore } from './datastore.js?v=29';
 import { showToast } from './ui_v23.js';
 
 export async function syncToSheets(lead) {

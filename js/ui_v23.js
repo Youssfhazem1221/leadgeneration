@@ -1,5 +1,6 @@
 console.log("UI Module Loaded: v18 (Discovery Mode)");
-import { DataStore } from './datastore.js?v=18';
+import { DataStore } from './datastore.js?v=29';
+
 
 export async function deleteLead(id) {
     const ok = await showModal("Delete Lead", "Are you sure you want to delete this lead? This action cannot be undone.", { type: 'confirm', danger: true });

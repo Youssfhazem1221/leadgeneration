@@ -1,4 +1,4 @@
-import { DataStore } from './datastore.js?v=22';
+import { DataStore } from './datastore.js?v=29';
 import { getTimeAgo, openDrawer, addActivity, deleteLead } from './ui_v23.js';
 
 export function renderStats() {
