@@ -228,7 +228,7 @@ export function toggleVisibility(id) {
 
 export async function testGemini() {
     const inputKey = document.getElementById('set-gemini').value.trim();
-    const masterKey = "AIzaSyBb2p9SQM_J50_qrrh4bPl7CQh5zuFm1v8";
+    const masterKey = "AIzaSyA6k8BCdBp8M3wx5nF9AatNH47sWMmgc6g";
     const resEl = document.getElementById('test-gemini-res');
     
     const keyToTry = inputKey || masterKey;
