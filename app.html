@@ -272,6 +272,122 @@
         }
         .modal-actions .btn-modal-confirm { font-weight: 600; }
         .modal-actions .btn-modal-confirm.danger { color: var(--apple-red); }
+
+        /* ─── View Transitions ─── */
+        .view-pane { animation: viewFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes viewFadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ─── Header Page Title ─── */
+        .header-title { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; color: var(--apple-text); }
+        .header-subtitle { font-size: 12px; color: var(--apple-secondary); margin-top: 1px; }
+        .user-badge {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--apple-border);
+            border-radius: 999px; padding: 6px 14px 6px 8px;
+        }
+        .user-avatar {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--apple-blue), #5e5ce6);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+        }
+
+        /* ─── Sidebar Nav Icon Badge ─── */
+        .nav-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; background: rgba(255,255,255,0.06); transition: background 0.2s; }
+        .nav-item.active .nav-icon { background: rgba(255,255,255,0.18); }
+        .nav-version { font-size: 11px; color: rgba(255,255,255,0.2); text-align: center; padding-top: 16px; letter-spacing: 0.05em; }
+
+        /* ─── Table Controls ─── */
+        .table-controls {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .table-controls input[type="text"] { max-width: 220px; flex-shrink: 0; }
+        .table-controls select { flex-shrink: 0; }
+        .table-controls .spacer { flex: 1; }
+        .btn-toolbar {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid var(--apple-border);
+            color: var(--apple-text);
+            border-radius: 10px; padding: 9px 16px;
+            font-size: 13px; font-weight: 500; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px;
+            transition: all 0.18s ease;
+        }
+        .btn-toolbar:hover { background: rgba(255,255,255,0.12); border-color: var(--apple-border-strong); }
+        .btn-toolbar.primary { background: var(--apple-blue); color: #fff; border-color: transparent; box-shadow: 0 4px 14px rgba(10,132,255,0.35); }
+        .btn-toolbar.primary:hover { background: #1a8fff; box-shadow: 0 6px 20px rgba(10,132,255,0.45); }
+
+        /* ─── Engine View ─── */
+        .engine-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--apple-border);
+            border-radius: 24px; padding: 36px;
+            max-width: 680px; margin: 0 auto;
+        }
+        .engine-card label { display: block; font-size: 12px; font-weight: 600; color: var(--apple-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+        .engine-card input, .engine-card select { width: 100%; margin-bottom: 0; }
+        .engine-tabs { display: flex; gap: 8px; margin-bottom: 28px; }
+        .engine-tab {
+            padding: 9px 20px; border-radius: 10px; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+            background: rgba(255,255,255,0.05); color: var(--apple-secondary);
+            border: 1px solid var(--apple-border);
+        }
+        .engine-tab.active { background: var(--apple-blue); color: #fff; border-color: transparent; box-shadow: 0 4px 14px rgba(10,132,255,0.3); }
+        .engine-results { margin-top: 28px; display: flex; flex-direction: column; gap: 14px; }
+        .engine-result-item {
+            background: rgba(255,255,255,0.04); border: 1px solid var(--apple-border);
+            border-radius: 14px; padding: 18px 20px;
+            display: flex; align-items: center; gap: 14px;
+            transition: border-color 0.2s;
+        }
+        .engine-result-item:hover { border-color: var(--apple-border-strong); }
+        .engine-result-item input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--apple-blue); }
+
+        /* ─── Settings View ─── */
+        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 900px; }
+        @media (max-width: 900px) { .settings-grid { grid-template-columns: 1fr; } }
+        .settings-section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--apple-border);
+            border-radius: 20px; padding: 28px;
+        }
+        .settings-section h3 { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 20px; }
+        .settings-section .field-row { margin-bottom: 18px; }
+        .settings-section label { display: block; font-size: 12px; font-weight: 600; color: var(--apple-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+        .settings-section input, .settings-section select { width: 100%; }
+        .password-input-group { position: relative; display: flex; align-items: center; }
+        .password-input-group input { padding-right: 48px; flex: 1; }
+        .toggle-password { position: absolute; right: 12px; background: none; border: none; padding: 4px; color: var(--apple-secondary); font-size: 16px; }
+        .toggle-password:hover { background: none; transform: none; color: var(--apple-text); }
+        .test-row { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+        .danger-zone { border-color: rgba(255, 69, 58, 0.3) !important; }
+        .danger-zone h3 { color: var(--apple-red); }
+
+        /* ─── Empty State ─── */
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 60px 20px; color: var(--apple-secondary); text-align: center; }
+        .empty-state .empty-icon { font-size: 48px; opacity: 0.4; }
+        .empty-state p { font-size: 15px; font-weight: 500; }
+        .empty-state span { font-size: 13px; opacity: 0.7; }
+
+        /* ─── Button primary polish ─── */
+        button.btn-primary { box-shadow: 0 4px 14px rgba(10,132,255,0.3); }
+        button.btn-primary:hover { background: #1a8fff; box-shadow: 0 6px 20px rgba(10,132,255,0.45); }
+
+        /* ─── Kanban drag ghost ─── */
+        .lead-card.dragging { opacity: 0.4; transform: scale(0.97); }
+        .kanban-column.drag-over { border-color: var(--apple-blue); background: rgba(10,132,255,0.05); }
+
+        /* ─── Status badge in table ─── */
+        .status-badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-new       { background: rgba(10,132,255,0.15);  color: var(--apple-blue); }
+        .status-contacted { background: rgba(255,214,10,0.15);  color: var(--apple-amber); }
+        .status-replied   { background: rgba(48,209,88,0.15);   color: var(--apple-green); }
+        .status-booked    { background: rgba(94,92,230,0.15);   color: #a78bfa; }
+        .status-closed    { background: rgba(48,209,88,0.2);    color: var(--apple-green); }
+        .status-notinter  { background: rgba(255,69,58,0.15);   color: var(--apple-red); }
     </style>
 </head>
 <body>
@@ -279,35 +395,41 @@
     <!-- Navigation Sidebar -->
     <nav id="sidebar">
         <div class="nav-logo">
-            <span>⚡</span>
-            <span>Outreach CRM</span>
+            <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(145deg,#0a84ff,#5e5ce6);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 12px rgba(10,132,255,0.4);">⚡</div>
+            <div>
+                <div style="font-size:16px;font-weight:700;letter-spacing:-0.02em;">Outreach CRM</div>
+                <div style="font-size:11px;color:var(--apple-secondary);font-weight:400;">AI-Powered Sales</div>
+            </div>
         </div>
         <div class="nav-item active" onclick="switchView('pipeline')" id="nav-pipeline">
-            <span>▤</span> Pipeline
+            <div class="nav-icon">▤</div> Pipeline
         </div>
         <div class="nav-item" onclick="switchView('table')" id="nav-table">
-            <span>☰</span> Leads Table
+            <div class="nav-icon">☰</div> Leads Table
         </div>
         <div class="nav-item" onclick="switchView('engine')" id="nav-engine">
-            <span>✨</span> Lead Engine
+            <div class="nav-icon">✨</div> Lead Engine
         </div>
         <div style="flex:1"></div>
         <div class="nav-item" onclick="switchView('settings')" id="nav-settings">
-            <span>⚙</span> Settings
+            <div class="nav-icon">⚙</div> Settings
         </div>
-        <div class="nav-item" onclick="logout()" style="color: var(--apple-red);">
-            <span>🚪</span> Logout
+        <div class="nav-item" onclick="logout()" style="color:var(--apple-red);">
+            <div class="nav-icon" style="background:rgba(255,69,58,0.12);">↩</div> Sign Out
         </div>
+        <div class="nav-version">v2.0 · Outreach CRM</div>
     </nav>
 
     <!-- Main Content Area -->
     <main>
         <header>
-            <div id="stats-summary" class="flex gap-4">
-                <!-- Stats will be injected here -->
+            <div>
+                <div class="header-title" id="header-page-title">Pipeline</div>
+                <div class="header-subtitle" id="header-page-subtitle">Drag cards to update lead status</div>
             </div>
-            <div class="user-profile flex items-center gap-2">
-                <span id="user-display-email" class="text-sm text-secondary"></span>
+            <div class="user-badge">
+                <div class="user-avatar" id="user-avatar-initials">?</div>
+                <span id="user-display-email" class="text-sm" style="color:var(--apple-text);"></span>
             </div>
         </header>
 
@@ -315,17 +437,17 @@
             <!-- Views -->
             
             <!-- PIPELINE VIEW -->
-            <div id="view-pipeline" class="h-full">
+            <div id="view-pipeline" class="h-full view-pane">
                 <div class="kanban-board" id="kanban-board">
                     <!-- Columns generated by JS -->
                 </div>
             </div>
 
             <!-- TABLE VIEW -->
-            <div id="view-table" class="hidden">
+            <div id="view-table" class="hidden view-pane">
                 <div class="table-controls">
-                    <input type="text" id="filter-search" placeholder="Search name or phone..." oninput="renderTable()" style="max-width: 200px;">
-                    <select id="filter-status" onchange="renderTable()" style="max-width: 150px;">
+                    <input type="text" id="filter-search" placeholder="🔍  Search name or phone…" oninput="renderTable()">
+                    <select id="filter-status" onchange="renderTable()">
                         <option value="All">All Statuses</option>
                         <option value="New">New</option>
                         <option value="Contacted">Contacted</option>
@@ -334,17 +456,17 @@
                         <option value="Closed">Closed</option>
                         <option value="Not Interested">Not Interested</option>
                     </select>
-                    <select id="filter-source" onchange="renderTable()" style="max-width: 120px;">
+                    <select id="filter-source" onchange="renderTable()">
                         <option value="All">All Sources</option>
                         <option value="places">Real</option>
                         <option value="csv_import">Imported</option>
                         <option value="ai_generated">AI</option>
                     </select>
-                    <div style="flex:1"></div>
-                    <button onclick="syncAllToSheets()" class="btn-secondary" style="margin-right: 8px;">Sync to Sheets</button>
+                    <div class="spacer"></div>
+                    <button class="btn-toolbar" onclick="syncAllToSheets()">↑ Sync Sheets</button>
                     <input type="file" id="csv-import-input" style="display:none;" accept=".csv" onchange="handleFileSelect(event)">
-                    <button onclick="document.getElementById('csv-import-input').click()" class="btn-secondary" style="margin-right: 8px;">Import CSV</button>
-                    <button onclick="exportCSV()">Export CSV</button>
+                    <button class="btn-toolbar" onclick="document.getElementById('csv-import-input').click()">⤓ Import CSV</button>
+                    <button class="btn-toolbar primary" onclick="exportCSV()">↓ Export CSV</button>
                 </div>
                 <div class="table-container">
                     <table>
@@ -369,7 +491,7 @@
             </div>
 
             <!-- ENGINE VIEW -->
-            <div id="view-engine" class="hidden">
+            <div id="view-engine" class="hidden view-pane">
                 <div class="engine-tabs">
                     <div class="engine-tab active" id="tab-real">🗺 Find Real Leads</div>
                 </div>
@@ -406,78 +528,72 @@
             </div>
 
             <!-- SETTINGS VIEW -->
-            <div id="view-settings" class="hidden">
-                <div class="settings-section">
-                    <h3 class="mb-4 font-semibold">API Configuration</h3>
-                    <div class="mb-4">
-                        <label class="text-sm text-secondary block mb-1">Gemini API Key</label>
-                        <div class="password-input-group">
-                            <input type="password" id="set-gemini" placeholder="AIza...">
-                            <button class="toggle-password" onclick="toggleVisibility('set-gemini')">👁</button>
+            <div id="view-settings" class="hidden view-pane">
+                <div class="settings-grid">
+                    <div class="settings-section">
+                        <h3>API Configuration</h3>
+                        <div class="field-row">
+                            <label>Gemini API Key</label>
+                            <div class="password-input-group">
+                                <input type="password" id="set-gemini" placeholder="AIza...">
+                                <button class="toggle-password" onclick="toggleVisibility('set-gemini')">👁</button>
+                            </div>
+                            <div class="test-row">
+                                <button onclick="testGemini()">Test Gemini</button>
+                                <span id="test-gemini-res" class="text-sm"></span>
+                            </div>
                         </div>
-                        <div class="test-row">
-                            <button onclick="testGemini()">Test Gemini</button>
-                            <span id="test-gemini-res" class="text-sm"></span>
+                        <div class="field-row">
+                            <label>Google Sheets Webhook URL</label>
+                            <input type="text" id="set-webhook" placeholder="https://script.google.com/macros/s/...">
+                            <div class="test-row">
+                                <button onclick="testWebhook()">Test Webhook</button>
+                                <span id="test-webhook-res" class="text-sm"></span>
+                            </div>
+                        </div>
+                        <button class="btn-primary" onclick="saveSettings()">Save Configuration</button>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Your Agency</h3>
+                        <div class="field-row">
+                            <label>Agency Name</label>
+                            <input type="text" id="set-agency" placeholder="My AI Agency">
+                        </div>
+                        <div class="field-row">
+                            <label>Default Target Niche</label>
+                            <input type="text" id="set-niche" placeholder="Clinics">
+                        </div>
+                        <button class="btn-primary" onclick="saveSettings()">Save Agency Info</button>
+                    </div>
+
+                    <div class="settings-section admin-only" style="grid-column: 1 / -1;">
+                        <h3>Team Management</h3>
+                        <p class="text-sm text-secondary mb-4">Manage who has access to your CRM. Changes take effect on their next login.</p>
+                        <div class="table-container mb-4" style="background:rgba(0,0,0,0.2);">
+                            <table style="width:100%;text-align:left;">
+                                <thead><tr><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+                                <tbody id="team-table-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            <input type="email" id="invite-email" placeholder="colleague@gmail.com" style="flex:1;">
+                            <select id="invite-role" style="max-width:120px;">
+                                <option value="viewer">Viewer</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                            <button class="btn-primary" onclick="inviteUser()">Add User</button>
                         </div>
                     </div>
-                    <div class="mb-4">
-                        <label class="text-sm text-secondary block mb-1">Google Sheets Webhook URL</label>
-                        <input type="text" id="set-webhook" placeholder="https://script.google.com/macros/s/...">
-                        <div class="test-row">
-                            <button onclick="testWebhook()">Test Webhook</button>
-                            <span id="test-webhook-res" class="text-sm"></span>
+
+                    <div class="settings-section danger-zone" style="grid-column: 1 / -1;">
+                        <h3>Danger Zone</h3>
+                        <p class="text-sm text-secondary mb-4">Export your data before clearing.</p>
+                        <div class="flex gap-2">
+                            <button onclick="exportCSV()">↓ Export Data (CSV)</button>
+                            <button onclick="syncAllToSheets()">↑ Force Sync to Sheets</button>
+                            <button onclick="clearAllData()" style="color:var(--apple-red);border:1px solid rgba(255,69,58,0.4);">🗑 Clear All Data</button>
                         </div>
-                    </div>
-                    <button class="btn-primary" onclick="saveSettings()">Save Configuration</button>
-                </div>
-
-                <div class="settings-section admin-only">
-                    <h3 class="mb-4 font-semibold">Team Management</h3>
-                    <p class="text-sm text-secondary mb-4">Manage who has access to your CRM. Changes take effect on their next login.</p>
-                    <div class="table-container mb-4" style="background: rgba(0,0,0,0.2);">
-                        <table style="width: 100%; text-align: left;">
-                            <thead>
-                                <tr>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="team-table-body">
-                                <!-- Populated by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="flex gap-2 items-center">
-                        <input type="email" id="invite-email" placeholder="colleague@gmail.com" style="flex:1;">
-                        <select id="invite-role" style="max-width: 120px; padding: 10px; border-radius: 8px;">
-                            <option value="viewer">Viewer</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                        <button class="btn-primary" onclick="inviteUser()">Add User</button>
-                    </div>
-                </div>
-
-                <div class="settings-section">
-                    <h3 class="mb-4 font-semibold">Your Agency</h3>
-                    <div class="mb-4">
-                        <label class="text-sm text-secondary block mb-1">Agency Name</label>
-                        <input type="text" id="set-agency" placeholder="My AI Agency">
-                    </div>
-                    <div class="mb-4">
-                        <label class="text-sm text-secondary block mb-1">Default Target Niche</label>
-                        <input type="text" id="set-niche" placeholder="Clinics">
-                    </div>
-                    <button class="btn-primary" onclick="saveSettings()">Save Agency Info</button>
-                </div>
-
-                <div class="settings-section" style="border-color: rgba(239, 68, 68, 0.3);">
-                    <h3 class="mb-4 font-semibold text-red">Danger Zone</h3>
-                    <p class="text-sm text-secondary mb-4">Export your data before clearing.</p>
-                    <div class="flex gap-2">
-                        <button onclick="exportCSV()">Export Data (CSV)</button>
-                        <button onclick="syncAllToSheets()">Force Full Sync to Sheets</button>
-                        <button onclick="clearAllData()" style="color: var(--apple-red); border-color: rgba(255, 69, 58, 0.5);">Clear All Data</button>
                     </div>
                 </div>
             </div>
@@ -577,7 +693,7 @@
             switchMessageTab, updateLeadStatus, saveFollowUp, 
             loadSettingsToUI, saveSettings, toggleVisibility, 
             testGemini, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
-            showModal
+            showModal, setUserInfo
         } from './js/ui.js?v=7';
         import { renderPipeline, renderStats } from './js/pipeline.js?v=7';
         import { renderTable, sortTable, deleteLead, exportCSV, handleFileSelect } from './js/table.js?v=7';
@@ -590,7 +706,7 @@
             switchMessageTab, updateLeadStatus, saveFollowUp,
             loadSettingsToUI, saveSettings, toggleVisibility,
             testGemini, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
-            showModal,
+            showModal, setUserInfo,
             DataStore, renderPipeline, renderStats, renderTable, sortTable,
             deleteLead, exportCSV, handleFileSelect, findRealLeads, importRealLeads,
             syncToSheets, syncAllToSheets, refreshUI, clearAllData
@@ -617,6 +733,13 @@
         DataStore.init(() => {
             refreshUI();
             loadSettingsToUI();
+        });
+
+        // Wire user info to header badge once Firebase reports the logged-in user
+        import('./js/firebase-config.js?v=7').then(({ auth }) => {
+            auth.onAuthStateChanged((user) => {
+                if (user) setUserInfo(user.email);
+            });
         });
 
         // Notes debounce

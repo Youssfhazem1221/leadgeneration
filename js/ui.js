@@ -14,6 +14,13 @@ export function showToast(msg, type='success') {
     }, 3000);
 }
 
+const VIEW_META = {
+    pipeline: { title: 'Pipeline',    subtitle: 'Drag cards to update lead status' },
+    table:    { title: 'Leads Table', subtitle: 'Search, filter, and manage all leads' },
+    engine:   { title: 'Lead Engine', subtitle: 'Find and import real leads with AI' },
+    settings: { title: 'Settings',   subtitle: 'Configure your agency and integrations' },
+};
+
 export function switchView(view) {
     closeDrawer();
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -22,13 +29,37 @@ export function switchView(view) {
     
     ['pipeline', 'table', 'engine', 'settings'].forEach(v => {
         const el = document.getElementById(`view-${v}`);
-        if (el) el.classList.add('hidden');
+        if (el) { el.classList.add('hidden'); el.classList.remove('view-pane'); }
     });
     const viewEl = document.getElementById(`view-${view}`);
-    if (viewEl) viewEl.classList.remove('hidden');
+    if (viewEl) {
+        viewEl.classList.remove('hidden');
+        // Restart animation
+        void viewEl.offsetWidth;
+        viewEl.classList.add('view-pane');
+    }
+
+    const meta = VIEW_META[view] || {};
+    const titleEl = document.getElementById('header-page-title');
+    const subtitleEl = document.getElementById('header-page-subtitle');
+    if (titleEl) titleEl.textContent = meta.title || '';
+    if (subtitleEl) subtitleEl.textContent = meta.subtitle || '';
     
     if (view === 'pipeline' && typeof window.renderPipeline === 'function') window.renderPipeline();
     if (view === 'table' && typeof window.renderTable === 'function') window.renderTable();
+}
+
+export function setUserInfo(email) {
+    const emailEl = document.getElementById('user-display-email');
+    const avatarEl = document.getElementById('user-avatar-initials');
+    if (emailEl) emailEl.textContent = email || '';
+    if (avatarEl && email) {
+        const parts = email.split('@')[0].split(/[\.\-\_]/);
+        const initials = parts.length >= 2
+            ? (parts[0][0] + parts[1][0]).toUpperCase()
+            : email.slice(0, 2).toUpperCase();
+        avatarEl.textContent = initials;
+    }
 }
 
 export function getTimeAgo(dateStr) {
