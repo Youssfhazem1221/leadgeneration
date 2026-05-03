@@ -715,22 +715,25 @@
     <!-- Lead Detail Drawer -->
     <div id="drawer">
         <div class="drawer-header">
-            <div class="flex-col">
-                <h2 id="drawer-name" class="font-semibold" style="font-size: 24px; letter-spacing: -0.02em; margin-bottom: 4px;"></h2>
+            <div class="flex-col" style="gap: 6px;">
+                <h2 id="drawer-name" class="font-semibold" style="font-size: 22px; letter-spacing: -0.02em; margin: 0;"></h2>
                 <div class="flex items-center gap-2">
                     <span id="drawer-source-pill" class="pill-source"></span>
                     <span id="drawer-channel-text" class="text-secondary text-sm"></span>
                 </div>
             </div>
-            <button onclick="closeDrawer()" style="background: rgba(255,255,255,0.1); border-radius: 50%; width: 36px; height: 36px; padding: 0;">✕</button>
+            <button onclick="closeDrawer()" style="background: rgba(255,255,255,0.08); border-radius: 50%; width: 32px; height: 32px; padding: 0; font-size: 14px; flex-shrink: 0;">✕</button>
         </div>
-        <div class="drawer-content">
-            <div class="drawer-section">
-                <div class="section-label">Lead Details</div>
-                <div class="flex-col gap-4" style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 18px; border: 1px solid var(--apple-border);">
+
+        <div class="drawer-content" style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
+
+            <!-- Lead Details Card -->
+            <div style="background: rgba(255,255,255,0.03); padding: 16px; border-radius: 14px; border: 1px solid var(--apple-border);">
+                <div style="font-size: 11px; font-weight: 600; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Lead Details</div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
                     <div class="flex justify-between items-center">
-                        <span class="text-secondary">Status</span>
-                        <select id="drawer-status" onchange="updateLeadStatus()" style="width: 160px;">
+                        <span class="text-secondary text-sm">Status</span>
+                        <select id="drawer-status" onchange="updateLeadStatus()" style="width: 150px; font-size: 13px;">
                             <option value="New">New</option>
                             <option value="Contacted">Contacted</option>
                             <option value="Replied">Replied</option>
@@ -740,65 +743,70 @@
                         </select>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-secondary">Phone</span>
-                        <span id="drawer-phone" class="font-semibold" style="cursor:pointer; color: var(--apple-blue);" onclick="copyText(this.innerText)"></span>
+                        <span class="text-secondary text-sm">Phone</span>
+                        <span id="drawer-phone" class="font-semibold text-sm" style="cursor:pointer; color: var(--apple-blue);" onclick="copyText(this.innerText)"></span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-secondary">Location</span>
-                        <span id="drawer-area" class="font-semibold"></span>
+                        <span class="text-secondary text-sm">Location</span>
+                        <span id="drawer-area" class="font-semibold text-sm" style="max-width: 200px; text-align: right;"></span>
                     </div>
-                    <div class="flex justify-between items-center" id="drawer-rating-row">
-                        <span class="text-secondary">Rating</span>
+                    <div class="flex justify-between items-center hidden" id="drawer-rating-row">
+                        <span class="text-secondary text-sm">Rating</span>
                         <div class="flex items-center gap-2">
-                            <span id="drawer-rating" class="font-semibold"></span>
-                            <a id="drawer-maps-link" target="_blank" style="color: var(--apple-blue); text-decoration: none; font-size: 12px;">Maps ↗</a>
+                            <span id="drawer-rating" class="font-semibold text-sm"></span>
+                            <a id="drawer-maps-link" target="_blank" style="color: var(--apple-blue); text-decoration: none; font-size: 11px;">Maps ↗</a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="drawer-section">
-                <div class="section-label">AI Outreach Message</div>
-                <div class="drawer-tabs">
+            <!-- Follow-up Schedule -->
+            <div style="background: rgba(255,255,255,0.03); padding: 14px 16px; border-radius: 14px; border: 1px solid var(--apple-border);">
+                <div style="font-size: 11px; font-weight: 600; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;">Follow-up</div>
+                <div class="flex gap-2 items-center">
+                    <input type="date" id="drawer-follow-date" style="flex:1; font-size: 13px;">
+                    <button onclick="saveFollowUp()" class="btn-primary" style="padding: 8px 14px; font-size: 12px;">Save</button>
+                </div>
+            </div>
+
+            <!-- AI Outreach Message -->
+            <div>
+                <div style="font-size: 11px; font-weight: 600; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;">Outreach Message</div>
+                <div class="drawer-tabs" style="margin-bottom: 8px;">
                     <div class="drawer-tab active" onclick="switchMessageTab('en')" id="drawer-tab-en">English</div>
                     <div class="drawer-tab" onclick="switchMessageTab('ar')" id="drawer-tab-ar">Arabic</div>
                 </div>
-                <div id="drawer-message-en" style="position: relative; background: rgba(0,0,0,0.3); padding: 16px; border-radius: 12px; border: 1px solid var(--apple-border); font-size: 14px; line-height: 1.5;">
+                <div id="drawer-message-en" style="position: relative; background: rgba(0,0,0,0.25); padding: 14px; padding-right: 60px; border-radius: 10px; border: 1px solid var(--apple-border); font-size: 13px; line-height: 1.5;">
                     <span id="drawer-msg-text-en"></span>
-                    <button class="pill" onclick="copyText(document.getElementById('drawer-msg-text-en').innerText)" style="position: absolute; top: 8px; right: 8px; background: var(--apple-blue); border: none; color: white;">Copy</button>
+                    <button class="pill" onclick="copyText(document.getElementById('drawer-msg-text-en').innerText)" style="position: absolute; top: 8px; right: 8px; background: var(--apple-blue); border: none; color: white; font-size: 11px; padding: 4px 10px;">Copy</button>
                 </div>
-                <div id="drawer-message-ar" class="hidden" style="position: relative; background: rgba(0,0,0,0.3); padding: 16px; border-radius: 12px; border: 1px solid var(--apple-border); font-size: 14px; line-height: 1.5; direction: rtl; text-align: right;">
+                <div id="drawer-message-ar" class="hidden" style="position: relative; background: rgba(0,0,0,0.25); padding: 14px; padding-left: 60px; border-radius: 10px; border: 1px solid var(--apple-border); font-size: 13px; line-height: 1.5; direction: rtl; text-align: right;">
                     <span id="drawer-msg-text-ar"></span>
-                    <button class="pill" onclick="copyText(document.getElementById('drawer-msg-text-ar').innerText)" style="position: absolute; top: 8px; left: 8px; background: var(--apple-blue); border: none; color: white;">Copy</button>
+                    <button class="pill" onclick="copyText(document.getElementById('drawer-msg-text-ar').innerText)" style="position: absolute; top: 8px; left: 8px; background: var(--apple-blue); border: none; color: white; font-size: 11px; padding: 4px 10px;">Copy</button>
                 </div>
             </div>
 
-            <div class="drawer-section">
-                <div class="section-label">Internal Notes</div>
-                <div id="drawer-comments-list" class="flex-col gap-2 mb-3" style="max-height: 250px; overflow-y: auto; padding-right: 4px;">
+            <!-- Internal Notes -->
+            <div>
+                <div style="font-size: 11px; font-weight: 600; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;">Internal Notes</div>
+                <div id="drawer-comments-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto; margin-bottom: 10px;">
                     <!-- Comments injected here -->
                 </div>
                 <div class="flex gap-2">
-                    <input type="text" id="drawer-new-comment" placeholder="Type a note..." class="flex-1 text-sm" style="background: rgba(255,255,255,0.05); border: 1px solid var(--apple-border); border-radius: 8px; padding: 10px; color: white;">
-                    <button onclick="addComment()" class="btn-primary" style="padding: 10px 16px;">Post</button>
+                    <input type="text" id="drawer-new-comment" placeholder="Type a note..." style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--apple-border); border-radius: 8px; padding: 9px 12px; color: white; font-size: 13px;">
+                    <button onclick="addComment()" class="btn-primary" style="padding: 9px 14px; font-size: 12px;">Post</button>
                 </div>
             </div>
 
-            <div class="drawer-section">
-                <div class="section-label">Follow-up Schedule</div>
-                <div class="flex gap-2">
-                    <input type="date" id="drawer-follow-date" style="flex:1;">
-                    <button onclick="saveFollowUp()" class="btn-primary">Save</button>
-                </div>
+            <!-- Activity Timeline -->
+            <div>
+                <div style="font-size: 11px; font-weight: 600; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;">Activity</div>
+                <div class="activity-log" id="drawer-activity" style="max-height: 180px; overflow-y: auto;"></div>
             </div>
 
-            <div class="drawer-section">
-                <div class="section-label">Activity Timeline</div>
-                <div class="activity-log" id="drawer-activity" style="padding-top: 8px;"></div>
-            </div>
-
-            <div class="drawer-section admin-only" style="margin-top: 40px; border-top: 1px solid var(--apple-border); padding-top: 32px;">
-                <button onclick="handleDeleteFromDrawer()" class="delete-btn w-full" style="padding: 14px; border-radius: 12px; font-weight: 600;">🗑 Delete Lead</button>
+            <!-- Delete -->
+            <div class="admin-only" style="margin-top: 12px; border-top: 1px solid var(--apple-border); padding-top: 20px;">
+                <button onclick="handleDeleteFromDrawer()" class="delete-btn w-full" style="padding: 12px; border-radius: 10px; font-weight: 600; font-size: 13px;">🗑 Delete Lead</button>
             </div>
         </div>
     </div>
@@ -814,7 +822,7 @@
             switchMessageTab, updateLeadStatus, saveFollowUp, 
             loadSettingsToUI, saveSettings, toggleVisibility, 
             testGemini, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
-            showModal, setUserInfo, handleDeleteFromDrawer, deleteLead, addComment
+            showModal, setUserInfo, handleDeleteFromDrawer, deleteLead, addComment, deleteComment
         } from './js/ui_v23.js?v=35';
         import { renderPipeline, renderStats } from './js/pipeline.js?v=35';
         import { renderTable, sortTable, exportCSV, handleFileSelect } from './js/table.js?v=35';
@@ -847,7 +855,7 @@
             DataStore, renderPipeline, renderStats, renderTable, sortTable,
             deleteLead, exportCSV, handleFileSelect, findRealLeads, importRealLeads,
             syncToSheets, syncAllToSheets, refreshUI, clearAllData, switchEngineTab,
-            addComment
+            addComment, deleteComment
         });
 
         window.onerror = function(msg, url, line, col, error) {

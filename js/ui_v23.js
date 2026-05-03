@@ -175,34 +175,43 @@ export function addComment() {
 export function renderComments(lead) {
     const list = document.getElementById('drawer-comments-list');
     if (!list) {
-        console.warn("Comment UI not found. The browser is caching the old app.html. Please do a hard refresh.");
-        const oldTextArea = document.getElementById('drawer-notes');
-        if (oldTextArea) oldTextArea.value = "Please Hard Refresh (Ctrl + F5) to load the new Comments system.";
+        console.warn("Comment UI not found. Please hard refresh.");
         return;
     }
 
     if(!lead.comments || lead.comments.length === 0) {
-        list.innerHTML = '<div class="text-secondary text-sm text-center py-4">No notes yet.</div>';
+        list.innerHTML = '<div class="text-secondary text-sm" style="text-align:center; padding: 16px 0;">No notes yet.</div>';
         return;
     }
 
-    list.innerHTML = lead.comments.map(c => {
+    list.innerHTML = lead.comments.map((c, index) => {
         const authorName = c.author ? c.author.split('@')[0] : 'Unknown';
         return `
-        <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--apple-border); border-radius: 10px; padding: 10px; text-align: left;">
-            <div class="flex justify-between items-center mb-1">
-                <span class="text-xs font-semibold text-secondary" style="color: var(--apple-blue);">${authorName}</span>
-                <span class="text-xs text-secondary">${getTimeAgo(c.timestamp)}</span>
+        <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--apple-border); border-radius: 10px; padding: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="font-size: 11px; font-weight: 600; color: var(--apple-blue);">${authorName}</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 11px; color: var(--apple-secondary);">${getTimeAgo(c.timestamp)}</span>
+                    <button onclick="deleteComment(${index})" style="background: none; border: none; color: var(--apple-red, #ff453a); font-size: 11px; cursor: pointer; padding: 0; opacity: 0.7;">✕</button>
+                </div>
             </div>
-            <div class="text-sm" style="line-height: 1.4; color: white; white-space: pre-wrap;">${c.text}</div>
+            <div style="font-size: 13px; line-height: 1.4; color: white; white-space: pre-wrap;">${c.text}</div>
         </div>
         `;
     }).join('');
     
-    // Scroll to bottom
-    setTimeout(() => {
-        list.scrollTop = list.scrollHeight;
-    }, 50);
+    setTimeout(() => { list.scrollTop = list.scrollHeight; }, 50);
+}
+
+export function deleteComment(index) {
+    if(!currentLeadId) return;
+    const lead = DataStore.getLeads().find(l => l.id === currentLeadId);
+    if(!lead || !lead.comments || !lead.comments[index]) return;
+    
+    lead.comments.splice(index, 1);
+    DataStore.saveLead(lead);
+    renderComments(lead);
+    showToast("Note deleted");
 }
 
 
