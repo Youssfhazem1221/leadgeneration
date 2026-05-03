@@ -818,7 +818,7 @@
                         ${colLeads.map(l => {
                             const isReal = l.source === 'places';
                             const sourceBadge = `<span class="pill-source ${isReal ? 'source-real' : 'source-ai'}">${isReal ? 'Real 🟢' : 'AI ⚪'}</span>`;
-                            const channelClass = 'channel-' + l.channel.toLowerCase();
+                            const channelClass = 'channel-' + (l.channel || 'whatsapp').toLowerCase();
                             const timeAgo = getTimeAgo(l.created_at);
                             const overdue = (l.follow_up_date && l.follow_up_date <= todayStr) ? '<span style="color:var(--amber); text-shadow: 0 0 5px var(--amber);">●</span>' : '';
                             
@@ -906,8 +906,8 @@
                 
                 const isReal = l.source === 'places';
                 const sourceBadge = `<span class="pill-source ${isReal ? 'source-real' : 'source-ai'}">${isReal ? 'Real 🟢' : 'AI ⚪'}</span>`;
-                const statusClass = 'status-' + l.status.toLowerCase().replace(' ', '-');
-                const channelClass = 'channel-' + l.channel.toLowerCase();
+                const statusClass = 'status-' + (l.status || 'new').toLowerCase().replace(' ', '-');
+                const channelClass = 'channel-' + (l.channel || 'whatsapp').toLowerCase();
 
                 tr.innerHTML = `
                     <td class="font-medium">${l.name}</td>

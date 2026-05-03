@@ -61,6 +61,18 @@ function applyRoleRestrictions(role) {
                 el.style.opacity = '0.5';
             }
         });
+    } else if (role === 'admin') {
+        // Ensure everything is visible and enabled for admin
+        const adminElements = document.querySelectorAll('button[onclick*="delete"], #nav-engine, #nav-settings, #btn-find-real, .admin-only');
+        adminElements.forEach(el => el.classList.remove('hidden'));
+        
+        const drawerInputs = document.querySelectorAll('#drawer input, #drawer select, #drawer textarea, #drawer button');
+        drawerInputs.forEach(el => {
+            el.disabled = false;
+            el.style.opacity = '1';
+        });
+        
+        document.querySelectorAll('.lead-card').forEach(c => c.setAttribute('draggable', 'true'));
     }
 }
 
