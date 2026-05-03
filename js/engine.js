@@ -64,41 +64,48 @@ Schema:
             body: JSON.stringify(geminiBody)
         });
         
-        // Fallback 1: Try gemini-2.0-flash
-        if (res.status === 404) {
-            console.warn("Gemini 2.5 not found, trying 2.0");
-            res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(geminiBody)
-            });
-        }
+        let data = null;
+        let useGroq = false;
+        const groqKey = document.getElementById('set-groq')?.value.trim() || settings.groqKey || "";
 
-        // Fallback 2: Try gemini-pro (legacy)
-        if (res.status === 404) {
-            res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(geminiBody)
-            });
-        }
-        
         if (res.status === 429) {
-            throw new Error("API is busy. Please wait 1 minute and click Find again.");
-        }
-        
-        const data = await res.json();
-        console.log("Engine: Raw API Data:", data);
-        
-        if (data.error) {
-            throw new Error(data.error.message);
-        }
-
-        if (!data.candidates || !data.candidates[0]) {
-            throw new Error("Gemini returned no results. Check your niche/area.");
+            if (groqKey) {
+                useGroq = true;
+                showToast("Gemini busy. Falling back to Groq AI...", "warning");
+            } else {
+                throw new Error("API is busy. Please wait 1 minute and click Find again.");
+            }
+        } else {
+            data = await res.json();
+            if (data.error) throw new Error(data.error.message);
+            if (!data.candidates || !data.candidates[0]) throw new Error("Gemini returned no results.");
         }
 
-        const rawText = data.candidates[0].content.parts[0].text;
+        let rawText = "";
+        
+        if (useGroq) {
+            const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${groqKey}`
+                },
+                body: JSON.stringify({
+                    model: "llama3-70b-8192",
+                    messages: [{ role: "user", content: prompt }]
+                })
+            });
+            
+            if (!groqRes.ok) {
+                const errData = await groqRes.json();
+                throw new Error(`Groq API Error: ${errData.error?.message || groqRes.status}`);
+            }
+            const groqData = await groqRes.json();
+            rawText = groqData.choices[0].message.content;
+        } else {
+            rawText = data.candidates[0].content.parts[0].text;
+        }
+
         console.log("Engine: Raw Content Text:", rawText);
         let parsedLeads = [];
         try {
@@ -109,12 +116,12 @@ Schema:
             const cleanJson = rawText.substring(startIdx, endIdx + 1);
             parsedLeads = JSON.parse(cleanJson);
         } catch(e) {
-            console.error("Gemini Raw Response:", rawText);
-            throw new Error("Failed to parse leads. Gemini returned a conversational response instead of data.");
+            console.error("Raw Response:", rawText);
+            throw new Error(`Failed to parse leads. ${useGroq ? 'Groq' : 'Gemini'} returned invalid data.`);
         }
 
         if (parsedLeads.length === 0) {
-            throw new Error("Gemini could not find any real businesses with phone numbers in that area.");
+            throw new Error(`${useGroq ? 'Groq' : 'Gemini'} could not find any valid leads.`);
         }
 
         tempEngineResults = parsedLeads.map((b, i) => ({

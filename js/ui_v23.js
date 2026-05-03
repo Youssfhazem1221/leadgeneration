@@ -192,12 +192,14 @@ export function loadSettingsToUI() {
     console.log("UI: Loading settings to fields...", s);
     const geminiEl = document.getElementById('set-gemini');
     const webhookEl = document.getElementById('set-webhook');
+    const groqEl = document.getElementById('set-groq');
     const agencyEl = document.getElementById('set-agency');
     const nicheEl = document.getElementById('set-niche');
     const realNicheEl = document.getElementById('real-niche');
 
     if (geminiEl) geminiEl.value = s.geminiKey || '';
     if (webhookEl) webhookEl.value = s.webhookUrl || '';
+    if (groqEl) groqEl.value = s.groqKey || '';
     if (agencyEl) agencyEl.value = s.agency || '';
     if (nicheEl) nicheEl.value = s.niche || '';
     if (realNicheEl && s.niche) realNicheEl.value = s.niche;
@@ -207,6 +209,7 @@ export async function saveSettings() {
     console.log("UI: saveSettings triggered");
     const s = {
         geminiKey: document.getElementById('set-gemini').value.trim(),
+        groqKey: document.getElementById('set-groq').value.trim(),
         webhookUrl: document.getElementById('set-webhook').value.trim(),
         agency: document.getElementById('set-agency').value.trim(),
         niche: document.getElementById('set-niche').value.trim()

@@ -150,7 +150,7 @@ export async function processCSV(text) {
 
     const headers = rows[0].map(h => h.toLowerCase().trim());
     const dataRows = rows.slice(1);
-    let importCount = 0;
+    let newLeads = [];
 
     for (const row of dataRows) {
         if (row.length < 1 || (row.length === 1 && !row[0])) continue;
@@ -195,22 +195,52 @@ export async function processCSV(text) {
         });
 
         if (lead.name || lead.phone) {
-            try {
-                await DataStore.saveLead(lead);
-                importCount++;
-            } catch (err) {
-                console.error("Failed to import lead", lead, err);
-                showToast("Error saving a lead: " + err.message, "error");
-            }
+            newLeads.push(lead);
+        }
+    }
+
+    if (newLeads.length === 0) {
+        return showToast("No valid leads found in CSV.", "warning");
+    }
+
+    const existingLeads = DataStore.getLeads();
+    const duplicates = newLeads.filter(nl => existingLeads.some(el => el.phone === nl.phone && nl.phone));
+    let replaceDuplicates = false;
+
+    if (duplicates.length > 0) {
+        replaceDuplicates = await showModal(
+            "Duplicates Found", 
+            `We found ${duplicates.length} leads in this CSV that already exist in your CRM (matching by phone). Do you want to replace the existing leads with this new data, or skip them?`, 
+            { type: 'confirm', confirmText: 'Replace All', cancelText: 'Skip Duplicates' }
+        );
+    }
+
+    let importCount = 0;
+    for (const lead of newLeads) {
+        const existing = existingLeads.find(el => el.phone === lead.phone && lead.phone);
+        if (existing) {
+            if (!replaceDuplicates) continue; 
+            lead.id = existing.id; // overwrite existing
+        }
+
+        try {
+            await DataStore.saveLead(lead);
+            importCount++;
+        } catch (err) {
+            console.error("Failed to import lead", lead, err);
         }
     }
 
     if (importCount > 0) {
         showToast(`Imported ${importCount} leads successfully.`);
         if (typeof window.refreshUI === 'function') window.refreshUI();
+    } else if (duplicates.length > 0 && !replaceDuplicates) {
+        showToast("Skipped all duplicates. No new leads imported.", "warning");
     } else {
-        showToast("No leads were imported. Check CSV format.", "warning");
+        showToast("No leads were imported.", "warning");
     }
+    
+    event.target.value = ''; // Reset file input
 }
 
 function parseCSV(text, separator = ',') {

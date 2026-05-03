@@ -486,28 +486,33 @@
 
             <!-- TABLE VIEW -->
             <div id="view-table" class="hidden view-pane">
-                <div class="table-controls">
-                    <input type="text" id="filter-search" placeholder="🔍  Search name or phone…" oninput="renderTable()">
-                    <select id="filter-status" onchange="renderTable()">
-                        <option value="All">All Statuses</option>
-                        <option value="New">New</option>
-                        <option value="Contacted">Contacted</option>
-                        <option value="Replied">Replied</option>
-                        <option value="Call Booked">Call Booked</option>
-                        <option value="Closed">Closed</option>
-                        <option value="Not Interested">Not Interested</option>
-                    </select>
-                    <select id="filter-source" onchange="renderTable()">
-                        <option value="All">All Sources</option>
-                        <option value="places">Real</option>
-                        <option value="csv_import">Imported</option>
-                        <option value="ai_generated">AI</option>
-                    </select>
-                    <div class="spacer"></div>
-                    <button class="btn-toolbar" onclick="syncAllToSheets()">↑ Sync Sheets</button>
-                    <input type="file" id="csv-import-input" style="display:none;" accept=".csv" onchange="handleFileSelect(event)">
-                    <button class="btn-toolbar" onclick="document.getElementById('csv-import-input').click()">⤓ Import CSV</button>
-                    <button class="btn-toolbar primary" onclick="exportCSV()">↓ Export CSV</button>
+                <div class="table-controls" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; flex: 1;">
+                        <input type="text" id="filter-search" placeholder="🔍  Search name or phone…" oninput="renderTable()" style="min-width: 200px;">
+                        <select id="filter-status" onchange="renderTable()">
+                            <option value="All">All Statuses</option>
+                            <option value="New">New</option>
+                            <option value="Contacted">Contacted</option>
+                            <option value="Replied">Replied</option>
+                            <option value="Call Booked">Call Booked</option>
+                            <option value="Closed">Closed</option>
+                            <option value="Not Interested">Not Interested</option>
+                        </select>
+                        <select id="filter-source" onchange="renderTable()">
+                            <option value="All">All Sources</option>
+                            <option value="places">Real</option>
+                            <option value="csv_import">Imported</option>
+                            <option value="ai_generated">AI</option>
+                            <option value="google_maps">Maps Scraper</option>
+                            <option value="yelp">Yelp Scraper</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn-toolbar" onclick="syncAllToSheets()">↑ Sync Sheets</button>
+                        <input type="file" id="csv-import-input" style="display:none;" accept=".csv" onchange="handleFileSelect(event)">
+                        <button class="btn-toolbar" onclick="document.getElementById('csv-import-input').click()">⤓ Import CSV</button>
+                        <button class="btn-toolbar primary" onclick="exportCSV()">↓ Export CSV</button>
+                    </div>
                 </div>
                 <div class="table-container">
                     <table>
@@ -626,17 +631,29 @@
                 <div class="settings-grid">
                     <div class="settings-section">
                         <h3>API Configuration</h3>
-                        <div class="field-row">
-                            <label>Gemini API Key</label>
-                            <div class="password-input-group">
-                                <input type="password" id="set-gemini" placeholder="AIza...">
-                                <button class="toggle-password" onclick="toggleVisibility('set-gemini')">👁</button>
+                        <div class="form-group mb-4">
+                            <label>Gemini API Key (Master Search)</label>
+                            <div class="flex gap-2">
+                                <div class="password-wrapper flex-1">
+                                    <input type="password" id="set-gemini" placeholder="AIzaSy...">
+                                    <button class="toggle-password" onclick="toggleVisibility('set-gemini')">👁</button>
+                                </div>
+                                <button class="btn-toolbar" onclick="testGemini()">Test Key</button>
                             </div>
-                            <div class="test-row">
-                                <button onclick="testGemini()">Test Gemini</button>
-                                <span id="test-gemini-res" class="text-sm"></span>
-                            </div>
+                            <div id="test-gemini-res" class="text-xs mt-1 text-secondary"></div>
                         </div>
+
+                        <div class="form-group mb-4">
+                            <label>Groq API Key (Fallback for when Gemini is busy)</label>
+                            <div class="flex gap-2">
+                                <div class="password-wrapper flex-1">
+                                    <input type="password" id="set-groq" placeholder="gsk_...">
+                                    <button class="toggle-password" onclick="toggleVisibility('set-groq')">👁</button>
+                                </div>
+                            </div>
+                            <div class="text-xs mt-1 text-secondary">Used automatically if Gemini returns a 429 error.</div>
+                        </div>
+
                         <div class="field-row">
                             <label>Google Sheets Webhook URL</label>
                             <input type="text" id="set-webhook" placeholder="https://script.google.com/macros/s/...">
