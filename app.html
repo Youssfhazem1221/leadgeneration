@@ -439,18 +439,6 @@
                 <div style="font-size:11px;color:var(--apple-secondary);font-weight:400;">AI-Powered Sales</div>
             </div>
         </div>
-        
-        <!-- Niche Context Switcher -->
-        <div style="margin: 8px 16px 24px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid var(--apple-border);">
-            <div style="font-size: 10px; font-weight: 700; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                <span style="font-size: 12px;">🎯</span> Active Context
-            </div>
-            <select id="active-niche-switcher" onchange="updateActiveNiche(this.value)" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--apple-border); color: white; font-size: 13px; padding: 8px; border-radius: 10px; cursor: pointer; outline: none; transition: border-color 0.2s;">
-                <option value="Clinics">Clinics</option>
-                <option value="Real Estate">Real Estate</option>
-                <option value="E-commerce">E-commerce</option>
-            </select>
-        </div>
 
         <div class="nav-item active" onclick="switchView('pipeline')" id="nav-pipeline">
             <div class="nav-icon">▤</div> Pipeline
@@ -521,6 +509,12 @@
                                 <option value="ai_generated">AI</option>
                                 <option value="google_maps">Maps Scraper</option>
                                 <option value="yelp">Yelp Scraper</option>
+                            </select>
+                            <select id="filter-niche" onchange="updateActiveNiche(this.value)" style="background: transparent; border: none; padding: 6px 10px; color: var(--apple-blue); font-size: 13px; font-weight: 600; cursor: pointer; outline: none; border-left: 1px solid var(--apple-border);">
+                                <option value="All">All Niches</option>
+                                <option value="Clinics">Clinics</option>
+                                <option value="Real Estate">Real Estate</option>
+                                <option value="E-commerce">E-commerce</option>
                             </select>
                         </div>
                     </div>

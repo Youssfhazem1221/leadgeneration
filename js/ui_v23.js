@@ -106,9 +106,13 @@ export function openDrawer(id) {
     document.getElementById('drawer-name').innerText = lead.name;
     document.getElementById('drawer-phone').innerText = lead.phone;
     document.getElementById('drawer-area').innerText = lead.area || 'Not specified';
-    document.getElementById('drawer-status').value = lead.status;
-    document.getElementById('drawer-niche').value = lead.niche || 'Clinics';
-    document.getElementById('drawer-follow-date').value = lead.follow_up_date || '';
+    const statusEl = document.getElementById('drawer-status');
+    const nicheEl = document.getElementById('drawer-niche');
+    const followEl = document.getElementById('drawer-follow-date');
+
+    if (statusEl) statusEl.value = lead.status;
+    if (nicheEl) nicheEl.value = lead.niche || 'Clinics';
+    if (followEl) followEl.value = lead.follow_up_date || '';
     
     renderComments(lead);
 
@@ -247,7 +251,9 @@ export function switchMessageTab(lang) {
 
 export function updateLeadStatus() {
     if(!currentLeadId) return;
-    const newStatus = document.getElementById('drawer-status').value;
+    const el = document.getElementById('drawer-status');
+    if (!el) return;
+    const newStatus = el.value;
     const lead = DataStore.getLeads().find(l => l.id === currentLeadId);
     if(lead.status === newStatus) return;
     addActivity(lead, `Status changed from ${lead.status} to ${newStatus}`);
@@ -259,7 +265,9 @@ export function updateLeadStatus() {
 
 export function updateLeadNiche() {
     if(!currentLeadId) return;
-    const newNiche = document.getElementById('drawer-niche').value;
+    const el = document.getElementById('drawer-niche');
+    if (!el) return;
+    const newNiche = el.value;
     const lead = DataStore.getLeads().find(l => l.id === currentLeadId);
     if(lead.niche === newNiche) return;
     addActivity(lead, `Niche changed from ${lead.niche || 'Clinics'} to ${newNiche}`);
@@ -302,9 +310,9 @@ export function loadSettingsToUI() {
     if (nicheEl) nicheEl.value = s.niche || '';
     if (realNicheEl && s.niche) realNicheEl.value = s.niche;
 
-    // Active Niche Switcher
-    const nicheSwitcher = document.getElementById('active-niche-switcher');
-    if (nicheSwitcher) nicheSwitcher.value = s.activeNiche || 'Clinics';
+    // Active Niche Switcher (Now in Table Toolbar)
+    const nicheSwitcher = document.getElementById('filter-niche');
+    if (nicheSwitcher) nicheSwitcher.value = s.activeNiche || 'All';
 
     // Render Offer Types in Settings
     renderOfferTypes();
@@ -333,7 +341,7 @@ export function updateEngineOfferDropdown() {
     dropdown.innerHTML = (s.offerTypes || []).map(offer => `
         <option value="${offer}">${offer}</option>
     `).join('');
-    if (s.offerTypes.includes(currentVal)) dropdown.value = currentVal;
+    if (s.offerTypes && s.offerTypes.includes(currentVal)) dropdown.value = currentVal;
 }
 
 export async function addOfferType() {
