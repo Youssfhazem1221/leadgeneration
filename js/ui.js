@@ -1,5 +1,14 @@
-import { DataStore } from './datastore.js?v=7';
-import { deleteLead } from './table.js?v=7';
+import { DataStore } from './datastore.js?v=8';
+
+export async function deleteLead(id) {
+    const ok = await showModal("Delete Lead", "Are you sure you want to delete this lead? This action cannot be undone.", { type: 'confirm', danger: true });
+    if(ok) {
+        await DataStore.deleteLead(id);
+        showToast("Lead deleted");
+        // refreshUI is global
+        if (typeof window.refreshUI === 'function') window.refreshUI();
+    }
+}
 
 export function showToast(msg, type='success') {
     const container = document.getElementById('toast-container');
