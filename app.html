@@ -456,6 +456,8 @@
                     </select>
                     <div style="flex:1"></div>
                     <button onclick="syncAllToSheets()" class="btn-secondary" style="margin-right: 8px;">Sync to Sheets</button>
+                    <input type="file" id="csv-import-input" style="display:none;" accept=".csv" onchange="handleFileSelect(event)">
+                    <button onclick="document.getElementById('csv-import-input').click()" class="btn-secondary" style="margin-right: 8px;">Import CSV</button>
                     <button onclick="exportCSV()">Export CSV</button>
                 </div>
                 <div class="table-container">
@@ -955,6 +957,115 @@
             a.href = url;
             a.download = `crm_leads_${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                processCSV(text);
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function processCSV(text) {
+            const rows = parseCSV(text);
+            if (rows.length < 2) return showToast("CSV is empty or invalid", "error");
+
+            const headers = rows[0].map(h => h.toLowerCase().trim());
+            const dataRows = rows.slice(1);
+            let importCount = 0;
+
+            dataRows.forEach(row => {
+                if (row.length < 1 || (row.length === 1 && !row[0])) return;
+
+                const lead = {
+                    id: 'lead_' + Math.random().toString(36).substr(2, 9),
+                    name: '',
+                    phone: '',
+                    area: '',
+                    source: 'csv_import',
+                    channel: 'WhatsApp',
+                    status: 'New',
+                    pain: '',
+                    follow_up_date: '',
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    activity_log: [{ action: "Imported from CSV", timestamp: new Date().toISOString() }]
+                };
+
+                headers.forEach((header, index) => {
+                    const value = row[index] ? row[index].trim() : '';
+                    if (!value) return;
+
+                    if (header.includes('name')) lead.name = value;
+                    else if (header.includes('phone') || header.includes('number')) lead.phone = value;
+                    else if (header.includes('area') || header.includes('location')) lead.area = value;
+                    else if (header.includes('status')) lead.status = value;
+                    else if (header.includes('channel')) lead.channel = value;
+                    else if (header.includes('pain')) lead.pain = value;
+                    else if (header.includes('source')) lead.source = value;
+                    else if (header.includes('date')) lead.follow_up_date = value;
+                    else if (header === 'id') lead.id = value;
+                });
+
+                if (lead.name || lead.phone) {
+                    DataStore.saveLead(lead);
+                    importCount++;
+                }
+            });
+
+            showToast(`Successfully imported ${importCount} leads`);
+            refreshUI();
+        }
+
+        function parseCSV(text) {
+            const rows = [];
+            let currentRow = [];
+            let currentField = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const nextChar = text[i + 1];
+
+                if (inQuotes) {
+                    if (char === '"' && nextChar === '"') {
+                        currentField += '"';
+                        i++;
+                    } else if (char === '"') {
+                        inQuotes = false;
+                    } else {
+                        currentField += char;
+                    }
+                } else {
+                    if (char === '"') {
+                        inQuotes = true;
+                    } else if (char === ',') {
+                        currentRow.push(currentField);
+                        currentField = '';
+                    } else if (char === '\r' || char === '\n') {
+                        currentRow.push(currentField);
+                        if (currentRow.length > 0) {
+                            rows.push(currentRow);
+                        }
+                        currentRow = [];
+                        currentField = '';
+                        if (char === '\r' && nextChar === '\n') i++;
+                    } else {
+                        currentField += char;
+                    }
+                }
+            }
+            if (currentRow.length > 0 || currentField !== '') {
+                currentRow.push(currentField);
+                rows.push(currentRow);
+            }
+            return rows;
         }
 
         // --- Drawer ---
