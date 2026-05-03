@@ -211,7 +211,8 @@ export function saveNewLead(l) {
         return false; 
     }
 
-    const activeNiche = DataStore.getSettings().activeNiche || 'Clinics';
+    const engineNicheEl = document.getElementById('engine-niche-select');
+    const importNiche = engineNicheEl ? engineNicheEl.value : (DataStore.getSettings().activeNiche || 'Clinics');
 
     const lead = {
         id: crypto.randomUUID(),
@@ -219,7 +220,7 @@ export function saveNewLead(l) {
         phone: l.phone,
         area: l.area || l.address,
         pain: l.pain,
-        niche: activeNiche,
+        niche: importNiche,
         channel: l.channel,
         en_message: l.en_message,
         ar_message: l.ar_message,

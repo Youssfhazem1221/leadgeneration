@@ -314,6 +314,12 @@ export function loadSettingsToUI() {
     const nicheSwitcher = document.getElementById('filter-niche');
     if (nicheSwitcher) nicheSwitcher.value = s.activeNiche || 'All';
 
+    // Also sync the Engine Import category
+    const engineNicheSwitcher = document.getElementById('engine-niche-select');
+    if (engineNicheSwitcher && s.activeNiche && s.activeNiche !== 'All') {
+        engineNicheSwitcher.value = s.activeNiche;
+    }
+
     // Render Offer Types in Settings
     renderOfferTypes();
     // Update Engine Offer dropdown
