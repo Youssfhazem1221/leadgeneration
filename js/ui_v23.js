@@ -268,15 +268,6 @@ export function updateLeadNiche() {
     if (typeof window.refreshUI === 'function') window.refreshUI();
     showToast("Niche updated");
 }
-    if(lead && lead.status !== newStatus) {
-        const old = lead.status;
-        lead.status = newStatus;
-        addActivity(lead, `Status changed from ${old} to ${newStatus}`);
-        DataStore.saveLead(lead);
-        if (typeof window.syncToSheets === 'function') window.syncToSheets(lead);
-        openDrawer(lead.id); 
-    }
-}
 
 export function saveFollowUp() {
     if(!currentLeadId) return;
