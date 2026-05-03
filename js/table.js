@@ -37,7 +37,8 @@ export function renderTable() {
         const matchSearch = l.name.toLowerCase().includes(search) || (l.phone && l.phone.includes(search));
         const matchStatus = status === 'All' || l.status === status;
         const matchSource = source === 'All' || l.source === source;
-        const matchNiche = !activeNiche || activeNiche === 'All' || l.niche === activeNiche;
+        const leadNiche = l.niche || 'Clinics';
+        const matchNiche = !activeNiche || activeNiche === 'All' || leadNiche === activeNiche;
         return matchSearch && matchStatus && matchSource && matchNiche;
     });
 

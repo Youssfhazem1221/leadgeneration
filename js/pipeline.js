@@ -3,10 +3,16 @@ import { getTimeAgo, openDrawer, addActivity, deleteLead } from './ui_v23.js?v=3
 
 export function renderStats() {
     const leads = DataStore.getLeads();
-    const total = leads.length;
-    const booked = leads.filter(l => l.status === 'Call Booked').length;
+    const activeNiche = DataStore.getSettings().activeNiche;
+    const filteredLeads = leads.filter(l => {
+        const leadNiche = l.niche || 'Clinics';
+        return !activeNiche || activeNiche === 'All' || leadNiche === activeNiche;
+    });
+
+    const total = filteredLeads.length;
+    const booked = filteredLeads.filter(l => l.status === 'Call Booked').length;
     const todayStr = new Date().toISOString().split('T')[0];
-    const due = leads.filter(l => l.follow_up_date && l.follow_up_date <= todayStr && !['Closed', 'Not Interested'].includes(l.status)).length;
+    const due = filteredLeads.filter(l => l.follow_up_date && l.follow_up_date <= todayStr && !['Closed', 'Not Interested'].includes(l.status)).length;
 
     const container = document.getElementById('stats-summary');
     if(!container) return;
@@ -29,6 +35,12 @@ export function renderStats() {
 
 export function renderPipeline() {
     const leads = DataStore.getLeads();
+    const activeNiche = DataStore.getSettings().activeNiche;
+    const filteredLeads = leads.filter(l => {
+        const leadNiche = l.niche || 'Clinics';
+        return !activeNiche || activeNiche === 'All' || leadNiche === activeNiche;
+    });
+
     const cols = ['New', 'Contacted', 'Replied', 'Call Booked', 'Closed'];
     const board = document.getElementById('kanban-board');
     if(!board) return;
@@ -37,7 +49,7 @@ export function renderPipeline() {
     const todayStr = new Date().toISOString().split('T')[0];
 
     cols.forEach(status => {
-        const colLeads = leads.filter(l => l.status === status);
+        const colLeads = filteredLeads.filter(l => l.status === status);
         const col = document.createElement('div');
         col.className = 'kanban-column';
         col.innerHTML = `
