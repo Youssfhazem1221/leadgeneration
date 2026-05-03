@@ -44,12 +44,14 @@ export const DataStore = {
     },
     
     saveSettings: async (settings) => {
+        console.log("DataStore: Saving settings...", settings);
         try {
             await set(ref(database, 'settings/global'), settings);
+            console.log("DataStore: Settings saved successfully to Firebase.");
             // Optimistic update
             localSettings = { ...localSettings, ...settings };
         } catch (e) {
-            console.error("Error saving settings: ", e);
+            console.error("DataStore: Error saving settings: ", e);
             throw e;
         }
     },

@@ -187,6 +187,7 @@ export function addActivity(lead, action) {
 
 export function loadSettingsToUI() {
     const s = DataStore.getSettings();
+    console.log("UI: Loading settings to fields...", s);
     const geminiEl = document.getElementById('set-gemini');
     const webhookEl = document.getElementById('set-webhook');
     const agencyEl = document.getElementById('set-agency');
@@ -200,15 +201,23 @@ export function loadSettingsToUI() {
     if (realNicheEl && s.niche) realNicheEl.value = s.niche;
 }
 
-export function saveSettings() {
+export async function saveSettings() {
+    console.log("UI: saveSettings triggered");
     const s = {
-        geminiKey: document.getElementById('set-gemini').value,
-        webhookUrl: document.getElementById('set-webhook').value,
-        agency: document.getElementById('set-agency').value,
-        niche: document.getElementById('set-niche').value
+        geminiKey: document.getElementById('set-gemini').value.trim(),
+        webhookUrl: document.getElementById('set-webhook').value.trim(),
+        agency: document.getElementById('set-agency').value.trim(),
+        niche: document.getElementById('set-niche').value.trim()
     };
-    DataStore.saveSettings(s);
-    showToast("Settings saved");
+    
+    try {
+        await DataStore.saveSettings(s);
+        showToast("Settings saved to cloud");
+        console.log("UI: saveSettings complete");
+    } catch (e) {
+        console.error("UI: Failed to save settings", e);
+        showToast("Error: Cloud sync failed", "error");
+    }
 }
 
 export function toggleVisibility(id) {
