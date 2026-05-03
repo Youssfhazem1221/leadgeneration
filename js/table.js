@@ -80,7 +80,7 @@ export function renderTable() {
         const statusClass = statusClassMap[l.status] || 'status-new';
 
         tr.innerHTML = `
-            <td style="text-align: center;"><input type="checkbox" class="lead-checkbox" data-id="${l.id}"></td>
+            <td style="text-align: center;"><input type="checkbox" class="lead-checkbox" data-id="${l.id}" onchange="updateSelectedCount()"></td>
             <td class="font-semibold">
                 <div style="display: flex; flex-direction: column; gap: 4px;">
                     <span style="font-size: 14px;">${l.name}</span>
