@@ -82,9 +82,9 @@ export function renderTable() {
         tr.innerHTML = `
             <td style="text-align: center;"><input type="checkbox" class="lead-checkbox" data-id="${l.id}"></td>
             <td class="font-semibold">
-                <div class="flex flex-col">
-                    <span>${l.name}</span>
-                    <span style="font-size: 10px; color: var(--apple-secondary); font-weight: 500;">${l.niche || 'Clinics'}</span>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <span style="font-size: 14px;">${l.name}</span>
+                    <div><span class="niche-label niche-${(l.niche || 'Clinics').toLowerCase().replace(' ', '-')}">${l.niche || 'Clinics'}</span></div>
                 </div>
             </td>
             <td>${l.phone}</td>

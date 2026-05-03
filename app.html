@@ -189,12 +189,53 @@
         .delete-btn { color: var(--apple-red) !important; border: 1px solid rgba(255, 69, 58, 0.2) !important; background: rgba(255, 69, 58, 0.05) !important; }
         .delete-btn:hover { background: var(--apple-red) !important; color: white !important; border-color: transparent !important; }
         .delete-card-btn:hover { color: var(--apple-red) !important; transform: scale(1.1); }
+        
+        /* Custom Apple-style Checkboxes */
+        .lead-checkbox, .result-checkbox, #select-all-leads {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--apple-border);
+            border-radius: 6px;
+            background: rgba(255,255,255,0.05);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            outline: none;
+        }
+
+        .lead-checkbox:hover, .result-checkbox:hover, #select-all-leads:hover {
+            border-color: var(--apple-blue);
+            background: rgba(10, 132, 255, 0.1);
+        }
+
+        .lead-checkbox:checked, .result-checkbox:checked, #select-all-leads:checked {
+            background: var(--apple-blue);
+            border-color: var(--apple-blue);
+        }
+
+        .lead-checkbox:checked::after, .result-checkbox:checked::after, #select-all-leads:checked::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: 900;
+        }
 
         /* Pills */
         .pill-source { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.03em; }
         .source-real { background: rgba(48, 209, 88, 0.15); color: var(--apple-green); }
         .source-ai { background: rgba(161, 161, 166, 0.15); color: var(--apple-secondary); }
         .source-csv { background: rgba(10, 132, 255, 0.15); color: var(--apple-blue); }
+
+        /* Niche Labels */
+        .niche-label { font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
+        .niche-clinics { background: rgba(10, 132, 255, 0.1); color: var(--apple-blue); }
+        .niche-real-estate { background: rgba(255, 159, 10, 0.1); color: #ff9f0a; }
+        .niche-e-commerce { background: rgba(191, 90, 242, 0.1); color: #bf5af2; }
 
         /* Drawer */
         #drawer { position: fixed; top: 12px; right: 12px; bottom: 12px; width: 480px; background: rgba(28, 28, 30, 0.7); backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%); border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6); z-index: 1000; transform: translateX(120%); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; overflow: hidden; }
