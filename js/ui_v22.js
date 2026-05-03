@@ -245,7 +245,10 @@ export async function testGemini() {
                 body: JSON.stringify({ contents: [{ parts: [{ text: "Hi" }] }] })
             });
             if (res.ok) return true;
-            if (res.status === 429) { lastError = "Rate limit reached (Too busy). Wait 60s."; return false; }
+            if (res.status === 429) { 
+                lastError = "API is busy. Please wait 1 minute and click test again."; 
+                return false; 
+            }
             const errData = await res.json();
             lastError = errData.error?.message || `HTTP ${res.status}`;
             return false;

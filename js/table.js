@@ -195,13 +195,22 @@ export async function processCSV(text) {
         });
 
         if (lead.name || lead.phone) {
-            await DataStore.saveLead(lead);
-            importCount++;
+            try {
+                await DataStore.saveLead(lead);
+                importCount++;
+            } catch (err) {
+                console.error("Failed to import lead", lead, err);
+                showToast("Error saving a lead: " + err.message, "error");
+            }
         }
     }
 
-    showToast(`Imported ${importCount} leads successfully.`);
-    if (typeof window.refreshUI === 'function') window.refreshUI();
+    if (importCount > 0) {
+        showToast(`Imported ${importCount} leads successfully.`);
+        if (typeof window.refreshUI === 'function') window.refreshUI();
+    } else {
+        showToast("No leads were imported. Check CSV format.", "warning");
+    }
 }
 
 function parseCSV(text, separator = ',') {

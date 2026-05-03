@@ -82,6 +82,10 @@ Schema:
             });
         }
         
+        if (res.status === 429) {
+            throw new Error("API is busy. Please wait 1 minute and click Find again.");
+        }
+        
         const data = await res.json();
         console.log("Engine: Raw API Data:", data);
         
