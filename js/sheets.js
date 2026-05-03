@@ -1,5 +1,5 @@
 import { DataStore } from './datastore.js?v=35';
-import { showToast } from './ui_v23.js';
+import { showToast } from './ui_v23.js?v=35';
 
 export async function syncToSheets(lead) {
     const url = DataStore.getSettings().webhookUrl;
