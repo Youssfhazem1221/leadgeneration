@@ -1,4 +1,4 @@
-import { db, collection, doc, deleteDoc, onSnapshot, setDoc, getDoc } from './firebase-config.js?v=2';
+import { db, collection, doc, deleteDoc, onSnapshot, setDoc, getDoc } from './firebase-config.js?v=3';
 
 let localLeads = [];
 let localSettings = {geminiKey:"", placesKey:"", webhookUrl:"", agency:"", niche:""};
