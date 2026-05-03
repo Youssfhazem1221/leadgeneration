@@ -722,7 +722,10 @@
                     <span id="drawer-channel-text" class="text-secondary text-sm"></span>
                 </div>
             </div>
-            <button onclick="closeDrawer()" style="background: rgba(255,255,255,0.08); border-radius: 50%; width: 32px; height: 32px; padding: 0; font-size: 14px; flex-shrink: 0;">✕</button>
+            <div class="flex items-center gap-2">
+                <button onclick="copyText(window.location.origin + window.location.pathname + '#lead=' + window.currentLeadId)" title="Copy link to this lead" style="background: rgba(255,255,255,0.08); border-radius: 50%; width: 32px; height: 32px; padding: 0; font-size: 13px; flex-shrink: 0;">🔗</button>
+                <button onclick="closeDrawer()" style="background: rgba(255,255,255,0.08); border-radius: 50%; width: 32px; height: 32px; padding: 0; font-size: 14px; flex-shrink: 0;">✕</button>
+            </div>
         </div>
 
         <div class="drawer-content" style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
@@ -822,7 +825,7 @@
             switchMessageTab, updateLeadStatus, saveFollowUp, 
             loadSettingsToUI, saveSettings, toggleVisibility, 
             testGemini, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
-            showModal, setUserInfo, handleDeleteFromDrawer, deleteLead, addComment, deleteComment
+            showModal, setUserInfo, handleDeleteFromDrawer, deleteLead, addComment, deleteComment, checkHashAndOpenDrawer
         } from './js/ui_v23.js?v=35';
         import { renderPipeline, renderStats } from './js/pipeline.js?v=35';
         import { renderTable, sortTable, exportCSV, handleFileSelect } from './js/table.js?v=35';
@@ -911,6 +914,7 @@
         DataStore.init(() => {
             refreshUI();
             loadSettingsToUI();
+            checkHashAndOpenDrawer();
         });
 
         // Wire user info to header badge once Firebase reports the logged-in user

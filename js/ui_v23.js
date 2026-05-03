@@ -141,12 +141,24 @@ export function openDrawer(id) {
 
     document.getElementById('drawer').classList.add('open');
     switchMessageTab('en');
+    
+    // Update URL hash for shareable link
+    history.replaceState(null, '', `#lead=${id}`);
+}
+
+export function checkHashAndOpenDrawer() {
+    const hash = window.location.hash;
+    if (hash.startsWith('#lead=')) {
+        const leadId = hash.replace('#lead=', '');
+        if (leadId) openDrawer(leadId);
+    }
 }
 
 export function closeDrawer() {
     document.getElementById('drawer').classList.remove('open');
     currentLeadId = null;
     window.currentLeadId = null;
+    history.replaceState(null, '', window.location.pathname);
 }
 
 export function addComment() {
