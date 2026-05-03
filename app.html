@@ -974,10 +974,18 @@
         }
 
         async function processCSV(text) {
-            const rows = parseCSV(text);
+            console.log("Starting CSV process...");
+            // Detect separator (comma or semicolon)
+            const firstLine = text.split('\n')[0];
+            const separator = firstLine.includes(';') ? ';' : ',';
+            console.log("Detected separator:", separator);
+
+            const rows = parseCSV(text, separator);
             if (rows.length < 2) return showToast("CSV is empty or invalid", "error");
 
             const headers = rows[0].map(h => h.toLowerCase().trim());
+            console.log("Headers found:", headers);
+
             const dataRows = rows.slice(1);
             let importCount = 0;
 
@@ -1000,13 +1008,24 @@
                 };
 
                 headers.forEach((header, index) => {
-                    const value = row[index] ? row[index].trim() : '';
+                    let value = row[index] ? row[index].trim() : '';
                     if (!value) return;
 
+                    // Lenient mapping
                     if (header.includes('name')) lead.name = value;
-                    else if (header.includes('phone') || header.includes('number')) lead.phone = value;
-                    else if (header.includes('area') || header.includes('location')) lead.area = value;
-                    else if (header.includes('status')) lead.status = value;
+                    else if (header.includes('phone') || header.includes('number') || header.includes('tel')) lead.phone = value;
+                    else if (header.includes('area') || header.includes('location') || header.includes('city')) lead.area = value;
+                    else if (header.includes('status')) {
+                        // Normalize status to match pipeline columns
+                        const v = value.toLowerCase();
+                        if (v.includes('new')) lead.status = 'New';
+                        else if (v.includes('contact')) lead.status = 'Contacted';
+                        else if (v.includes('replied')) lead.status = 'Replied';
+                        else if (v.includes('book')) lead.status = 'Call Booked';
+                        else if (v.includes('close')) lead.status = 'Closed';
+                        else if (v.includes('not inter')) lead.status = 'Not Interested';
+                        else lead.status = value; 
+                    }
                     else if (header.includes('channel')) lead.channel = value;
                     else if (header.includes('pain')) lead.pain = value;
                     else if (header.includes('source')) lead.source = value;
@@ -1015,15 +1034,17 @@
                 });
 
                 if (lead.name || lead.phone) {
-                    DataStore.saveLead(lead);
+                    await DataStore.saveLead(lead);
                     importCount++;
                 }
             }
 
-            showToast(`Imported ${importCount} leads. They will appear shortly.`);
+            console.log(`Imported ${importCount} leads successfully.`);
+            showToast(`Imported ${importCount} leads successfully.`);
+            if (typeof window.refreshUI === 'function') window.refreshUI();
         }
 
-        function parseCSV(text) {
+        function parseCSV(text, separator = ',') {
             const rows = [];
             let currentRow = [];
             let currentField = '';
@@ -1045,7 +1066,7 @@
                 } else {
                     if (char === '"') {
                         inQuotes = true;
-                    } else if (char === ',') {
+                    } else if (char === separator) {
                         currentRow.push(currentField);
                         currentField = '';
                     } else if (char === '\r' || char === '\n') {
