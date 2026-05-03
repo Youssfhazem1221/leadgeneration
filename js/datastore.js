@@ -1,4 +1,4 @@
-import { database, ref, set, get, onValue, remove, child } from './firebase-config.js?v=5';
+import { database, ref, set, get, onValue, remove, child } from './firebase-config.js?v=6';
 
 let localLeads = [];
 let localSettings = {geminiKey:"", placesKey:"", webhookUrl:"", agency:"", niche:""};

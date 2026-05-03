@@ -10,7 +10,7 @@ const firebaseConfig = {
   storageBucket: "outrach-crm.firebasestorage.app",
   messagingSenderId: "106217035980",
   appId: "1:106217035980:web:637f74425ab7b97fa6ca69",
-  databaseURL: "https://outrach-crm-default-rtdb.firebaseio.com"
+  databaseURL: "https://outrach-crm-default-rtdb.europe-west1.firebasedatabase.app"
 };
 
 // Initialize Firebase

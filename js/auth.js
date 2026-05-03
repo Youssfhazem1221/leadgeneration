@@ -1,5 +1,5 @@
-import { auth, provider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from './firebase-config.js?v=5';
-import { DataStore } from './datastore.js?v=5';
+import { auth, provider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from './firebase-config.js?v=6';
+import { DataStore } from './datastore.js?v=6';
 
 // The Root Admin is guaranteed access and will be automatically created in the database
 const AUTHORIZED_ADMINS = ["youssf.hazem1221@gmail.com", "youssfhazem1221@gmail.com", "mohamedelhawary8@gmail.com"];
@@ -10,11 +10,13 @@ async function handleAuthStatus(user, requireLogin = false) {
     if (user) {
         let role = await DataStore.getUserRole(user.email);
         
-        // Auto-provision Admins if they don't exist yet
-        if (!role && AUTHORIZED_ADMINS.some(email => email.toLowerCase() === user.email.toLowerCase())) {
-            await DataStore.saveUser(user.email, 'admin');
-            role = 'admin';
-            console.log("Admin provisioned automatically.");
+        // Auto-provision users if they don't exist yet
+        if (!role) {
+            const isRootAdmin = AUTHORIZED_ADMINS.some(email => email.toLowerCase() === user.email.toLowerCase());
+            const initialRole = isRootAdmin ? 'admin' : 'viewer';
+            await DataStore.saveUser(user.email, initialRole);
+            role = initialRole;
+            console.log(`${initialRole} provisioned automatically for ${user.email}`);
         }
 
         if (!role) {
