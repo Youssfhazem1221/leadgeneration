@@ -99,9 +99,10 @@ export function openDrawer(id) {
     document.getElementById('drawer-phone').innerText = lead.phone;
     document.getElementById('drawer-area').innerText = lead.area || 'Not specified';
     document.getElementById('drawer-status').value = lead.status;
-    document.getElementById('drawer-notes').value = lead.notes || '';
     document.getElementById('drawer-follow-date').value = lead.follow_up_date || '';
     
+    renderComments(lead);
+
     const isReal = lead.source === 'places';
     const isCSV = lead.source === 'csv_import';
     const sourcePill = document.getElementById('drawer-source-pill');
@@ -139,6 +140,56 @@ export function closeDrawer() {
     currentLeadId = null;
     window.currentLeadId = null;
 }
+
+export function addComment() {
+    if(!currentLeadId) return;
+    const input = document.getElementById('drawer-new-comment');
+    const text = input.value.trim();
+    if(!text) return;
+
+    const lead = DataStore.getLeads().find(l => l.id === currentLeadId);
+    if(!lead.comments) lead.comments = [];
+    
+    const currentUser = document.getElementById('user-display-email')?.innerText || 'User';
+
+    lead.comments.push({
+        author: currentUser,
+        text: text,
+        timestamp: new Date().toISOString()
+    });
+
+    DataStore.saveLead(lead);
+    input.value = '';
+    
+    renderComments(lead);
+}
+
+export function renderComments(lead) {
+    const list = document.getElementById('drawer-comments-list');
+    if(!lead.comments || lead.comments.length === 0) {
+        list.innerHTML = '<div class="text-secondary text-sm text-center py-4">No notes yet.</div>';
+        return;
+    }
+
+    list.innerHTML = lead.comments.map(c => {
+        const authorName = c.author ? c.author.split('@')[0] : 'Unknown';
+        return `
+        <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--apple-border); border-radius: 10px; padding: 10px; text-align: left;">
+            <div class="flex justify-between items-center mb-1">
+                <span class="text-xs font-semibold text-secondary" style="color: var(--apple-blue);">${authorName}</span>
+                <span class="text-xs text-secondary">${getTimeAgo(c.timestamp)}</span>
+            </div>
+            <div class="text-sm" style="line-height: 1.4; color: white; white-space: pre-wrap;">${c.text}</div>
+        </div>
+        `;
+    }).join('');
+    
+    // Scroll to bottom
+    setTimeout(() => {
+        list.scrollTop = list.scrollHeight;
+    }, 50);
+}
+
 
 export async function handleDeleteFromDrawer() {
     if (!currentLeadId) return;

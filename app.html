@@ -775,7 +775,13 @@
 
             <div class="drawer-section">
                 <div class="section-label">Internal Notes</div>
-                <textarea id="drawer-notes" rows="4" placeholder="Add private notes..." style="background: rgba(255,255,255,0.03);"></textarea>
+                <div id="drawer-comments-list" class="flex-col gap-2 mb-3" style="max-height: 250px; overflow-y: auto; padding-right: 4px;">
+                    <!-- Comments injected here -->
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="drawer-new-comment" placeholder="Type a note..." class="flex-1 text-sm" style="background: rgba(255,255,255,0.05); border: 1px solid var(--apple-border); border-radius: 8px; padding: 10px; color: white;">
+                    <button onclick="addComment()" class="btn-primary" style="padding: 10px 16px;">Post</button>
+                </div>
             </div>
 
             <div class="drawer-section">
@@ -840,7 +846,8 @@
             showModal, setUserInfo, handleDeleteFromDrawer,
             DataStore, renderPipeline, renderStats, renderTable, sortTable,
             deleteLead, exportCSV, handleFileSelect, findRealLeads, importRealLeads,
-            syncToSheets, syncAllToSheets, refreshUI, clearAllData, switchEngineTab
+            syncToSheets, syncAllToSheets, refreshUI, clearAllData, switchEngineTab,
+            addComment
         });
 
         async function clearAllData() {
