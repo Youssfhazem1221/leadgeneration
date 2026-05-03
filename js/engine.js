@@ -1,6 +1,6 @@
-import { DataStore } from './datastore.js?v=35';
-import { showToast, switchView } from './ui_v23.js?v=35';
-import { normalizePhone } from './table.js?v=35';
+import { DataStore } from './datastore.js?v=36';
+import { showToast, switchView } from './ui_v23.js?v=36';
+import { normalizePhone } from './table.js?v=36';
 
 
 let tempEngineResults = [];

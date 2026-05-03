@@ -1,6 +1,6 @@
-import { auth, provider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from './firebase-config.js?v=35';
-import { DataStore } from './datastore.js?v=35';
-import { showModal } from './ui_v23.js?v=35';
+import { auth, provider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from './firebase-config.js?v=36';
+import { DataStore } from './datastore.js?v=36';
+import { showModal } from './ui_v23.js?v=36';
 
 // The Root Admin is guaranteed access and will be automatically created in the database
 const AUTHORIZED_ADMINS = ["youssf.hazem1221@gmail.com", "youssfhazem1221@gmail.com", "mohamedelhawary8@gmail.com"];

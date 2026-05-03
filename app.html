@@ -818,19 +818,19 @@
     <div id="toast-container"></div>
 
     <script type="module">
-        import { initAuth, logout } from './js/auth.js?v=35';
-        import { DataStore } from './js/datastore.js?v=35';
+        import { initAuth, logout } from './js/auth.js?v=36';
+        import { DataStore } from './js/datastore.js?v=36';
         import { 
             showToast, switchView, copyText, openDrawer, closeDrawer, 
             switchMessageTab, updateLeadStatus, saveFollowUp, 
             loadSettingsToUI, saveSettings, toggleVisibility, 
             testGemini, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
             showModal, setUserInfo, handleDeleteFromDrawer, deleteLead, addComment, deleteComment, checkHashAndOpenDrawer
-        } from './js/ui_v23.js?v=35';
-        import { renderPipeline, renderStats } from './js/pipeline.js?v=35';
-        import { renderTable, sortTable, exportCSV, handleFileSelect } from './js/table.js?v=35';
-        import { findRealLeads, importRealLeads } from './js/engine.js?v=35';
-        import { syncToSheets, syncAllToSheets } from './js/sheets.js?v=35';
+        } from './js/ui_v23.js?v=36';
+        import { renderPipeline, renderStats } from './js/pipeline.js?v=36';
+        import { renderTable, sortTable, exportCSV, handleFileSelect } from './js/table.js?v=36';
+        import { findRealLeads, importRealLeads } from './js/engine.js?v=36';
+        import { syncToSheets, syncAllToSheets } from './js/sheets.js?v=36';
 
         // Expose to window for inline onclick handlers
         // Mobile Menu Toggle
@@ -918,7 +918,7 @@
         });
 
         // Wire user info to header badge once Firebase reports the logged-in user
-        import('./js/firebase-config.js?v=35').then(({ auth }) => {
+        import('./js/firebase-config.js?v=36').then(({ auth }) => {
             auth.onAuthStateChanged((user) => {
                 if (user) setUserInfo(user.email);
             });
