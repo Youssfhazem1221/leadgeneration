@@ -486,32 +486,40 @@
 
             <!-- TABLE VIEW -->
             <div id="view-table" class="hidden view-pane">
-                <div class="table-controls" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap; flex: 1;">
-                        <input type="text" id="filter-search" placeholder="🔍  Search name or phone…" oninput="renderTable()" style="min-width: 200px;">
-                        <select id="filter-status" onchange="renderTable()">
-                            <option value="All">All Statuses</option>
-                            <option value="New">New</option>
-                            <option value="Contacted">Contacted</option>
-                            <option value="Replied">Replied</option>
-                            <option value="Call Booked">Call Booked</option>
-                            <option value="Closed">Closed</option>
-                            <option value="Not Interested">Not Interested</option>
-                        </select>
-                        <select id="filter-source" onchange="renderTable()">
-                            <option value="All">All Sources</option>
-                            <option value="places">Real</option>
-                            <option value="csv_import">Imported</option>
-                            <option value="ai_generated">AI</option>
-                            <option value="google_maps">Maps Scraper</option>
-                            <option value="yelp">Yelp Scraper</option>
-                        </select>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+                    <!-- Search Row -->
+                    <div style="position: relative;">
+                        <input type="text" id="filter-search" placeholder="Search leads by name or phone…" oninput="renderTable()" style="width: 100%; padding: 12px 16px 12px 40px; background: rgba(255,255,255,0.05); border: 1px solid var(--apple-border); border-radius: 12px; color: white; font-size: 14px; outline: none; transition: border-color 0.2s;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 15px; opacity: 0.5; pointer-events: none;">🔍</span>
                     </div>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <button class="btn-toolbar" onclick="syncAllToSheets()">↑ Sync Sheets</button>
-                        <input type="file" id="csv-import-input" style="display:none;" accept=".csv" onchange="handleFileSelect(event)">
-                        <button class="btn-toolbar" onclick="document.getElementById('csv-import-input').click()">⤓ Import CSV</button>
-                        <button class="btn-toolbar primary" onclick="exportCSV()">↓ Export CSV</button>
+                    <!-- Filters + Actions Row -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                            <select id="filter-status" onchange="renderTable()" style="padding: 8px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--apple-border); border-radius: 10px; color: white; font-size: 13px; cursor: pointer;">
+                                <option value="All">All Statuses</option>
+                                <option value="New">New</option>
+                                <option value="Contacted">Contacted</option>
+                                <option value="Replied">Replied</option>
+                                <option value="Call Booked">Call Booked</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Not Interested">Not Interested</option>
+                            </select>
+                            <select id="filter-source" onchange="renderTable()" style="padding: 8px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--apple-border); border-radius: 10px; color: white; font-size: 13px; cursor: pointer;">
+                                <option value="All">All Sources</option>
+                                <option value="places">Real</option>
+                                <option value="csv_import">Imported</option>
+                                <option value="ai_generated">AI</option>
+                                <option value="google_maps">Maps Scraper</option>
+                                <option value="yelp">Yelp Scraper</option>
+                            </select>
+                            <span id="table-count" style="font-size: 12px; color: var(--apple-secondary); white-space: nowrap;"></span>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button onclick="syncAllToSheets()" style="padding: 8px 14px; background: rgba(255,255,255,0.06); border: 1px solid var(--apple-border); border-radius: 10px; color: white; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;">↑ Sync Sheets</button>
+                            <input type="file" id="csv-import-input" style="display:none;" accept=".csv" onchange="handleFileSelect(event)">
+                            <button onclick="document.getElementById('csv-import-input').click()" style="padding: 8px 14px; background: rgba(255,255,255,0.06); border: 1px solid var(--apple-border); border-radius: 10px; color: white; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;">⤓ Import CSV</button>
+                            <button onclick="exportCSV()" style="padding: 8px 14px; background: var(--apple-blue); border: none; border-radius: 10px; color: white; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">↓ Export CSV</button>
+                        </div>
                     </div>
                 </div>
                 <div class="table-container">
