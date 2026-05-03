@@ -1,5 +1,5 @@
-import { auth, provider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from './firebase-config.js?v=7';
-import { DataStore } from './datastore.js?v=29';
+import { auth, provider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from './firebase-config.js?v=35';
+import { DataStore } from './datastore.js?v=35';
 import { showModal } from './ui_v23.js';
 
 // The Root Admin is guaranteed access and will be automatically created in the database
