@@ -92,22 +92,11 @@ function logout() {
 }
 
 function loginWithEmail(email, password) {
-    return signInWithEmailAndPassword(auth, email, password).catch((error) => {
-        console.error("Error signing in with email", error);
-        alert("Sign in failed: " + error.message);
-        throw error;
-    });
+    return signInWithEmailAndPassword(auth, email, password);
 }
 
 function signupWithEmail(email, password) {
-    return createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
-        console.log("Signed up successfully");
-        return userCredential;
-    }).catch((error) => {
-        console.error("Error signing up", error);
-        alert("Sign up failed: " + error.message);
-        throw error;
-    });
+    return createUserWithEmailAndPassword(auth, email, password);
 }
 
 // Initialize listener

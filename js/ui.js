@@ -1,0 +1,227 @@
+import { DataStore } from './datastore.js?v=7';
+
+export function showToast(msg, type='success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : '⚠';
+    toast.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.3s ease forwards';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+export function switchView(view) {
+    closeDrawer();
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    const navEl = document.getElementById(`nav-${view}`);
+    if (navEl) navEl.classList.add('active');
+    
+    ['pipeline', 'table', 'engine', 'settings'].forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) el.classList.add('hidden');
+    });
+    const viewEl = document.getElementById(`view-${view}`);
+    if (viewEl) viewEl.classList.remove('hidden');
+    
+    if (view === 'pipeline' && typeof window.renderPipeline === 'function') window.renderPipeline();
+    if (view === 'table' && typeof window.renderTable === 'function') window.renderTable();
+}
+
+export function getTimeAgo(dateStr) {
+    const diff = (new Date() - new Date(dateStr)) / 1000;
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+    return Math.floor(diff/86400) + 'd ago';
+}
+
+export function copyText(txt) {
+    navigator.clipboard.writeText(txt).then(() => showToast("Copied to clipboard"));
+}
+
+// --- Drawer ---
+let currentLeadId = null;
+
+export function openDrawer(id) {
+    const lead = DataStore.getLeads().find(l => l.id === id);
+    if (!lead) return;
+    currentLeadId = id;
+    window.currentLeadId = id; // Sync with global if needed
+
+    document.getElementById('drawer-name').innerText = lead.name;
+    document.getElementById('drawer-phone').innerText = lead.phone;
+    document.getElementById('drawer-area').innerText = lead.area || 'Not specified';
+    document.getElementById('drawer-status').value = lead.status;
+    document.getElementById('drawer-notes').value = lead.notes || '';
+    document.getElementById('drawer-follow-date').value = lead.follow_up_date || '';
+    
+    const isReal = lead.source === 'places';
+    const isCSV = lead.source === 'csv_import';
+    const sourcePill = document.getElementById('drawer-source-pill');
+    sourcePill.innerText = isReal ? 'Real' : (isCSV ? 'CSV' : 'AI');
+    sourcePill.className = `pill-source ${isReal ? 'source-real' : (isCSV ? 'source-csv' : 'source-ai')}`;
+    
+    document.getElementById('drawer-channel-text').innerText = lead.channel || 'WhatsApp';
+
+    if(isReal && lead.rating) {
+        document.getElementById('drawer-rating-row').classList.remove('hidden');
+        document.getElementById('drawer-rating').innerText = `★ ${lead.rating}`;
+        document.getElementById('drawer-maps-link').href = lead.maps_url || '#';
+    } else {
+        document.getElementById('drawer-rating-row').classList.add('hidden');
+    }
+
+    const messages = lead.ai_messages || { en: 'Generating...', ar: 'جاري الإنشاء...' };
+    document.getElementById('drawer-msg-text-en').innerText = messages.en;
+    document.getElementById('drawer-msg-text-ar').innerText = messages.ar;
+
+    const logContainer = document.getElementById('drawer-activity');
+    logContainer.innerHTML = (lead.activity_log || []).slice().reverse().map(log => `
+        <div class="flex-col gap-1 mb-4" style="border-left: 2px solid var(--apple-blue); padding-left: 12px; position: relative;">
+            <div class="text-sm font-semibold">${log.action}</div>
+            <div class="text-xs text-secondary">${new Date(log.timestamp).toLocaleString()}</div>
+        </div>
+    `).join('');
+
+    document.getElementById('drawer').classList.add('open');
+    switchMessageTab('en');
+}
+
+export function closeDrawer() {
+    document.getElementById('drawer').classList.remove('open');
+    currentLeadId = null;
+    window.currentLeadId = null;
+}
+
+export function switchMessageTab(lang) {
+    document.getElementById('drawer-tab-en').classList.toggle('active', lang === 'en');
+    document.getElementById('drawer-tab-ar').classList.toggle('active', lang === 'ar');
+    document.getElementById('drawer-message-en').classList.toggle('hidden', lang !== 'en');
+    document.getElementById('drawer-message-ar').classList.toggle('hidden', lang !== 'ar');
+}
+
+export function updateLeadStatus() {
+    if(!currentLeadId) return;
+    const newStatus = document.getElementById('drawer-status').value;
+    const lead = DataStore.getLeads().find(l => l.id === currentLeadId);
+    if(lead && lead.status !== newStatus) {
+        const old = lead.status;
+        lead.status = newStatus;
+        addActivity(lead, `Status changed from ${old} to ${newStatus}`);
+        DataStore.saveLead(lead);
+        if (typeof window.syncToSheets === 'function') window.syncToSheets(lead);
+        openDrawer(lead.id); 
+    }
+}
+
+export function saveFollowUp() {
+    if(!currentLeadId) return;
+    const date = document.getElementById('drawer-follow-date').value;
+    const lead = DataStore.getLeads().find(l => l.id === currentLeadId);
+    lead.follow_up_date = date;
+    addActivity(lead, `Set follow-up date to ${date || 'none'}`);
+    DataStore.saveLead(lead);
+    openDrawer(lead.id);
+    showToast("Follow-up saved");
+}
+
+export function addActivity(lead, action) {
+    if(!lead.activity_log) lead.activity_log = [];
+    lead.activity_log.unshift({ action, timestamp: new Date().toISOString() });
+}
+
+export function loadSettingsToUI() {
+    const s = DataStore.getSettings();
+    const geminiEl = document.getElementById('set-gemini');
+    const webhookEl = document.getElementById('set-webhook');
+    const agencyEl = document.getElementById('set-agency');
+    const nicheEl = document.getElementById('set-niche');
+    const realNicheEl = document.getElementById('real-niche');
+
+    if (geminiEl) geminiEl.value = s.geminiKey || '';
+    if (webhookEl) webhookEl.value = s.webhookUrl || '';
+    if (agencyEl) agencyEl.value = s.agency || '';
+    if (nicheEl) nicheEl.value = s.niche || '';
+    if (realNicheEl && s.niche) realNicheEl.value = s.niche;
+}
+
+export function saveSettings() {
+    const s = {
+        geminiKey: document.getElementById('set-gemini').value,
+        webhookUrl: document.getElementById('set-webhook').value,
+        agency: document.getElementById('set-agency').value,
+        niche: document.getElementById('set-niche').value
+    };
+    DataStore.saveSettings(s);
+    showToast("Settings saved");
+}
+
+export function toggleVisibility(id) {
+    const el = document.getElementById(id);
+    if (el) el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+export async function testGemini() {
+    const key = document.getElementById('set-gemini').value;
+    const resEl = document.getElementById('test-gemini-res');
+    if(!key) return resEl.innerHTML = '<span class="text-red">Missing Key</span>';
+    resEl.innerText = "Testing...";
+    try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: "Hi" }] }] })
+        });
+        if(res.ok) resEl.innerHTML = '<span class="text-accent">✓ Success</span>';
+        else throw new Error('API Error');
+    } catch(e) { resEl.innerHTML = '<span class="text-red">✗ Failed</span>'; }
+}
+
+export async function testWebhook() {
+    const url = document.getElementById('set-webhook').value;
+    const resEl = document.getElementById('test-webhook-res');
+    if(!url) return resEl.innerHTML = '<span class="text-red">Missing URL</span>';
+    resEl.innerText = "Testing...";
+    try {
+        await fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify({action:'test'})});
+        resEl.innerHTML = '<span class="text-accent">✓ Sent</span>';
+    } catch(e) { resEl.innerHTML = '<span class="text-red">✗ Failed</span>'; }
+}
+
+// --- Team Management ---
+export function renderTeamTable() {
+    const users = DataStore.getUsers();
+    const tbody = document.getElementById('team-table-body');
+    if(!tbody) return;
+    
+    tbody.innerHTML = users.map(u => `
+        <tr>
+            <td>${u.email}</td>
+            <td><span class="pill-source ${u.role === 'admin' ? 'source-real' : 'source-ai'}">${u.role}</span></td>
+            <td>
+                <button style="padding:4px 8px; font-size:11px; color:var(--red); background:none; border:none;" 
+                        onclick="removeUserAccess('${u.email}')">Revoke</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+export async function inviteUser() {
+    const email = document.getElementById('invite-email').value.trim();
+    const role = document.getElementById('invite-role').value;
+    if(!email || !email.includes('@')) return showToast("Enter a valid email", "error");
+    
+    await DataStore.saveUser(email, role);
+    document.getElementById('invite-email').value = '';
+    showToast(`Added ${email} as ${role}`);
+}
+
+export async function removeUserAccess(email) {
+    if(confirm(`Revoke access for ${email}? They will be immediately locked out.`)) {
+        await DataStore.deleteUser(email);
+        showToast("User access revoked");
+    }
+}

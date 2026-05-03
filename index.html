@@ -4,187 +4,536 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Outreach CRM - Login</title>
+    <title>Outreach CRM — Sign In</title>
+    <meta name="description" content="Sign in to Outreach CRM — your AI-powered lead generation and management engine.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #0a0a0a;
-            --bg-surface: rgba(26, 26, 26, 0.6);
-            --border: rgba(255, 255, 255, 0.08);
-            --text-primary: #f8fafc;
-            --text-secondary: #5b7caa;
-            --accent: #10b981;
-            --accent-hover: #059669;
-            --font-inter: 'Inter', sans-serif;
-            --glass-blur: blur(12px);
-            --glow-accent: 0 0 15px rgba(16, 185, 129, 0.3);
+            --bg: #000000;
+            --surface: rgba(255, 255, 255, 0.04);
+            --surface-hover: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.1);
+            --border-focus: rgba(10, 132, 255, 0.8);
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --text-tertiary: #6e6e73;
+            --blue: #0a84ff;
+            --blue-dark: #0071e3;
+            --blue-glow: rgba(10, 132, 255, 0.25);
+            --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Arial, sans-serif;
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
         }
 
-        * {
+        *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: var(--font-inter);
         }
 
-        body {
-            background-color: var(--bg-base);
-            background-image: radial-gradient(circle at top left, #1a1e24 0%, var(--bg-base) 50%),
-                radial-gradient(circle at bottom right, #0d141c 0%, var(--bg-base) 50%);
+        html, body {
+            height: 100%;
+            font-family: var(--font);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: var(--bg);
             color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        /* ─── Ambient Background ─── */
+        .bg-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.35;
+            animation: drift 18s ease-in-out infinite alternate;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #1a3a6b 0%, transparent 70%);
+            top: -200px;
+            left: -150px;
+            animation-duration: 22s;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #0d2a4a 0%, transparent 70%);
+            bottom: -150px;
+            right: -100px;
+            animation-duration: 18s;
+            animation-delay: -6s;
+        }
+
+        .orb-3 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, #0a2040 0%, transparent 70%);
+            top: 40%;
+            left: 55%;
+            animation-duration: 26s;
+            animation-delay: -12s;
+            opacity: 0.2;
+        }
+
+        @keyframes drift {
+            0%   { transform: translate(0px, 0px) scale(1); }
+            33%  { transform: translate(30px, -20px) scale(1.04); }
+            66%  { transform: translate(-20px, 15px) scale(0.97); }
+            100% { transform: translate(10px, -10px) scale(1.02); }
+        }
+
+        /* ─── Noise Texture ─── */
+        .bg-canvas::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            background-size: 200px 200px;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        /* ─── Page Layout ─── */
+        .page {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            overflow: hidden;
+            padding: 24px;
+        }
+
+        /* ─── Login Card ─── */
+        .card {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(22, 22, 24, 0.65);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            padding: 48px 40px;
+            box-shadow:
+                0 0 0 0.5px rgba(255, 255, 255, 0.05) inset,
+                0 32px 64px rgba(0, 0, 0, 0.5),
+                0 8px 24px rgba(0, 0, 0, 0.3);
+            animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(24px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ─── Logo / App Icon ─── */
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(145deg, #0a84ff 0%, #0055cc 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 28px;
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.15) inset,
+                0 8px 20px rgba(10, 132, 255, 0.35),
+                0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .app-icon:hover { transform: scale(1.05) rotate(-2deg); }
+
+        /* ─── Headings ─── */
+        .card-title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .card-subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 36px;
+        }
+
+        /* ─── Field Groups ─── */
+        .field-group {
+            margin-bottom: 12px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            letter-spacing: 0.01em;
+        }
+
+        .field-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 13px 16px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-family: var(--font);
+            outline: none;
+            transition: all 0.2s ease;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .field-input::placeholder { color: var(--text-tertiary); }
+
+        .field-input:focus {
+            border-color: var(--blue);
+            background: rgba(10, 132, 255, 0.06);
+            box-shadow: 0 0 0 4px var(--blue-glow);
+        }
+
+        /* ─── Actions ─── */
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            width: 100%;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            font-family: var(--font);
+            cursor: pointer;
+            transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             -webkit-font-smoothing: antialiased;
         }
 
-        .login-card {
-            background-color: var(--bg-surface);
-            backdrop-filter: var(--glass-blur);
+        .btn:active { transform: scale(0.98); }
+
+        .btn-primary {
+            background: var(--blue-dark);
+            color: #ffffff;
+            letter-spacing: -0.01em;
+            box-shadow: 0 2px 8px rgba(0, 113, 227, 0.35);
+        }
+
+        .btn-primary:hover {
+            background: #0077f0;
+            box-shadow: 0 4px 16px rgba(0, 113, 227, 0.45);
+        }
+
+        .btn-ghost {
+            background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 48px;
-            width: 100%;
-            max-width: 440px;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            animation: float 6s ease-in-out infinite;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
         }
 
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
+        .btn-ghost:hover { background: var(--surface-hover); }
 
-            50% {
-                transform: translateY(-10px);
-            }
-
-            100% {
-                transform: translateY(0px);
-            }
-        }
-
-        .logo-icon {
-            font-size: 48px;
-            margin-bottom: 24px;
-            display: inline-block;
-            text-shadow: var(--glow-accent);
-        }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.02em;
-        }
-
-        p {
-            color: var(--text-secondary);
-            font-size: 15px;
-            margin-bottom: 40px;
-            line-height: 1.5;
-        }
-
-        .btn-google {
+        /* ─── Divider ─── */
+        .divider {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 12px;
-            width: 100%;
-            background-color: #fff;
-            color: #000;
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider-text {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        /* ─── Google Button ─── */
+        .btn-google {
+            background: rgba(255, 255, 255, 0.93);
+            color: #1d1d1f;
+            font-weight: 500;
             border: none;
-            padding: 14px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
         }
 
         .btn-google:hover {
-            background-color: #f1f5f9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         }
 
-        .google-icon {
+        .google-logo {
             width: 20px;
             height: 20px;
+            flex-shrink: 0;
         }
 
-        .footer {
-            margin-top: 32px;
-            font-size: 12px;
+        /* ─── Toggle Link ─── */
+        .toggle-auth {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
             color: var(--text-secondary);
         }
+
+        .toggle-auth button {
+            background: none;
+            border: none;
+            color: var(--blue);
+            font-size: 13px;
+            font-family: var(--font);
+            cursor: pointer;
+            font-weight: 500;
+            padding: 0;
+            margin-left: 4px;
+            transition: opacity 0.15s;
+        }
+
+        .toggle-auth button:hover { opacity: 0.75; }
+
+        /* ─── Footer ─── */
+        .footer {
+            text-align: center;
+            margin-top: 28px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            letter-spacing: 0.02em;
+        }
+
+        /* ─── Error Message ─── */
+        .error-msg {
+            background: rgba(255, 69, 58, 0.12);
+            border: 1px solid rgba(255, 69, 58, 0.25);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #ff6b6b;
+            text-align: center;
+            display: none;
+            margin-top: 12px;
+            animation: shake 0.3s ease;
+        }
+        .error-msg.visible { display: block; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25%       { transform: translateX(-6px); }
+            75%       { transform: translateX(6px); }
+        }
+
+        /* ─── Loading Spinner on button ─── */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+        .loading .spinner { display: inline-block; }
+        .loading .btn-label { display: none; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 
 <body>
 
-    <div class="login-card">
-        <div class="logo-icon">⚡</div>
-        <h1>Outreach CRM</h1>
-        <p>Your AI-powered lead generation and management engine. Please sign in to access your dashboard.</p>
-
-        <div class="auth-form" style="margin-bottom: 24px; text-align: left;">
-            <input type="email" id="email" placeholder="Email Address" style="width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.4); color: white; outline: none; font-size: 14px;">
-            <input type="password" id="password" placeholder="Password" style="width: 100%; padding: 14px; margin-bottom: 16px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.4); color: white; outline: none; font-size: 14px;">
-            <div style="display: flex; gap: 12px;">
-                <button onclick="doEmailLogin()" style="flex: 1; padding: 14px; border-radius: 8px; border: none; background: var(--accent); color: #000; font-weight: 600; cursor: pointer; transition: all 0.2s;">Sign In</button>
-                <button onclick="doEmailSignup()" style="flex: 1; padding: 14px; border-radius: 8px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font-weight: 600; cursor: pointer; transition: all 0.2s;">Sign Up</button>
-            </div>
-        </div>
-
-        <div style="margin: 24px 0; display: flex; align-items: center; justify-content: center; gap: 16px;">
-            <div style="flex: 1; height: 1px; background: var(--border);"></div>
-            <span style="color: var(--text-secondary); font-size: 13px;">OR</span>
-            <div style="flex: 1; height: 1px; background: var(--border);"></div>
-        </div>
-
-        <button class="btn-google" onclick="login()">
-            <svg class="google-icon" viewBox="0 0 24 24">
-                <path fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                <path fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                <path fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-            </svg>
-            Sign in with Google
-        </button>
-
+    <!-- Ambient Background -->
+    <div class="bg-canvas" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
     </div>
+
+    <!-- Login Card -->
+    <main class="page">
+        <div class="card" role="main">
+
+            <div class="app-icon" aria-hidden="true">⚡</div>
+
+            <h1 class="card-title" id="form-title">Sign In</h1>
+            <p class="card-subtitle" id="form-subtitle">to continue to Outreach CRM</p>
+
+            <div class="field-group">
+                <label class="field-label" for="email">Email</label>
+                <input
+                    class="field-input"
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="name@company.com"
+                    autocomplete="email"
+                    autocapitalize="none"
+                    spellcheck="false"
+                >
+            </div>
+
+            <div class="field-group">
+                <label class="field-label" for="password">Password</label>
+                <input
+                    class="field-input"
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="••••••••"
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <div id="error-msg" class="error-msg" role="alert"></div>
+
+            <div class="actions">
+                <button id="btn-email" class="btn btn-primary" onclick="handleEmailAuth()">
+                    <span class="spinner"></span>
+                    <span class="btn-label" id="email-btn-label">Sign In</span>
+                </button>
+            </div>
+
+            <div class="divider">
+                <div class="divider-line"></div>
+                <span class="divider-text">or</span>
+                <div class="divider-line"></div>
+            </div>
+
+            <button class="btn btn-google" onclick="handleGoogleLogin()">
+                <svg class="google-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
+            </button>
+
+            <div class="toggle-auth">
+                <span id="toggle-label">New here?</span>
+                <button id="toggle-btn" onclick="toggleMode()">Create account</button>
+            </div>
+
+            <div class="footer">
+                Outreach CRM &nbsp;·&nbsp; Powered by AI
+            </div>
+
+        </div>
+    </main>
 
     <script type="module">
         import { initAuth, login, loginWithEmail, signupWithEmail } from './js/auth.js?v=6';
 
-        // Expose to window for the button onclick
+        let isSignup = false;
+
+        // Expose globals
         window.login = login;
-        window.doEmailLogin = () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            if(!email || !password) return alert("Please enter email and password");
-            loginWithEmail(email, password);
-        };
-        window.doEmailSignup = () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            if(!email || !password) return alert("Please enter email and password");
-            signupWithEmail(email, password);
+        window.handleGoogleLogin = login;
+
+        window.toggleMode = () => {
+            isSignup = !isSignup;
+            document.getElementById('form-title').textContent = isSignup ? 'Create Account' : 'Sign In';
+            document.getElementById('form-subtitle').textContent = isSignup ? 'Join Outreach CRM' : 'to continue to Outreach CRM';
+            document.getElementById('email-btn-label').textContent = isSignup ? 'Create Account' : 'Sign In';
+            document.getElementById('toggle-label').textContent = isSignup ? 'Already have an account?' : 'New here?';
+            document.getElementById('toggle-btn').textContent = isSignup ? 'Sign in' : 'Create account';
+            showError('');
         };
 
-        // Initialize auth listener (false = do not enforce login, just listen for redirect)
+        window.handleEmailAuth = async () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('btn-email');
+
+            if (!email || !password) {
+                showError('Please enter your email and password.');
+                return;
+            }
+            if (password.length < 6) {
+                showError('Password must be at least 6 characters.');
+                return;
+            }
+
+            btn.classList.add('loading');
+            showError('');
+
+            try {
+                if (isSignup) {
+                    await signupWithEmail(email, password);
+                } else {
+                    await loginWithEmail(email, password);
+                }
+            } catch (err) {
+                btn.classList.remove('loading');
+                let msg = 'Something went wrong. Please try again.';
+                if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+                    msg = 'Incorrect email or password.';
+                } else if (err.code === 'auth/email-already-in-use') {
+                    msg = 'This email is already in use. Try signing in.';
+                } else if (err.code === 'auth/invalid-email') {
+                    msg = 'Please enter a valid email address.';
+                } else if (err.code === 'auth/too-many-requests') {
+                    msg = 'Too many attempts. Please wait a moment.';
+                }
+                showError(msg);
+            }
+        };
+
+        function showError(msg) {
+            const el = document.getElementById('error-msg');
+            el.textContent = msg;
+            el.classList.toggle('visible', !!msg);
+        }
+
+        // Allow Enter key
+        document.getElementById('password').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') window.handleEmailAuth();
+        });
+        document.getElementById('email').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('password').focus();
+        });
+
+        // Initialize auth listener (false = don't enforce on login page)
         initAuth(false);
     </script>
-</body>
 
+</body>
 </html>

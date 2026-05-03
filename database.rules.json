@@ -1,0 +1,20 @@
+{
+  "rules": {
+    "leads": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.token.email.replace('.', ',')).child('role').val() === 'admin'"
+    },
+    "settings": {
+      "global": {
+        ".read": "auth != null && root.child('users').child(auth.token.email.replace('.', ',')).child('role').val() === 'admin'",
+        ".write": "auth != null && root.child('users').child(auth.token.email.replace('.', ',')).child('role').val() === 'admin'"
+      }
+    },
+    "users": {
+      ".read": "auth != null",
+      "$user_id": {
+        ".write": "auth != null && root.child('users').child(auth.token.email.replace('.', ',')).child('role').val() === 'admin'"
+      }
+    }
+  }
+}
