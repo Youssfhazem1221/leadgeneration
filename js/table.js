@@ -1,5 +1,5 @@
 import { DataStore } from './datastore.js?v=7';
-import { showToast, openDrawer, addActivity } from './ui.js?v=7';
+import { showToast, openDrawer, addActivity, showModal } from './ui.js?v=7';
 
 let currentSortCol = '';
 let sortAsc = true;
@@ -87,9 +87,10 @@ export function renderTable() {
     if (countEl) countEl.innerText = `Total: ${leads.length} Leads`;
 }
 
-export function deleteLead(id) {
-    if(confirm("Delete this lead?")) {
-        DataStore.deleteLead(id);
+export async function deleteLead(id) {
+    const ok = await showModal("Delete Lead", "Are you sure you want to delete this lead? This action cannot be undone.", { type: 'confirm', danger: true });
+    if(ok) {
+        await DataStore.deleteLead(id);
         showToast("Lead deleted");
     }
 }

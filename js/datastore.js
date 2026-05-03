@@ -21,7 +21,7 @@ export const DataStore = {
             await set(ref(database, `leads/${lead.id}`), lead);
         } catch (e) {
             console.error("Error saving lead: ", e);
-            alert("Error saving data. Check console.");
+            throw e;
         }
     },
     
@@ -30,6 +30,16 @@ export const DataStore = {
             await remove(ref(database, `leads/${id}`));
         } catch (e) {
             console.error("Error deleting lead: ", e);
+            throw e;
+        }
+    },
+
+    clearLeads: async () => {
+        try {
+            await remove(ref(database, 'leads'));
+        } catch (e) {
+            console.error("Error clearing leads: ", e);
+            throw e;
         }
     },
     
@@ -38,6 +48,7 @@ export const DataStore = {
             await set(ref(database, 'settings/global'), settings);
         } catch (e) {
             console.error("Error saving settings: ", e);
+            throw e;
         }
     },
 
@@ -51,7 +62,7 @@ export const DataStore = {
             });
         } catch (e) {
             console.error("Error saving user: ", e);
-            alert("Error saving user permissions.");
+            throw e;
         }
     },
 

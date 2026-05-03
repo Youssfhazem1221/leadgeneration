@@ -1,5 +1,6 @@
-import { auth, provider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from './firebase-config.js?v=6';
-import { DataStore } from './datastore.js?v=6';
+import { auth, provider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from './firebase-config.js?v=7';
+import { DataStore } from './datastore.js?v=7';
+import { showModal } from './ui.js?v=7';
 
 // The Root Admin is guaranteed access and will be automatically created in the database
 const AUTHORIZED_ADMINS = ["youssf.hazem1221@gmail.com", "youssfhazem1221@gmail.com", "mohamedelhawary8@gmail.com"];
@@ -20,7 +21,7 @@ async function handleAuthStatus(user, requireLogin = false) {
         }
 
         if (!role) {
-            alert(`Access Denied. Your email (${user.email}) is not authorized. Ask an Admin to invite you.`);
+            await showModal("Access Denied", `Your email (${user.email}) is not authorized. Ask an Admin to invite you.`);
             logout();
             return;
         }
@@ -78,11 +79,13 @@ function applyRoleRestrictions(role) {
     }
 }
 
-function login() {
-    signInWithPopup(auth, provider).catch((error) => {
+async function login() {
+    try {
+        await signInWithPopup(auth, provider);
+    } catch (error) {
         console.error("Error signing in", error);
-        alert("Sign in failed: " + error.message);
-    });
+        await showModal("Sign In Failed", error.message);
+    }
 }
 
 function logout() {

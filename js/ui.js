@@ -220,8 +220,51 @@ export async function inviteUser() {
 }
 
 export async function removeUserAccess(email) {
-    if(confirm(`Revoke access for ${email}? They will be immediately locked out.`)) {
+    const ok = await showModal("Revoke Access", `Revoke access for ${email}? They will be immediately locked out.`, { type: 'confirm', danger: true });
+    if(ok) {
         await DataStore.deleteUser(email);
         showToast("User access revoked");
     }
+}
+
+// --- Apple Modal System ---
+export function showModal(title, message, options = {}) {
+    const { type = 'alert', confirmText = 'OK', cancelText = 'Cancel', danger = false } = options;
+    
+    return new Promise((resolve) => {
+        const modalId = 'apple-modal';
+        let modal = document.getElementById(modalId);
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = modalId;
+            modal.className = 'modal-backdrop hidden';
+            document.body.appendChild(modal);
+        }
+
+        modal.innerHTML = `
+            <div class="modal-window">
+                <div class="modal-content">
+                    <h2 class="modal-title">${title}</h2>
+                    <p class="modal-message">${message}</p>
+                </div>
+                <div class="modal-actions">
+                    ${type === 'confirm' ? `<button class="btn-modal-cancel">${cancelText}</button>` : ''}
+                    <button class="btn-modal-confirm ${danger ? 'danger' : ''}">${confirmText}</button>
+                </div>
+            </div>
+        `;
+
+        const confirmBtn = modal.querySelector('.btn-modal-confirm');
+        const cancelBtn = modal.querySelector('.btn-modal-cancel');
+
+        const close = (val) => {
+            modal.classList.add('hidden');
+            resolve(val);
+        };
+
+        confirmBtn.onclick = () => close(true);
+        if (cancelBtn) cancelBtn.onclick = () => close(false);
+
+        modal.classList.remove('hidden');
+    });
 }
