@@ -486,16 +486,13 @@
 
             <!-- TABLE VIEW -->
             <div id="view-table" class="hidden view-pane">
-                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
-                    <!-- Search Row -->
-                    <div style="position: relative;">
-                        <input type="text" id="filter-search" placeholder="Search leads by name or phone…" oninput="renderTable()" style="width: 100%; padding: 12px 16px 12px 40px; background: rgba(255,255,255,0.05); border: 1px solid var(--apple-border); border-radius: 12px; color: white; font-size: 14px; outline: none; transition: border-color 0.2s;">
-                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 15px; opacity: 0.5; pointer-events: none;">🔍</span>
-                    </div>
-                    <!-- Filters + Actions Row -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-                            <select id="filter-status" onchange="renderTable()" style="padding: 8px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--apple-border); border-radius: 10px; color: white; font-size: 13px; cursor: pointer;">
+                <!-- Apple-style Unified Toolbar -->
+                <div class="table-toolbar" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 14px; border: 1px solid var(--apple-border); backdrop-filter: blur(10px);">
+                    
+                    <!-- Left: Grouped Filters -->
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="display: flex; background: rgba(255,255,255,0.05); border-radius: 10px; padding: 2px; border: 1px solid var(--apple-border);">
+                            <select id="filter-status" onchange="renderTable()" style="background: transparent; border: none; padding: 6px 10px; color: white; font-size: 13px; cursor: pointer; outline: none; border-right: 1px solid var(--apple-border);">
                                 <option value="All">All Statuses</option>
                                 <option value="New">New</option>
                                 <option value="Contacted">Contacted</option>
@@ -504,7 +501,7 @@
                                 <option value="Closed">Closed</option>
                                 <option value="Not Interested">Not Interested</option>
                             </select>
-                            <select id="filter-source" onchange="renderTable()" style="padding: 8px 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--apple-border); border-radius: 10px; color: white; font-size: 13px; cursor: pointer;">
+                            <select id="filter-source" onchange="renderTable()" style="background: transparent; border: none; padding: 6px 10px; color: white; font-size: 13px; cursor: pointer; outline: none;">
                                 <option value="All">All Sources</option>
                                 <option value="places">Real</option>
                                 <option value="csv_import">Imported</option>
@@ -512,13 +509,27 @@
                                 <option value="google_maps">Maps Scraper</option>
                                 <option value="yelp">Yelp Scraper</option>
                             </select>
-                            <span id="table-count" style="font-size: 12px; color: var(--apple-secondary); white-space: nowrap;"></span>
                         </div>
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button onclick="syncAllToSheets()" style="padding: 8px 14px; background: rgba(255,255,255,0.06); border: 1px solid var(--apple-border); border-radius: 10px; color: white; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;">↑ Sync Sheets</button>
+                    </div>
+
+                    <!-- Center: Search Bar (Integrated) -->
+                    <div style="flex: 1; max-width: 400px; position: relative;">
+                        <input type="text" id="filter-search" placeholder="Search name or phone…" oninput="renderTable()" style="width: 100%; padding: 8px 12px 8px 34px; background: rgba(255,255,255,0.05); border: 1px solid var(--apple-border); border-radius: 10px; color: white; font-size: 13px; outline: none; transition: all 0.2s;" onfocus="this.style.background='rgba(255,255,255,0.08)'; this.style.borderColor='var(--apple-blue)'" onblur="this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='var(--apple-border)'">
+                        <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: 0.4; pointer-events: none;">🔍</span>
+                    </div>
+
+                    <!-- Right: Actions & Info -->
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span id="table-count" style="font-size: 12px; color: var(--apple-secondary); font-weight: 500; letter-spacing: -0.01em;"></span>
+                        <div style="width: 1px; height: 16px; background: var(--apple-border);"></div>
+                        <div style="display: flex; gap: 6px;">
+                            <button onclick="syncAllToSheets()" class="btn-toolbar-icon" title="Sync to Sheets" style="background: rgba(255,255,255,0.05); border: 1px solid var(--apple-border); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 14px;">↑</button>
                             <input type="file" id="csv-import-input" style="display:none;" accept=".csv" onchange="handleFileSelect(event)">
-                            <button onclick="document.getElementById('csv-import-input').click()" style="padding: 8px 14px; background: rgba(255,255,255,0.06); border: 1px solid var(--apple-border); border-radius: 10px; color: white; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;">⤓ Import CSV</button>
-                            <button onclick="exportCSV()" style="padding: 8px 14px; background: var(--apple-blue); border: none; border-radius: 10px; color: white; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">↓ Export CSV</button>
+                            <button onclick="document.getElementById('csv-import-input').click()" class="btn-toolbar-icon" title="Import CSV" style="background: rgba(255,255,255,0.05); border: 1px solid var(--apple-border); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 14px;">⤓</button>
+                            <button onclick="exportCSV()" style="background: var(--apple-blue); border: none; border-radius: 8px; padding: 0 14px; height: 32px; color: white; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                                <span>Export</span>
+                                <span style="opacity: 0.8;">↓</span>
+                            </button>
                         </div>
                     </div>
                 </div>
