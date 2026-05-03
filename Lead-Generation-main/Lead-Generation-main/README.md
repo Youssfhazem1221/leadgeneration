@@ -1,0 +1,82 @@
+# Lead-Generation
+
+The updated version of my outdated dirty clumsy package (collection of scripts) for lead generation
+
+# TODO:
+
+- Add pyproject.toml, pre-commit hooks, use poetry or uv (just add musthaves)
+- Add MCP plugin?
+- Add tests (pywright, pytest)
+- Clean up the package, refactor, providy sync/async implementations
+- Implement simple automated emailing system via gmail smtp (subject and body templates), pephaps Twilio integration later, for phone numbers - something else (cold outreach), for social media (instagram, facebook) - something else too
+- Add GUI (tkinter most likely) and CLI options for running
+- Thnk of large/medium-scale lead generation (bypass blockers, api errors, auth, etc - legally and for educational/scientific purposes btw)
+- Add more lead sources (e.g., 2gis)
+- Add N&N integration (plugin)?
+
+# Installation
+
+Using pip (recommended)
+
+```bash
+pip install py-lead-generation
+```
+
+[Pypi Link](https://pypi.org/project/py-lead-generation)
+
+OR using from source code (not recommended)
+
+```bash
+git clone https://github.com/Madi-S/Lead-Generation
+cd Lead-Generation
+# Edit run.py for your needs
+python run.py
+```
+
+OR to use the previous archived version
+```bash
+git clone https://github.com/Madi-S/Lead-Generation
+cd Lead-Generation
+cd archived
+cd google-maps
+python extractor.py
+```
+
+# Quickstart
+
+```python
+import asyncio
+from py_lead_generation import GoogleMapsEngine, YelpEngine
+
+
+async def main() -> None:
+    q = input('Enter your search query: ').strip() or 'Barbershop'
+    addr = input('Enter the location you would like to search in: ').strip() \
+        or 'Paris'
+    zoom = float(input('[Optional] Enter google maps zoom: ').strip() or 12)
+
+    engine = GoogleMapsEngine(q, addr, zoom)
+    await engine.run()
+    engine.save_to_csv()
+
+    engine = YelpEngine('Pizza', 'Mexico, Pampanga, Philippines')
+    await engine.run()
+    engine.save_to_csv('pizza_leads.csv')
+
+if __name__ == '__main__':
+    asyncio.run(main())
+```
+
+# Current functionality
+
+    - Parse Google Maps
+    - Parse Yelp
+    - Export collected data to a CSV file
+
+# Expectations of this project:
+
+    - Parse Google Maps and Yelp for telephone number, email, address, and other information by given keyword
+    - Somehow parse search results in Google Search for the same information using regex or other algorithms
+    - Export all parsed data to CSV or Excel
+    - For parsed emails send a message, which will be prevented from going to spam
+    - For parsed telephone numbers send an SMS, which will be prevented from going to spam as well
