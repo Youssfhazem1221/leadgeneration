@@ -70,18 +70,23 @@
 
         /* Buttons & Inputs */
         input, select, textarea {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--apple-border);
             color: var(--apple-text);
-            padding: 10px 14px;
-            border-radius: 10px;
+            padding: 12px 16px;
+            border-radius: 12px;
             outline: none;
             transition: all 0.2s ease;
+            width: 100%;
+        }
+        select option {
+            background-color: #1c1c1e;
+            color: white;
         }
         input:focus, select:focus {
             border-color: var(--apple-blue);
-            background-color: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 3px var(--apple-blue-soft);
+            background-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 4px var(--apple-blue-soft);
         }
 
         button {
@@ -165,9 +170,24 @@
         .cards-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
 
         /* Cards */
-        .lead-card { background: var(--apple-card); border: 1px solid var(--apple-border); border-radius: 16px; padding: 18px; cursor: grab; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .lead-card:hover { transform: scale(1.02); background: var(--apple-elevated); border-color: var(--apple-border-strong); box-shadow: 0 12px 24px rgba(0,0,0,0.3); }
-        .lead-name { font-weight: 600; margin-bottom: 6px; font-size: 16px; letter-spacing: -0.01em; }
+        .lead-card { 
+            background: var(--apple-card); 
+            border: 1px solid var(--apple-border); 
+            border-radius: 18px; 
+            padding: 20px; 
+            cursor: grab; 
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            margin-bottom: 12px; /* Increased margin between cards */
+        }
+        .lead-card:hover { transform: translateY(-4px); background: var(--apple-elevated); border-color: var(--apple-border-strong); box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
+        .lead-name { font-weight: 700; margin-bottom: 8px; font-size: 16px; letter-spacing: -0.02em; line-height: 1.2; }
+        .lead-card .text-secondary { line-height: 1.4; white-space: normal; word-break: break-word; margin-bottom: 16px; }
+
+        /* Action Buttons */
+        .edit-btn:hover { background: var(--apple-blue); color: white; border-color: transparent; }
+        .delete-btn { color: var(--apple-red) !important; border: 1px solid rgba(255, 69, 58, 0.2) !important; background: rgba(255, 69, 58, 0.05) !important; }
+        .delete-btn:hover { background: var(--apple-red) !important; color: white !important; border-color: transparent !important; }
 
         /* Pills */
         .pill-source { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.03em; }

@@ -85,8 +85,8 @@ export function renderTable() {
             <td class="${overdue ? 'text-red' : ''}">${l.follow_up_date || '-'}</td>
             <td>
                 <div class="flex gap-2">
-                    <button class="btn-secondary edit-btn" data-id="${l.id}" style="padding: 6px 12px; font-size: 12px;">Edit</button>
-                    <button class="btn-secondary delete-btn" data-id="${l.id}" style="padding: 6px 12px; font-size: 12px; color: var(--apple-red); border-color: rgba(255, 69, 58, 0.2);">Delete</button>
+                    <button class="edit-btn" data-id="${l.id}" style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Edit</button>
+                    <button class="delete-btn" data-id="${l.id}" style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Delete</button>
                 </div>
             </td>
         `;
