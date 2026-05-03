@@ -231,14 +231,22 @@ export async function testGemini() {
     if(!key) return resEl.innerHTML = '<span class="text-red">Missing Key</span>';
     resEl.innerText = "Testing...";
     
+    let lastError = "All models failed";
     const tryModel = async (model, version='v1') => {
         try {
             const res = await fetch(`https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent?key=${key}`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: "Hi" }] }] })
             });
-            return res.ok;
-        } catch(e) { return false; }
+            if (res.ok) return true;
+            const errData = await res.json();
+            lastError = errData.error?.message || `HTTP ${res.status}`;
+            console.error(`Gemini Test (${model}):`, lastError);
+            return false;
+        } catch(e) { 
+            lastError = e.message;
+            return false; 
+        }
     };
 
     if (await tryModel('gemini-1.5-flash', 'v1')) {
@@ -247,8 +255,10 @@ export async function testGemini() {
         resEl.innerHTML = '<span class="text-accent">✓ Success (1.5 Beta)</span>';
     } else if (await tryModel('gemini-pro', 'v1')) {
         resEl.innerHTML = '<span class="text-accent">✓ Success (Gemini Pro)</span>';
+    } else if (await tryModel('gemini-1.0-pro', 'v1')) {
+        resEl.innerHTML = '<span class="text-accent">✓ Success (1.0 Pro)</span>';
     } else {
-        resEl.innerHTML = '<span class="text-red">✗ Failed: Model not found or Key invalid</span>';
+        resEl.innerHTML = `<span class="text-red">✗ Failed: ${lastError}</span>`;
     }
 }
 
