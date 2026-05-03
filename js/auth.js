@@ -2,7 +2,7 @@ import { auth, provider, signInWithPopup, signOut, onAuthStateChanged } from './
 import { DataStore } from './datastore.js?v=2';
 
 // The Root Admin is guaranteed access and will be automatically created in the database
-const ROOT_ADMIN = "youssfhazem1221@gmail.com";
+const ROOT_ADMIN = "youssf.hazem1221@gmail.com";
 
 let currentUserRole = null;
 
