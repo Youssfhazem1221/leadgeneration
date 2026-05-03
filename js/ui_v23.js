@@ -259,9 +259,7 @@ export async function testGemini() {
     };
 
     const modelsToTry = [
-        {m:'gemini-2.5-flash', v:'v1beta'},
-        {m:'gemini-2.0-flash', v:'v1'},
-        {m:'gemini-1.5-flash', v:'v1'}
+        {m:'gemini-2.5-flash', v:'v1beta'}
     ];
 
     for (const item of modelsToTry) {
