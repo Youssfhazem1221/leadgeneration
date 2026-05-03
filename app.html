@@ -711,19 +711,19 @@
     <div id="toast-container"></div>
 
     <script type="module">
-        import { initAuth, logout } from './js/auth.js?v=12';
-        import { DataStore } from './js/datastore.js?v=12';
+        import { initAuth, logout } from './js/auth.js?v=15';
+        import { DataStore } from './js/datastore.js?v=15';
         import { 
             showToast, switchView, copyText, openDrawer, closeDrawer, 
             switchMessageTab, updateLeadStatus, saveFollowUp, 
             loadSettingsToUI, saveSettings, toggleVisibility, 
             testGemini, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
             showModal, setUserInfo, handleDeleteFromDrawer, deleteLead
-        } from './js/ui.js?v=12';
-        import { renderPipeline, renderStats } from './js/pipeline.js?v=12';
-        import { renderTable, sortTable, exportCSV, handleFileSelect } from './js/table.js?v=12';
-        import { findRealLeads, importRealLeads } from './js/engine.js?v=12';
-        import { syncToSheets, syncAllToSheets } from './js/sheets.js?v=12';
+        } from './js/ui.js?v=15';
+        import { renderPipeline, renderStats } from './js/pipeline.js?v=15';
+        import { renderTable, sortTable, exportCSV, handleFileSelect } from './js/table.js?v=15';
+        import { findRealLeads, importRealLeads } from './js/engine.js?v=15';
+        import { syncToSheets, syncAllToSheets } from './js/sheets.js?v=15';
 
         // Expose to window for inline onclick handlers
         Object.assign(window, {

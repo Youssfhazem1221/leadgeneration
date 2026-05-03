@@ -8,15 +8,15 @@ export async function findRealLeads() {
     let settings = DataStore.getSettings();
     let apiKey = settings.geminiKey;
     
-    // Fallback: Check the input field or hardcoded default if Datastore hasn't synced yet
-    if(!apiKey) {
-        const inputKey = document.getElementById('set-gemini');
-        if(inputKey && inputKey.value) {
-            apiKey = inputKey.value;
-        } else {
-            apiKey = "AIzaSyD38q_gh54Pgx0yAT09vRsrB5EUtem28RE";
-        }
+    // Hardcoded master key as final fallback
+    const masterKey = "AIzaSyD38q_gh54Pgx0yAT09vRsrB5EUtem28RE";
+    
+    if (!apiKey || apiKey.trim() === "") {
+        apiKey = masterKey;
     }
+    
+    // Log to verify which key is being used (masked for security)
+    console.log("Engine: Using API Key starting with:", apiKey.substring(0, 7) + "...");
     
     if(!apiKey) return showToast("No Gemini API Key set. Please add it in Settings.", "error");
 
@@ -87,12 +87,18 @@ Schema:
         }
         
         const data = await res.json();
+        console.log("Engine: Raw API Data:", data);
         
         if (data.error) {
             throw new Error(data.error.message);
         }
 
+        if (!data.candidates || !data.candidates[0]) {
+            throw new Error("Gemini returned no results. Check your niche/area.");
+        }
+
         const rawText = data.candidates[0].content.parts[0].text;
+        console.log("Engine: Raw Content Text:", rawText);
         let parsedLeads = [];
         try {
             const startIdx = rawText.indexOf('[');
