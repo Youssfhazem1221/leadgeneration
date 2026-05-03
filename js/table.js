@@ -94,7 +94,10 @@ export function renderTable() {
     });
 
     document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', () => openDrawer(btn.dataset.id));
+        btn.addEventListener('click', (e) => {
+            console.log("Table: Edit button clicked for ID:", btn.dataset.id);
+            openDrawer(btn.dataset.id);
+        });
     });
 
     document.querySelectorAll('.delete-btn').forEach(btn => {

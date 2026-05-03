@@ -850,6 +850,18 @@
             addComment
         });
 
+        window.onerror = function(msg, url, line, col, error) {
+            const txt = `Error: ${msg}\nLine: ${line}`;
+            console.error(txt, error);
+            if (typeof showToast === 'function') showToast(txt, "error");
+            return false;
+        };
+        window.onunhandledrejection = function(event) {
+            const txt = `Promise Error: ${event.reason}`;
+            console.error(txt);
+            if (typeof showToast === 'function') showToast(txt, "error");
+        };
+
         async function clearAllData() {
             const ok = await showModal("Danger Zone", "This will permanently delete ALL leads from the database. Are you absolutely sure?", { type: 'confirm', danger: true, confirmText: 'Delete All' });
             if(ok) {

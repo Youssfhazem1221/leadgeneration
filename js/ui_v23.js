@@ -90,10 +90,18 @@ export function copyText(txt) {
 let currentLeadId = null;
 
 export function openDrawer(id) {
-    const lead = DataStore.getLeads().find(l => l.id === id);
-    if (!lead) return;
+    console.log("UI: openDrawer triggered for ID:", id);
+    const leads = DataStore.getLeads();
+    const lead = leads.find(l => l.id === id);
+    
+    if (!lead) {
+        console.error("UI: Lead not found in local DataStore for ID:", id, "Total leads in store:", leads.length);
+        showToast("Error: Lead data not found. Try refreshing.", "error");
+        return;
+    }
+    
     currentLeadId = id;
-    window.currentLeadId = id; // Sync with global if needed
+    window.currentLeadId = id; 
 
     document.getElementById('drawer-name').innerText = lead.name;
     document.getElementById('drawer-phone').innerText = lead.phone;
