@@ -211,12 +211,15 @@ export function saveNewLead(l) {
         return false; 
     }
 
+    const activeNiche = DataStore.getSettings().activeNiche || 'Clinics';
+
     const lead = {
         id: crypto.randomUUID(),
         name: l.name,
         phone: l.phone,
         area: l.area || l.address,
         pain: l.pain,
+        niche: activeNiche,
         channel: l.channel,
         en_message: l.en_message,
         ar_message: l.ar_message,

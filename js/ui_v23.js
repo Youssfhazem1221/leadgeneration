@@ -107,6 +107,7 @@ export function openDrawer(id) {
     document.getElementById('drawer-phone').innerText = lead.phone;
     document.getElementById('drawer-area').innerText = lead.area || 'Not specified';
     document.getElementById('drawer-status').value = lead.status;
+    document.getElementById('drawer-niche').value = lead.niche || 'Clinics';
     document.getElementById('drawer-follow-date').value = lead.follow_up_date || '';
     
     renderComments(lead);
@@ -248,6 +249,25 @@ export function updateLeadStatus() {
     if(!currentLeadId) return;
     const newStatus = document.getElementById('drawer-status').value;
     const lead = DataStore.getLeads().find(l => l.id === currentLeadId);
+    if(lead.status === newStatus) return;
+    addActivity(lead, `Status changed from ${lead.status} to ${newStatus}`);
+    lead.status = newStatus;
+    DataStore.saveLead(lead);
+    if (typeof window.refreshUI === 'function') window.refreshUI();
+    showToast("Status updated");
+}
+
+export function updateLeadNiche() {
+    if(!currentLeadId) return;
+    const newNiche = document.getElementById('drawer-niche').value;
+    const lead = DataStore.getLeads().find(l => l.id === currentLeadId);
+    if(lead.niche === newNiche) return;
+    addActivity(lead, `Niche changed from ${lead.niche || 'Clinics'} to ${newNiche}`);
+    lead.niche = newNiche;
+    DataStore.saveLead(lead);
+    if (typeof window.refreshUI === 'function') window.refreshUI();
+    showToast("Niche updated");
+}
     if(lead && lead.status !== newStatus) {
         const old = lead.status;
         lead.status = newStatus;
@@ -290,11 +310,81 @@ export function loadSettingsToUI() {
     if (agencyEl) agencyEl.value = s.agency || '';
     if (nicheEl) nicheEl.value = s.niche || '';
     if (realNicheEl && s.niche) realNicheEl.value = s.niche;
+
+    // Active Niche Switcher
+    const nicheSwitcher = document.getElementById('active-niche-switcher');
+    if (nicheSwitcher) nicheSwitcher.value = s.activeNiche || 'Clinics';
+
+    // Render Offer Types in Settings
+    renderOfferTypes();
+    // Update Engine Offer dropdown
+    updateEngineOfferDropdown();
+}
+
+export function renderOfferTypes() {
+    const s = DataStore.getSettings();
+    const container = document.getElementById('offer-types-list');
+    if (!container) return;
+    
+    container.innerHTML = (s.offerTypes || []).map(offer => `
+        <div style="background: rgba(255,255,255,0.08); border: 1px solid var(--apple-border); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+            <span>${offer}</span>
+            <button onclick="deleteOfferType('${offer}')" style="background: none; border: none; color: var(--apple-red); cursor: pointer; padding: 0 2px; font-weight: 700;">✕</button>
+        </div>
+    `).join('');
+}
+
+export function updateEngineOfferDropdown() {
+    const s = DataStore.getSettings();
+    const dropdown = document.getElementById('real-offer');
+    if (!dropdown) return;
+    const currentVal = dropdown.value;
+    dropdown.innerHTML = (s.offerTypes || []).map(offer => `
+        <option value="${offer}">${offer}</option>
+    `).join('');
+    if (s.offerTypes.includes(currentVal)) dropdown.value = currentVal;
+}
+
+export async function addOfferType() {
+    const input = document.getElementById('new-offer-type');
+    const val = input.value.trim();
+    if (!val) return;
+    
+    const s = DataStore.getSettings();
+    if (!s.offerTypes) s.offerTypes = [];
+    if (s.offerTypes.includes(val)) return showToast("Offer type already exists", "warning");
+    
+    s.offerTypes.push(val);
+    await DataStore.saveSettings(s);
+    input.value = '';
+    renderOfferTypes();
+    updateEngineOfferDropdown();
+    showToast("Offer type added");
+}
+
+export async function deleteOfferType(offer) {
+    const s = DataStore.getSettings();
+    s.offerTypes = (s.offerTypes || []).filter(o => o !== offer);
+    await DataStore.saveSettings(s);
+    renderOfferTypes();
+    updateEngineOfferDropdown();
+}
+
+export async function updateActiveNiche(niche) {
+    console.log("UI: Updating active niche context to:", niche);
+    const s = DataStore.getSettings();
+    s.activeNiche = niche;
+    await DataStore.saveSettings(s);
+    showToast(`Context switched to ${niche}`);
+    
+    // Refresh table and pipeline to filter by niche (if we implement niche filtering)
+    if (typeof window.refreshUI === 'function') window.refreshUI();
 }
 
 export async function saveSettings() {
     console.log("UI: saveSettings triggered");
     const s = {
+        ...DataStore.getSettings(),
         geminiKey: document.getElementById('set-gemini').value.trim(),
         groqKey: document.getElementById('set-groq').value.trim(),
         webhookUrl: document.getElementById('set-webhook').value.trim(),
@@ -486,4 +576,65 @@ export function showModal(title, message, options = {}) {
 
         modal.classList.remove('hidden');
     });
+}
+// --- Mass Selection Logic ---
+export function toggleSelectAll(checked) {
+    const checkboxes = document.querySelectorAll('.lead-checkbox');
+    checkboxes.forEach(cb => cb.checked = checked);
+    updateSelectedCount();
+}
+
+export function updateSelectedCount() {
+    const selected = document.querySelectorAll('.lead-checkbox:checked');
+    const count = selected.length;
+    const toolbar = document.getElementById('mass-action-toolbar');
+    const countEl = document.getElementById('selected-count');
+    
+    if (count > 0) {
+        countEl.textContent = count;
+        toolbar.classList.remove('hidden');
+        // Force reflow for animation
+        setTimeout(() => {
+            toolbar.style.opacity = '1';
+            toolbar.style.pointerEvents = 'all';
+            toolbar.style.transform = 'translateX(-50%) translateY(0)';
+        }, 10);
+    } else {
+        toolbar.style.opacity = '0';
+        toolbar.style.pointerEvents = 'none';
+        toolbar.style.transform = 'translateX(-50%) translateY(20px)';
+        setTimeout(() => toolbar.classList.add('hidden'), 300);
+    }
+}
+
+export function clearSelection() {
+    const selectAll = document.getElementById('select-all-leads');
+    if (selectAll) selectAll.checked = false;
+    toggleSelectAll(false);
+}
+
+export async function applyMassNiche() {
+    const targetNiche = document.getElementById('mass-niche-select').value;
+    const selectedCheckboxes = document.querySelectorAll('.lead-checkbox:checked');
+    const ids = Array.from(selectedCheckboxes).map(cb => cb.dataset.id);
+    
+    if (ids.length === 0) return;
+    
+    const ok = await showModal("Mass Update", `Move ${ids.length} leads to ${targetNiche}?`, { type: 'confirm' });
+    if (!ok) return;
+    
+    showToast(`Updating ${ids.length} leads...`);
+    
+    const leads = DataStore.getLeads();
+    for (const id of ids) {
+        const lead = leads.find(l => l.id === id);
+        if (lead) {
+            lead.niche = targetNiche;
+            await DataStore.saveLead(lead);
+        }
+    }
+    
+    clearSelection();
+    showToast(`Moved to ${targetNiche}`);
+    if (typeof window.refreshUI === 'function') window.refreshUI();
 }

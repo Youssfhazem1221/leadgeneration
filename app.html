@@ -439,6 +439,19 @@
                 <div style="font-size:11px;color:var(--apple-secondary);font-weight:400;">AI-Powered Sales</div>
             </div>
         </div>
+        
+        <!-- Niche Context Switcher -->
+        <div style="margin: 8px 16px 24px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid var(--apple-border);">
+            <div style="font-size: 10px; font-weight: 700; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 12px;">🎯</span> Active Context
+            </div>
+            <select id="active-niche-switcher" onchange="updateActiveNiche(this.value)" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--apple-border); color: white; font-size: 13px; padding: 8px; border-radius: 10px; cursor: pointer; outline: none; transition: border-color 0.2s;">
+                <option value="Clinics">Clinics</option>
+                <option value="Real Estate">Real Estate</option>
+                <option value="E-commerce">E-commerce</option>
+            </select>
+        </div>
+
         <div class="nav-item active" onclick="switchView('pipeline')" id="nav-pipeline">
             <div class="nav-icon">▤</div> Pipeline
         </div>
@@ -537,6 +550,7 @@
                     <table>
                         <thead>
                             <tr>
+                                <th style="width: 40px; text-align: center;"><input type="checkbox" id="select-all-leads" onclick="toggleSelectAll(this.checked)"></th>
                                 <th onclick="sortTable('name')">Name ↕</th>
                                 <th>Phone</th>
                                 <th>Area</th>
@@ -719,6 +733,20 @@
                         </div>
                     </div>
 
+                    <!-- Section: Offers Management -->
+                    <div>
+                        <div style="font-size: 11px; font-weight: 600; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; margin-left: 4px;">Offer Types (Offer Type Dropdown)</div>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--apple-border); border-radius: 14px; padding: 16px;">
+                            <div id="offer-types-list" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+                                <!-- Dynamic tags -->
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="new-offer-type" placeholder="Add new offer (e.g. SEO Audit)" style="flex: 1; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--apple-border); padding: 10px 14px; font-size: 13px; color: white;">
+                                <button class="btn-toolbar primary" onclick="addOfferType()" style="height: 40px; padding: 0 16px;">Add</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Actions -->
                     <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px;">
                         <button class="btn-primary" onclick="saveSettings()" style="padding: 12px 24px; font-size: 14px; font-weight: 600;">Save All Settings</button>
@@ -826,6 +854,14 @@
                         <span class="text-secondary text-sm">Location</span>
                         <span id="drawer-area" class="font-semibold text-sm" style="max-width: 200px; text-align: right;"></span>
                     </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-secondary text-sm">Niche</span>
+                        <select id="drawer-niche" onchange="updateLeadNiche()" style="width: 150px; font-size: 13px;">
+                            <option value="Clinics">Clinics</option>
+                            <option value="Real Estate">Real Estate</option>
+                            <option value="E-commerce">E-commerce</option>
+                        </select>
+                    </div>
                     <div class="flex justify-between items-center hidden" id="drawer-rating-row">
                         <span class="text-secondary text-sm">Rating</span>
                         <div class="flex items-center gap-2">
@@ -887,6 +923,22 @@
         </div>
     </div>
 
+    <!-- Mass Action Toolbar -->
+    <div id="mass-action-toolbar" class="hidden" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--apple-blue); color: white; padding: 12px 24px; border-radius: 20px; display: flex; align-items: center; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none;">
+        <div style="font-size: 13px; font-weight: 600;"><span id="selected-count">0</span> leads selected</div>
+        <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.2);"></div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <span style="font-size: 12px; opacity: 0.8;">Move to Niche:</span>
+            <select id="mass-niche-select" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                <option value="Clinics" style="color: black;">Clinics</option>
+                <option value="Real Estate" style="color: black;">Real Estate</option>
+                <option value="E-commerce" style="color: black;">E-commerce</option>
+            </select>
+            <button onclick="applyMassNiche()" style="background: white; color: var(--apple-blue); border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.2s;">Apply</button>
+        </div>
+        <button onclick="clearSelection()" style="background: none; border: none; color: white; font-size: 18px; cursor: pointer; padding: 0 4px; display: flex; align-items: center; justify-content: center;">✕</button>
+    </div>
+
     <!-- Toasts -->
     <div id="toast-container"></div>
 
@@ -927,7 +979,7 @@
             switchMessageTab, updateLeadStatus, saveFollowUp,
             loadSettingsToUI, saveSettings, toggleVisibility,
             testGemini, testGroq, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
-            showModal, setUserInfo, handleDeleteFromDrawer,
+            showModal, setUserInfo, handleDeleteFromDrawer, updateLeadNiche, applyMassNiche, clearSelection, toggleSelectAll, updateActiveNiche, addOfferType, deleteOfferType
             DataStore, renderPipeline, renderStats, renderTable, sortTable,
             deleteLead, exportCSV, handleFileSelect, findRealLeads, importRealLeads,
             syncToSheets, syncAllToSheets, refreshUI, clearAllData, switchEngineTab,

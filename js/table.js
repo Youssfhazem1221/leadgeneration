@@ -31,11 +31,14 @@ export function renderTable() {
     const status = statusEl.value;
     const source = sourceEl.value;
     
+    const activeNiche = DataStore.getSettings().activeNiche;
+    
     leads = leads.filter(l => {
-        const matchSearch = l.name.toLowerCase().includes(search) || l.phone.includes(search);
+        const matchSearch = l.name.toLowerCase().includes(search) || (l.phone && l.phone.includes(search));
         const matchStatus = status === 'All' || l.status === status;
         const matchSource = source === 'All' || l.source === source;
-        return matchSearch && matchStatus && matchSource;
+        const matchNiche = !activeNiche || l.niche === activeNiche;
+        return matchSearch && matchStatus && matchSource && matchNiche;
     });
 
     if(currentSortCol) {
@@ -76,7 +79,13 @@ export function renderTable() {
         const statusClass = statusClassMap[l.status] || 'status-new';
 
         tr.innerHTML = `
-            <td class="font-semibold">${l.name}</td>
+            <td style="text-align: center;"><input type="checkbox" class="lead-checkbox" data-id="${l.id}"></td>
+            <td class="font-semibold">
+                <div class="flex flex-col">
+                    <span>${l.name}</span>
+                    <span style="font-size: 10px; color: var(--apple-secondary); font-weight: 500;">${l.niche || 'Clinics'}</span>
+                </div>
+            </td>
             <td>${l.phone}</td>
             <td>${l.area || '-'}</td>
             <td><span class="pill-source ${sourceClass}">${sourceText}</span></td>
@@ -102,6 +111,12 @@ export function renderTable() {
 
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', () => deleteLead(btn.dataset.id));
+    });
+
+    document.querySelectorAll('.lead-checkbox').forEach(cb => {
+        cb.addEventListener('change', () => {
+            if (typeof window.updateSelectedCount === 'function') window.updateSelectedCount();
+        });
     });
 
     const countEl = document.getElementById('table-count');
@@ -191,11 +206,17 @@ export async function processCSV(text) {
                 else lead.status = value; 
             }
             else if (header.includes('channel')) lead.channel = value;
+            else if (header.includes('niche') || header.includes('category')) lead.niche = value;
             else if (header.includes('pain')) lead.pain = value;
             else if (header.includes('source')) lead.source = value;
             else if (header.includes('date')) lead.follow_up_date = value;
             else if (header === 'id') lead.id = value;
         });
+
+        if (!lead.niche) {
+            const activeNiche = DataStore.getSettings().activeNiche || 'Clinics';
+            lead.niche = activeNiche;
+        }
 
         if (lead.name || lead.phone) {
             newLeads.push(lead);
