@@ -48,10 +48,14 @@ export const DataStore = {
         try {
             await set(ref(database, 'settings/global'), settings);
             console.log("DataStore: Settings saved successfully to Firebase.");
-            // Optimistic update
+            // Optimistic & Local update
             localSettings = { ...localSettings, ...settings };
+            localStorage.setItem('crm_settings', JSON.stringify(localSettings));
         } catch (e) {
             console.error("DataStore: Error saving settings: ", e);
+            // Even if Firebase fails, save locally
+            localSettings = { ...localSettings, ...settings };
+            localStorage.setItem('crm_settings', JSON.stringify(localSettings));
             throw e;
         }
     },
@@ -109,7 +113,15 @@ export const DataStore = {
         onValue(ref(database, 'settings/global'), (snapshot) => {
             if (snapshot.exists()) {
                 localSettings = snapshot.val();
+                localStorage.setItem('crm_settings', JSON.stringify(localSettings));
                 if (onDataChangeCallback) onDataChangeCallback();
+            } else {
+                // Fallback to localStorage if Firebase is empty
+                const cached = localStorage.getItem('crm_settings');
+                if (cached) {
+                    localSettings = JSON.parse(cached);
+                    if (onDataChangeCallback) onDataChangeCallback();
+                }
             }
         });
 
