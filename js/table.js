@@ -63,6 +63,17 @@ export function renderTable() {
         const sourceClass = isReal ? 'source-real' : (isCSV ? 'source-csv' : 'source-ai');
         const sourceText = isReal ? 'Real' : (isCSV ? 'CSV' : 'AI');
         const channelClass = 'channel-' + (l.channel || 'whatsapp').toLowerCase();
+        
+        // Status Badge class mapping
+        const statusClassMap = {
+            'New': 'status-new',
+            'Contacted': 'status-contacted',
+            'Replied': 'status-replied',
+            'Call Booked': 'status-booked',
+            'Closed': 'status-closed',
+            'Not Interested': 'status-notinter'
+        };
+        const statusClass = statusClassMap[l.status] || 'status-new';
 
         tr.innerHTML = `
             <td class="font-semibold">${l.name}</td>
@@ -70,10 +81,13 @@ export function renderTable() {
             <td>${l.area || '-'}</td>
             <td><span class="pill-source ${sourceClass}">${sourceText}</span></td>
             <td><span class="channel-dot ${channelClass}"></span>${l.channel}</td>
-            <td>${l.status}</td>
+            <td><span class="status-badge ${statusClass}">${l.status}</span></td>
             <td class="${overdue ? 'text-red' : ''}">${l.follow_up_date || '-'}</td>
             <td>
-                <button class="btn-secondary edit-btn" data-id="${l.id}" style="padding: 4px 10px; font-size: 12px;">Edit</button>
+                <div class="flex gap-2">
+                    <button class="btn-secondary edit-btn" data-id="${l.id}" style="padding: 6px 12px; font-size: 12px;">Edit</button>
+                    <button class="btn-secondary delete-btn" data-id="${l.id}" style="padding: 6px 12px; font-size: 12px; color: var(--apple-red); border-color: rgba(255, 69, 58, 0.2);">Delete</button>
+                </div>
             </td>
         `;
         tbody.appendChild(tr);
@@ -81,6 +95,10 @@ export function renderTable() {
 
     document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', () => openDrawer(btn.dataset.id));
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => deleteLead(btn.dataset.id));
     });
 
     const countEl = document.getElementById('table-count');
