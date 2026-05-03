@@ -79,9 +79,19 @@
             transition: all 0.2s ease;
             width: 100%;
         }
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px !important;
+        }
         select option {
-            background-color: #1c1c1e;
+            background-color: #2c2c2e;
             color: white;
+            padding: 12px;
         }
         input:focus, select:focus {
             border-color: var(--apple-blue);
@@ -972,10 +982,10 @@
         <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.2);"></div>
         <div style="display: flex; gap: 12px; align-items: center;">
             <span style="font-size: 12px; opacity: 0.8;">Move to Niche:</span>
-            <select id="mass-niche-select" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; cursor: pointer;">
-                <option value="Clinics" style="color: black;">Clinics</option>
-                <option value="Real Estate" style="color: black;">Real Estate</option>
-                <option value="E-commerce" style="color: black;">E-commerce</option>
+            <select id="mass-niche-select" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                <option value="Clinics">Clinics</option>
+                <option value="Real Estate">Real Estate</option>
+                <option value="E-commerce">E-commerce</option>
             </select>
             <button onclick="applyMassNiche()" style="background: white; color: var(--apple-blue); border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.2s;">Apply</button>
         </div>
