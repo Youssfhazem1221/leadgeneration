@@ -166,6 +166,13 @@ export function addComment() {
 
 export function renderComments(lead) {
     const list = document.getElementById('drawer-comments-list');
+    if (!list) {
+        console.warn("Comment UI not found. The browser is caching the old app.html. Please do a hard refresh.");
+        const oldTextArea = document.getElementById('drawer-notes');
+        if (oldTextArea) oldTextArea.value = "Please Hard Refresh (Ctrl + F5) to load the new Comments system.";
+        return;
+    }
+
     if(!lead.comments || lead.comments.length === 0) {
         list.innerHTML = '<div class="text-secondary text-sm text-center py-4">No notes yet.</div>';
         return;
