@@ -1,21 +1,24 @@
-import { db, collection, doc, deleteDoc, onSnapshot, setDoc, getDoc } from './firebase-config.js?v=4';
+import { database, ref, set, get, onValue, remove, child } from './firebase-config.js?v=5';
 
 let localLeads = [];
 let localSettings = {geminiKey:"", placesKey:"", webhookUrl:"", agency:"", niche:""};
 let localUsers = [];
 let onDataChangeCallback = null;
 
+// Helper to sanitize email for RTDB keys (replaces . with ,)
+const sanitizeEmail = (email) => email ? email.replace(/\./g, ',') : '';
+
 export const DataStore = {
-    // Synchronous reads (from memory cache, updated via Firestore listeners)
+    // Synchronous reads (from memory cache, updated via RTDB listeners)
     getLeads: () => localLeads,
     getSettings: () => localSettings,
     getUsers: () => localUsers,
 
-    // Asynchronous writes (to Firestore)
+    // Asynchronous writes (to RTDB)
     saveLead: async (lead) => {
         lead.updated_at = new Date().toISOString();
         try {
-            await setDoc(doc(db, "leads", lead.id), lead);
+            await set(ref(database, `leads/${lead.id}`), lead);
         } catch (e) {
             console.error("Error saving lead: ", e);
             alert("Error saving data. Check console.");
@@ -24,7 +27,7 @@ export const DataStore = {
     
     deleteLead: async (id) => {
         try {
-            await deleteDoc(doc(db, "leads", id));
+            await remove(ref(database, `leads/${id}`));
         } catch (e) {
             console.error("Error deleting lead: ", e);
         }
@@ -32,15 +35,16 @@ export const DataStore = {
     
     saveSettings: async (settings) => {
         try {
-            await setDoc(doc(db, "settings", "global"), settings);
+            await set(ref(database, 'settings/global'), settings);
         } catch (e) {
             console.error("Error saving settings: ", e);
         }
     },
 
     saveUser: async (email, role) => {
+        const sanitized = sanitizeEmail(email);
         try {
-            await setDoc(doc(db, "users", email), {
+            await set(ref(database, `users/${sanitized}`), {
                 email: email,
                 role: role,
                 added_at: new Date().toISOString()
@@ -52,8 +56,9 @@ export const DataStore = {
     },
 
     deleteUser: async (email) => {
+        const sanitized = sanitizeEmail(email);
         try {
-            await deleteDoc(doc(db, "users", email));
+            await remove(ref(database, `users/${sanitized}`));
         } catch (e) {
             console.error("Error deleting user: ", e);
         }
@@ -61,10 +66,11 @@ export const DataStore = {
 
     // One-off read for Auth check
     getUserRole: async (email) => {
+        const sanitized = sanitizeEmail(email);
         try {
-            const userDoc = await getDoc(doc(db, "users", email));
-            if (userDoc.exists()) {
-                return userDoc.data().role;
+            const snapshot = await get(ref(database, `users/${sanitized}`));
+            if (snapshot.exists()) {
+                return snapshot.val().role;
             }
             return null;
         } catch (e) {
@@ -77,22 +83,24 @@ export const DataStore = {
     init: (callback) => {
         onDataChangeCallback = callback;
         
-        // Listen to Leads collection in real-time
-        onSnapshot(collection(db, "leads"), (snapshot) => {
-            localLeads = snapshot.docs.map(doc => doc.data());
+        // Listen to Leads in real-time
+        onValue(ref(database, 'leads'), (snapshot) => {
+            const data = snapshot.val();
+            localLeads = data ? Object.values(data) : [];
             if (onDataChangeCallback) onDataChangeCallback();
         });
 
-        // Listen to Settings document
-        onSnapshot(doc(db, "settings", "global"), (docSnapshot) => {
-            if (docSnapshot.exists()) {
-                localSettings = docSnapshot.data();
+        // Listen to Settings
+        onValue(ref(database, 'settings/global'), (snapshot) => {
+            if (snapshot.exists()) {
+                localSettings = snapshot.val();
             }
         });
 
-        // Listen to Users collection
-        onSnapshot(collection(db, "users"), (snapshot) => {
-            localUsers = snapshot.docs.map(doc => doc.data());
+        // Listen to Users
+        onValue(ref(database, 'users'), (snapshot) => {
+            const data = snapshot.val();
+            localUsers = data ? Object.values(data) : [];
             if (onDataChangeCallback) onDataChangeCallback();
         });
     }
