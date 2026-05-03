@@ -2,7 +2,7 @@ import { auth, provider, signInWithPopup, signOut, onAuthStateChanged, signInWit
 import { DataStore } from './datastore.js?v=3';
 
 // The Root Admin is guaranteed access and will be automatically created in the database
-const ROOT_ADMIN = "youssf.hazem1221@gmail.com";
+const AUTHORIZED_ADMINS = ["youssf.hazem1221@gmail.com", "youssfhazem1221@gmail.com", "mohamedelhawary8@gmail.com"];
 
 let currentUserRole = null;
 
@@ -10,11 +10,11 @@ async function handleAuthStatus(user, requireLogin = false) {
     if (user) {
         let role = await DataStore.getUserRole(user.email);
         
-        // Auto-provision Root Admin if they don't exist yet
-        if (!role && user.email.toLowerCase() === ROOT_ADMIN.toLowerCase()) {
+        // Auto-provision Admins if they don't exist yet
+        if (!role && AUTHORIZED_ADMINS.some(email => email.toLowerCase() === user.email.toLowerCase())) {
             await DataStore.saveUser(user.email, 'admin');
             role = 'admin';
-            console.log("Root Admin provisioned automatically.");
+            console.log("Admin provisioned automatically.");
         }
 
         if (!role) {
