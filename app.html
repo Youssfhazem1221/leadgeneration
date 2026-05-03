@@ -659,12 +659,15 @@
                                     <div style="font-size: 14px; font-weight: 500;">Gemini API Key</div>
                                     <div style="font-size: 12px; color: var(--apple-secondary);">Primary search engine (Master)</div>
                                 </div>
-                                <div style="display: flex; gap: 8px; align-items: center; width: 340px;">
-                                    <div class="password-wrapper flex-1">
-                                        <input type="password" id="set-gemini" placeholder="AIzaSy..." style="background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--apple-border); padding: 8px 12px; font-size: 13px; color: white; width: 100%;">
-                                        <button class="toggle-password" onclick="toggleVisibility('set-gemini')">👁</button>
+                                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; width: 340px;">
+                                    <div style="display: flex; gap: 8px; align-items: center; width: 100%;">
+                                        <div class="password-wrapper flex-1" style="position: relative; display: flex; align-items: center;">
+                                            <input type="password" id="set-gemini" placeholder="AIzaSy..." style="background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--apple-border); padding: 8px 36px 8px 12px; font-size: 13px; color: white; width: 100%;">
+                                            <button class="toggle-password" onclick="toggleVisibility('set-gemini')" style="position: absolute; right: 8px; background: none; border: none; padding: 4px; color: var(--apple-secondary); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;">👁</button>
+                                        </div>
+                                        <button class="btn-toolbar" onclick="testGemini()" style="height: 35px; white-space: nowrap;">Test</button>
                                     </div>
-                                    <button class="btn-toolbar" onclick="testGemini()" style="height: 35px; white-space: nowrap;">Test</button>
+                                    <div id="test-gemini-res" style="font-size: 11px; height: 14px;"></div>
                                 </div>
                             </div>
                             <!-- Groq Row -->
@@ -673,11 +676,15 @@
                                     <div style="font-size: 14px; font-weight: 500;">Groq API Key</div>
                                     <div style="font-size: 12px; color: var(--apple-secondary);">Fallback (429 Rate Limiting)</div>
                                 </div>
-                                <div style="width: 340px;">
-                                    <div class="password-wrapper" style="width: 100%;">
-                                        <input type="password" id="set-groq" placeholder="gsk_..." style="background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--apple-border); padding: 8px 12px; font-size: 13px; color: white; width: 100%;">
-                                        <button class="toggle-password" onclick="toggleVisibility('set-groq')">👁</button>
+                                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; width: 340px;">
+                                    <div style="display: flex; gap: 8px; align-items: center; width: 100%;">
+                                        <div class="password-wrapper flex-1" style="position: relative; display: flex; align-items: center;">
+                                            <input type="password" id="set-groq" placeholder="gsk_..." style="background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--apple-border); padding: 8px 36px 8px 12px; font-size: 13px; color: white; width: 100%;">
+                                            <button class="toggle-password" onclick="toggleVisibility('set-groq')" style="position: absolute; right: 8px; background: none; border: none; padding: 4px; color: var(--apple-secondary); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;">👁</button>
+                                        </div>
+                                        <button class="btn-toolbar" onclick="testGroq()" style="height: 35px; white-space: nowrap;">Test</button>
                                     </div>
+                                    <div id="test-groq-res" style="font-size: 11px; height: 14px;"></div>
                                 </div>
                             </div>
                             <!-- Webhook Row -->
@@ -686,9 +693,12 @@
                                     <div style="font-size: 14px; font-weight: 500;">Google Sheets Webhook</div>
                                     <div style="font-size: 12px; color: var(--apple-secondary);">App Script deployment URL</div>
                                 </div>
-                                <div style="display: flex; gap: 8px; align-items: center; width: 340px;">
-                                    <input type="text" id="set-webhook" placeholder="https://script.google.com/..." style="flex: 1; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--apple-border); padding: 8px 12px; font-size: 13px; color: white;">
-                                    <button class="btn-toolbar" onclick="testWebhook()" style="height: 35px; white-space: nowrap;">Test</button>
+                                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; width: 340px;">
+                                    <div style="display: flex; gap: 8px; align-items: center; width: 100%;">
+                                        <input type="text" id="set-webhook" placeholder="https://script.google.com/..." style="flex: 1; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--apple-border); padding: 8px 12px; font-size: 13px; color: white;">
+                                        <button class="btn-toolbar" onclick="testWebhook()" style="height: 35px; white-space: nowrap;">Test</button>
+                                    </div>
+                                    <div id="test-webhook-res" style="font-size: 11px; height: 14px;"></div>
                                 </div>
                             </div>
                         </div>
@@ -887,7 +897,7 @@
             showToast, switchView, copyText, openDrawer, closeDrawer, 
             switchMessageTab, updateLeadStatus, saveFollowUp, 
             loadSettingsToUI, saveSettings, toggleVisibility, 
-            testGemini, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
+            testGemini, testGroq, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
             showModal, setUserInfo, handleDeleteFromDrawer, deleteLead, addComment, deleteComment, checkHashAndOpenDrawer
         } from './js/ui_v23.js?v=36';
         import { renderPipeline, renderStats } from './js/pipeline.js?v=36';
@@ -916,7 +926,7 @@
             logout, switchView, copyText, openDrawer, closeDrawer,
             switchMessageTab, updateLeadStatus, saveFollowUp,
             loadSettingsToUI, saveSettings, toggleVisibility,
-            testGemini, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
+            testGemini, testGroq, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
             showModal, setUserInfo, handleDeleteFromDrawer,
             DataStore, renderPipeline, renderStats, renderTable, sortTable,
             deleteLead, exportCSV, handleFileSelect, findRealLeads, importRealLeads,

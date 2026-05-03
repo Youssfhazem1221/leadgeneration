@@ -367,6 +367,38 @@ export async function testGemini() {
     resEl.innerHTML = `<span class="text-red">✗ Failed: ${lastError}</span>`;
 }
 
+export async function testGroq() {
+    const key = document.getElementById('set-groq').value.trim();
+    const resEl = document.getElementById('test-groq-res');
+    if(!resEl) return;
+    if(!key) return resEl.innerHTML = '<span class="text-red">Missing Key</span>';
+    resEl.innerText = "Testing...";
+    try {
+        const res = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${key}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [{ role: "user", content: "Hi" }],
+                max_tokens: 1
+            })
+        });
+        if (res.ok) {
+            resEl.innerHTML = '<span class="text-accent">✓ Success</span>';
+        } else {
+            const err = await res.json();
+            resEl.innerHTML = `<span class="text-red">✗ Failed</span>`;
+            console.error("Groq Test Failed:", err);
+        }
+    } catch(e) {
+        resEl.innerHTML = `<span class="text-red">✗ Error</span>`;
+        console.error(e);
+    }
+}
+
 export async function testWebhook() {
     const url = document.getElementById('set-webhook').value;
     const resEl = document.getElementById('test-webhook-res');
