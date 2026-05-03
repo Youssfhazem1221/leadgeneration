@@ -1,4 +1,4 @@
-import { auth, provider, signInWithPopup, signOut, onAuthStateChanged } from './firebase-config.js?v=2';
+import { auth, provider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from './firebase-config.js?v=2';
 import { DataStore } from './datastore.js?v=2';
 
 // The Root Admin is guaranteed access and will be automatically created in the database
@@ -77,9 +77,28 @@ function logout() {
     });
 }
 
+function loginWithEmail(email, password) {
+    return signInWithEmailAndPassword(auth, email, password).catch((error) => {
+        console.error("Error signing in with email", error);
+        alert("Sign in failed: " + error.message);
+        throw error;
+    });
+}
+
+function signupWithEmail(email, password) {
+    return createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
+        console.log("Signed up successfully");
+        return userCredential;
+    }).catch((error) => {
+        console.error("Error signing up", error);
+        alert("Sign up failed: " + error.message);
+        throw error;
+    });
+}
+
 // Initialize listener
 export function initAuth(requireLogin) {
     onAuthStateChanged(auth, (user) => handleAuthStatus(user, requireLogin));
 }
 
-export { login, logout, currentUserRole };
+export { login, logout, loginWithEmail, signupWithEmail, currentUserRole };
