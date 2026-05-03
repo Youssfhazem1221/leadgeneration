@@ -61,16 +61,16 @@ Schema:
             generationConfig: { temperature: 0.7 }
         };
         
-        let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(geminiBody)
         });
         
-        // Fallback 1: Try v1 of 1.5-flash (without tools)
+        // Fallback 1: Try gemini-2.0-flash
         if (res.status === 404) {
-            delete geminiBody.tools;
-            res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            console.warn("Gemini 2.5 not found, trying 2.0");
+            res = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(geminiBody)
