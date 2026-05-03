@@ -1,5 +1,5 @@
 import { DataStore } from './datastore.js?v=12';
-import { showToast, switchView } from './ui.js?v=12';
+import { showToast, switchView } from './ui_v22.js';
 import { normalizePhone } from './table.js?v=12';
 
 let tempEngineResults = [];
