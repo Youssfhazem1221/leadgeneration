@@ -1,7 +1,7 @@
 import { database, ref, set, get, onValue, remove, child } from './firebase-config.js?v=8';
 
 let localLeads = [];
-let localSettings = {geminiKey:"", placesKey:"", webhookUrl:"", agency:"", niche:""};
+let localSettings = {geminiKey:"AIzaSyD38q_gh54Pgx0yAT09vRsrB5EUtem28RE", placesKey:"", webhookUrl:"", agency:"", niche:""};
 let localUsers = [];
 let onDataChangeCallback = null;
 

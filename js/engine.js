@@ -8,10 +8,14 @@ export async function findRealLeads() {
     let settings = DataStore.getSettings();
     let apiKey = settings.geminiKey;
     
-    // Fallback: Check the input field if Datastore hasn't synced yet
+    // Fallback: Check the input field or hardcoded default if Datastore hasn't synced yet
     if(!apiKey) {
         const inputKey = document.getElementById('set-gemini');
-        if(inputKey && inputKey.value) apiKey = inputKey.value;
+        if(inputKey && inputKey.value) {
+            apiKey = inputKey.value;
+        } else {
+            apiKey = "AIzaSyD38q_gh54Pgx0yAT09vRsrB5EUtem28RE";
+        }
     }
     
     if(!apiKey) return showToast("No Gemini API Key set. Please add it in Settings.", "error");
