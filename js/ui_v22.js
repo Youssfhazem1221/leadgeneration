@@ -228,7 +228,7 @@ export function toggleVisibility(id) {
 
 export async function testGemini() {
     const inputKey = document.getElementById('set-gemini').value.trim();
-    const masterKey = "AIzaSyD38q_gh54Pgx0yAT09vRsrB5EUtem28RE";
+    const masterKey = "AIzaSyBb2p9SQM_J50_qrrh4bPl7CQh5zuFm1v8";
     const resEl = document.getElementById('test-gemini-res');
     
     const keyToTry = inputKey || masterKey;
@@ -245,6 +245,7 @@ export async function testGemini() {
                 body: JSON.stringify({ contents: [{ parts: [{ text: "Hi" }] }] })
             });
             if (res.ok) return true;
+            if (res.status === 429) { lastError = "Rate limit reached (Too busy). Wait 60s."; return false; }
             const errData = await res.json();
             lastError = errData.error?.message || `HTTP ${res.status}`;
             return false;

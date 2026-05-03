@@ -6,7 +6,7 @@ let tempEngineResults = [];
 
 export async function findRealLeads() {
     let settings = DataStore.getSettings();
-    const masterKey = "AIzaSyD38q_gh54Pgx0yAT09vRsrB5EUtem28RE";
+    const masterKey = "AIzaSyBb2p9SQM_J50_qrrh4bPl7CQh5zuFm1v8";
     
     // Priority: 1. Input field (active typing), 2. Cloud settings, 3. Master key
     const inputKey = document.getElementById('set-gemini')?.value.trim();
