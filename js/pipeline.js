@@ -1,5 +1,6 @@
 import { DataStore } from './datastore.js?v=7';
 import { getTimeAgo, openDrawer, addActivity } from './ui.js?v=7';
+import { deleteLead } from './table.js?v=7';
 
 export function renderStats() {
     const leads = DataStore.getLeads();
@@ -58,7 +59,10 @@ export function renderPipeline() {
                     <div class="lead-card ${overdue ? 'overdue' : ''}" draggable="true" data-id="${l.id}" id="card-${l.id}">
                         <div class="flex justify-between items-start mb-2">
                             <div class="lead-name truncate" title="${l.name}">${l.name}</div>
-                            <span class="pill-source ${sourceClass}">${sourceText}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="pill-source ${sourceClass}">${sourceText}</span>
+                                <button class="delete-card-btn" data-id="${l.id}" title="Delete Lead" style="background:none; border:none; color:var(--apple-secondary); font-size:14px; cursor:pointer; padding:0; line-height:1;">✕</button>
+                            </div>
                         </div>
                         <div class="text-sm text-secondary truncate mb-2">${l.pain || 'No pain point recorded'}</div>
                         <div class="flex justify-between items-center text-sm">
@@ -84,13 +88,32 @@ function attachDragEvents() {
             setTimeout(() => card.classList.add('dragging'), 0);
         });
         card.addEventListener('dragend', () => card.classList.remove('dragging'));
-        card.addEventListener('click', () => openDrawer(card.dataset.id));
+        
+        card.addEventListener('click', (e) => {
+            // Don't open drawer if delete button was clicked
+            if (e.target.closest('.delete-card-btn')) return;
+            openDrawer(card.dataset.id);
+        });
+    });
+
+    document.querySelectorAll('.delete-card-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent opening drawer
+            deleteLead(btn.dataset.id);
+        });
     });
 
     document.querySelectorAll('.cards-container').forEach(container => {
-        container.addEventListener('dragover', (ev) => ev.preventDefault());
+        container.addEventListener('dragover', (ev) => {
+            ev.preventDefault();
+            container.classList.add('drag-over');
+        });
+        container.addEventListener('dragleave', () => {
+            container.classList.remove('drag-over');
+        });
         container.addEventListener('drop', (ev) => {
             ev.preventDefault();
+            container.classList.remove('drag-over');
             const id = ev.dataTransfer.getData("text");
             const newStatus = container.id.replace('col-', '');
             const lead = DataStore.getLeads().find(l => l.id === id);
@@ -100,6 +123,7 @@ function attachDragEvents() {
                 addActivity(lead, `Moved from ${oldStatus} to ${newStatus}`);
                 DataStore.saveLead(lead);
                 if (typeof window.syncToSheets === 'function') window.syncToSheets(lead);
+                // The refreshUI in app.html will handle re-rendering
             }
         });
     });
