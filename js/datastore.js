@@ -1,4 +1,4 @@
-import { database, ref, set, get, onValue, remove, child } from './firebase-config.js?v=6';
+import { database, ref, set, get, onValue, remove, child } from './firebase-config.js?v=8';
 
 let localLeads = [];
 let localSettings = {geminiKey:"", placesKey:"", webhookUrl:"", agency:"", niche:""};
@@ -46,6 +46,8 @@ export const DataStore = {
     saveSettings: async (settings) => {
         try {
             await set(ref(database, 'settings/global'), settings);
+            // Optimistic update
+            localSettings = { ...localSettings, ...settings };
         } catch (e) {
             console.error("Error saving settings: ", e);
             throw e;
@@ -105,6 +107,7 @@ export const DataStore = {
         onValue(ref(database, 'settings/global'), (snapshot) => {
             if (snapshot.exists()) {
                 localSettings = snapshot.val();
+                if (onDataChangeCallback) onDataChangeCallback();
             }
         });
 

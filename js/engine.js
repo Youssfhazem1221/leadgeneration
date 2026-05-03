@@ -1,12 +1,20 @@
-import { DataStore } from './datastore.js?v=7';
-import { showToast, switchView } from './ui.js?v=7';
-import { normalizePhone } from './table.js?v=7';
+import { DataStore } from './datastore.js?v=8';
+import { showToast, switchView } from './ui.js?v=8';
+import { normalizePhone } from './table.js?v=8';
 
 let tempEngineResults = [];
 
 export async function findRealLeads() {
-    const settings = DataStore.getSettings();
-    if(!settings.geminiKey) return showToast("No Gemini API Key set", "error");
+    let settings = DataStore.getSettings();
+    let apiKey = settings.geminiKey;
+    
+    // Fallback: Check the input field if Datastore hasn't synced yet
+    if(!apiKey) {
+        const inputKey = document.getElementById('set-gemini');
+        if(inputKey && inputKey.value) apiKey = inputKey.value;
+    }
+    
+    if(!apiKey) return showToast("No Gemini API Key set. Please add it in Settings.", "error");
 
     const niche = document.getElementById('real-niche').value || 'clinic';
     const area = document.getElementById('real-area').value || 'Cairo';
@@ -49,7 +57,7 @@ Schema:
             generationConfig: { temperature: 0.7 }
         };
         
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${settings.geminiKey}`, {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(geminiBody)
