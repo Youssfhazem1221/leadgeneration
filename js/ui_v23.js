@@ -443,7 +443,6 @@ export async function deleteOfferType(offer) {
     renderOfferTypes();
     updateEngineOfferDropdown();
 }
-}
 
 export function getNicheColor(niche) {
     const colors = [

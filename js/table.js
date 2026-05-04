@@ -121,8 +121,6 @@ export function renderTable() {
         });
     });
 
-    const countEl = document.getElementById('table-count');
-    if (countEl) countEl.innerText = `Total: ${leads.length} Leads`;
 }
 
 
