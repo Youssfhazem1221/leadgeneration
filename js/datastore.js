@@ -9,7 +9,8 @@ let localSettings = {
     niche: "", 
     groqKey: "",
     offerTypes: ["WhatsApp Bot", "Appointment Recovery", "Lead Follow-up System"],
-    activeNiche: "Clinics"
+    nicheTypes: ["Clinics", "Real Estate", "E-commerce"],
+    activeNiche: "All"
 };
 
 let localUsers = [];

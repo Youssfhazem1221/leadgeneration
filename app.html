@@ -800,6 +800,20 @@
                         </div>
                     </div>
 
+                    <!-- Section: Niches Management -->
+                    <div>
+                        <div style="font-size: 11px; font-weight: 600; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; margin-left: 4px;">Niche Categories (Active Context)</div>
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--apple-border); border-radius: 14px; padding: 16px;">
+                            <div id="niche-types-list" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+                                <!-- Dynamic tags -->
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="new-niche-type" placeholder="Add new niche (e.g. Lawyers)" style="flex: 1; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--apple-border); padding: 10px 14px; font-size: 13px; color: white;">
+                                <button class="btn-toolbar primary" onclick="addNicheType()" style="height: 40px; padding: 0 166px;">Add</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Actions -->
                     <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px;">
                         <button class="btn-primary" onclick="saveSettings()" style="padding: 12px 24px; font-size: 14px; font-weight: 600;">Save All Settings</button>
@@ -1007,7 +1021,8 @@
             loadSettingsToUI, saveSettings, toggleVisibility, 
             testGemini, testGroq, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
             showModal, setUserInfo, handleDeleteFromDrawer, deleteLead, addComment, deleteComment, checkHashAndOpenDrawer,
-            updateLeadNiche, applyMassNiche, clearSelection, toggleSelectAll, updateActiveNiche, addOfferType, deleteOfferType, updateSelectedCount, generateOutreachWithGroq
+            updateLeadNiche, applyMassNiche, clearSelection, toggleSelectAll, updateActiveNiche, addOfferType, deleteOfferType, updateSelectedCount, generateOutreachWithGroq,
+            addNicheType, deleteNicheType
         } from './js/ui_v23.js?v=36';
         import { renderPipeline, renderStats } from './js/pipeline.js?v=36';
         import { renderTable, sortTable, exportCSV, handleFileSelect } from './js/table.js?v=36';
@@ -1037,6 +1052,7 @@
             loadSettingsToUI, saveSettings, toggleVisibility,
             testGemini, testGroq, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
             showModal, setUserInfo, handleDeleteFromDrawer, updateLeadNiche, applyMassNiche, clearSelection, toggleSelectAll, updateActiveNiche, addOfferType, deleteOfferType, updateSelectedCount, generateOutreachWithGroq,
+            addNicheType, deleteNicheType,
             DataStore, renderPipeline, renderStats, renderTable, sortTable,
             deleteLead, exportCSV, handleFileSelect, findRealLeads, importRealLeads,
             syncToSheets, syncAllToSheets, refreshUI, clearAllData, switchEngineTab,

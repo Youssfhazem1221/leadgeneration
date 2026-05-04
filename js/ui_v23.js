@@ -385,14 +385,12 @@ export function loadSettingsToUI() {
     const nicheSwitcher = document.getElementById('filter-niche');
     if (nicheSwitcher) nicheSwitcher.value = s.activeNiche || 'All';
 
-    // Also sync the Engine Import category
-    const engineNicheSwitcher = document.getElementById('engine-niche-select');
-    if (engineNicheSwitcher && s.activeNiche && s.activeNiche !== 'All') {
-        engineNicheSwitcher.value = s.activeNiche;
-    }
-
     // Render Offer Types in Settings
     renderOfferTypes();
+    // Render Niches in Settings
+    renderNicheTypes();
+    // Update all niche dropdowns
+    updateAllNicheDropdowns();
     // Update Engine Offer dropdown
     updateEngineOfferDropdown();
 }
@@ -444,6 +442,81 @@ export async function deleteOfferType(offer) {
     await DataStore.saveSettings(s);
     renderOfferTypes();
     updateEngineOfferDropdown();
+}
+
+export function renderNicheTypes() {
+    const s = DataStore.getSettings();
+    const container = document.getElementById('niche-types-list');
+    if (!container) return;
+    
+    container.innerHTML = (s.nicheTypes || ["Clinics", "Real Estate", "E-commerce"]).map(niche => `
+        <div style="background: rgba(255,255,255,0.08); border: 1px solid var(--apple-border); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+            <span>${niche}</span>
+            <button onclick="deleteNicheType('${niche}')" style="background: none; border: none; color: var(--apple-red); cursor: pointer; padding: 0 2px; font-weight: 700;">✕</button>
+        </div>
+    `).join('');
+}
+
+export async function addNicheType() {
+    const input = document.getElementById('new-niche-type');
+    const val = input.value.trim();
+    if (!val) return;
+    
+    const s = DataStore.getSettings();
+    const defaultNiches = ["Clinics", "Real Estate", "E-commerce"];
+    if (!s.nicheTypes) s.nicheTypes = [...defaultNiches];
+    if (s.nicheTypes.includes(val)) return showToast("Niche already exists", "warning");
+    
+    s.nicheTypes.push(val);
+    await DataStore.saveSettings(s);
+    input.value = '';
+    renderNicheTypes();
+    updateAllNicheDropdowns();
+    showToast("Niche category added");
+}
+
+export async function deleteNicheType(niche) {
+    const s = DataStore.getSettings();
+    const defaultNiches = ["Clinics", "Real Estate", "E-commerce"];
+    if (!s.nicheTypes) s.nicheTypes = [...defaultNiches];
+    s.nicheTypes = s.nicheTypes.filter(n => n !== niche);
+    await DataStore.saveSettings(s);
+    renderNicheTypes();
+    updateAllNicheDropdowns();
+    showToast("Niche category removed");
+}
+
+export function updateAllNicheDropdowns() {
+    const s = DataStore.getSettings();
+    const nicheList = s.nicheTypes || ["Clinics", "Real Estate", "E-commerce"];
+    
+    // 1. Table Filter
+    const filterNiche = document.getElementById('filter-niche');
+    if (filterNiche) {
+        const currentVal = filterNiche.value;
+        filterNiche.innerHTML = '<option value="All">All Niches</option>' + 
+            nicheList.map(n => `<option value="${n}">${n}</option>`).join('');
+        if (nicheList.includes(currentVal) || currentVal === 'All') filterNiche.value = currentVal;
+    }
+
+    // 2. Engine Import Category
+    const engineNiche = document.getElementById('engine-niche-select');
+    if (engineNiche) {
+        engineNiche.innerHTML = nicheList.map(n => `<option value="${n}">${n}</option>`).join('');
+        if (s.activeNiche && nicheList.includes(s.activeNiche)) engineNiche.value = s.activeNiche;
+    }
+
+    // 3. Mass Action Toolbar
+    const massNiche = document.getElementById('mass-niche-select');
+    if (massNiche) {
+        massNiche.innerHTML = nicheList.map(n => `<option value="${n}">${n}</option>`).join('');
+    }
+
+    // 4. Drawer Niche
+    const drawerNiche = document.getElementById('drawer-niche');
+    if (drawerNiche) {
+        drawerNiche.innerHTML = nicheList.map(n => `<option value="${n}">${n}</option>`).join('');
+    }
 }
 
 export async function updateActiveNiche(niche) {
