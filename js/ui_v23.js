@@ -443,18 +443,42 @@ export async function deleteOfferType(offer) {
     renderOfferTypes();
     updateEngineOfferDropdown();
 }
+}
+
+export function getNicheColor(niche) {
+    const colors = [
+        { bg: 'rgba(10, 132, 255, 0.1)', text: '#0a84ff' },  // Blue
+        { bg: 'rgba(48, 209, 88, 0.1)', text: '#30d158' },   // Green
+        { bg: 'rgba(255, 159, 10, 0.1)', text: '#ff9f0a' },  // Orange
+        { bg: 'rgba(191, 90, 242, 0.1)', text: '#bf5af2' },  // Purple
+        { bg: 'rgba(100, 210, 255, 0.1)', text: '#64d2ff' }, // Teal
+        { bg: 'rgba(255, 55, 95, 0.1)', text: '#ff375f' },   // Pink
+        { bg: 'rgba(255, 214, 10, 0.1)', text: '#ffd60a' },  // Yellow
+        { bg: 'rgba(94, 92, 230, 0.1)', text: '#5e5ce6' }    // Indigo
+    ];
+    let hash = 0;
+    const name = (niche || 'Clinics');
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
+}
 
 export function renderNicheTypes() {
     const s = DataStore.getSettings();
     const container = document.getElementById('niche-types-list');
     if (!container) return;
     
-    container.innerHTML = (s.nicheTypes || ["Clinics", "Real Estate", "E-commerce"]).map(niche => `
-        <div style="background: rgba(255,255,255,0.08); border: 1px solid var(--apple-border); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 8px; font-size: 13px;">
-            <span>${niche}</span>
-            <button onclick="deleteNicheType('${niche}')" style="background: none; border: none; color: var(--apple-red); cursor: pointer; padding: 0 2px; font-weight: 700;">✕</button>
-        </div>
-    `).join('');
+    container.innerHTML = (s.nicheTypes || ["Clinics", "Real Estate", "E-commerce"]).map(niche => {
+        const nColor = getNicheColor(niche);
+        return `
+            <div style="background: ${nColor.bg}; color: ${nColor.text}; border: 1px solid ${nColor.text}44; padding: 6px 12px; border-radius: 8px; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                <span>${niche}</span>
+                <button onclick="deleteNicheType('${niche}')" style="background: none; border: none; color: ${nColor.text}; cursor: pointer; padding: 0 2px; font-weight: 700;">✕</button>
+            </div>
+        `;
+    }).join('');
 }
 
 export async function addNicheType() {

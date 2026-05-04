@@ -1,5 +1,5 @@
 import { DataStore } from './datastore.js?v=36';
-import { showToast, openDrawer, addActivity, showModal, deleteLead } from './ui_v23.js?v=36';
+import { showToast, openDrawer, addActivity, showModal, deleteLead, getNicheColor } from './ui_v23.js?v=36';
 
 let currentSortCol = '';
 let sortAsc = true;
@@ -79,12 +79,13 @@ export function renderTable() {
         };
         const statusClass = statusClassMap[l.status] || 'status-new';
 
+        const nColor = getNicheColor(l.niche);
         tr.innerHTML = `
             <td style="text-align: center;"><input type="checkbox" class="lead-checkbox" data-id="${l.id}" onchange="updateSelectedCount()"></td>
             <td class="font-semibold">
                 <div style="display: flex; flex-direction: column; gap: 4px;">
                     <span style="font-size: 14px;">${l.name}</span>
-                    <div><span class="niche-label niche-${(l.niche || 'Clinics').toLowerCase().replace(' ', '-')}">${l.niche || 'Clinics'}</span></div>
+                    <div><span class="niche-label" style="background: ${nColor.bg}; color: ${nColor.text};">${l.niche || 'Clinics'}</span></div>
                 </div>
             </td>
             <td>${l.phone}</td>
