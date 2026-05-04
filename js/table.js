@@ -1,5 +1,5 @@
-﻿import { DataStore } from './datastore.js?v=37';
-import { showToast, openDrawer, addActivity, showModal, deleteLead, getNicheColor } from './ui_v23.js?v=37';
+import { DataStore } from './datastore.js?v=38';
+import { showToast, openDrawer, addActivity, showModal, deleteLead, getNicheColor } from './ui_v23.js?v=38';
 
 let currentSortCol = '';
 let sortAsc = true;
@@ -13,8 +13,8 @@ export function sortTable(col) {
 export function normalizePhone(phone) {
     if (!phone) return '';
     let p = phone.toString().replace(/[\s\-\(\)]/g, '');  // Strip formatting
-    if (p.startsWith('+20')) p = '0' + p.slice(3);  // +20xxx â†’ 0xxx
-    if (p.startsWith('20') && p.length === 12) p = '0' + p.slice(2);  // 20xxx â†’ 0xxx
+    if (p.startsWith('+20')) p = '0' + p.slice(3);  // +20xxx -> 0xxx
+    if (p.startsWith('20') && p.length === 12) p = '0' + p.slice(2);  // 20xxx -> 0xxx
     return p;
 }
 

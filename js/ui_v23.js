@@ -1,5 +1,5 @@
 ﻿console.log("UI Module Loaded: v18 (Discovery Mode)");
-import { DataStore } from './datastore.js?v=37';
+import { DataStore } from './datastore.js?v=38';
 
 
 export async function deleteLead(id) {
