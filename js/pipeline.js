@@ -1,5 +1,5 @@
-import { DataStore } from './datastore.js?v=36';
-import { getTimeAgo, openDrawer, addActivity, deleteLead } from './ui_v23.js?v=36';
+﻿import { DataStore } from './datastore.js?v=37';
+import { getTimeAgo, openDrawer, addActivity, deleteLead } from './ui_v23.js?v=37';
 
 export function renderStats() {
     const leads = DataStore.getLeads();
@@ -72,7 +72,7 @@ export function renderPipeline() {
                             <div class="lead-name truncate" title="${l.name}">${l.name}</div>
                             <div class="flex items-center gap-2">
                                 <span class="pill-source ${sourceClass}">${sourceText}</span>
-                                <button class="delete-card-btn" data-id="${l.id}" title="Delete Lead" style="background:none; border:none; color:var(--apple-secondary); font-size:18px; cursor:pointer; padding:4px; line-height:1; transition: color 0.2s;">✕</button>
+                                <button class="delete-card-btn" data-id="${l.id}" title="Delete Lead" style="background:none; border:none; color:var(--apple-secondary); font-size:18px; cursor:pointer; padding:4px; line-height:1; transition: color 0.2s;">âœ•</button>
                             </div>
                         </div>
                         <div class="text-sm text-secondary truncate mb-2">${l.pain || 'No pain point recorded'}</div>

@@ -1,5 +1,5 @@
-console.log("UI Module Loaded: v18 (Discovery Mode)");
-import { DataStore } from './datastore.js?v=36';
+﻿console.log("UI Module Loaded: v18 (Discovery Mode)");
+import { DataStore } from './datastore.js?v=37';
 
 
 export async function deleteLead(id) {
@@ -17,7 +17,7 @@ export function showToast(msg, type='success') {
     if (!container) return;
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : '⚠';
+    const icon = type === 'success' ? 'âœ“' : type === 'error' ? 'âœ•' : 'âš ';
     toast.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
     container.appendChild(toast);
     setTimeout(() => {
@@ -126,14 +126,14 @@ export function openDrawer(id) {
 
     if(isReal && lead.rating) {
         document.getElementById('drawer-rating-row').classList.remove('hidden');
-        document.getElementById('drawer-rating').innerText = `★ ${lead.rating}`;
+        document.getElementById('drawer-rating').innerText = `â˜… ${lead.rating}`;
         document.getElementById('drawer-maps-link').href = lead.maps_url || '#';
     } else {
         document.getElementById('drawer-rating-row').classList.add('hidden');
     }
 
     const enMsg = lead.en_message || lead.ai_messages?.en || 'No message generated';
-    const arMsg = lead.ar_message || lead.ai_messages?.ar || 'لم يتم إنشاء رسالة';
+    const arMsg = lead.ar_message || lead.ai_messages?.ar || 'Ù„Ù… ÙŠØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø±Ø³Ø§Ù„Ø©';
     
     document.getElementById('drawer-msg-text-en').innerText = enMsg;
     document.getElementById('drawer-msg-text-ar').innerText = arMsg;
@@ -215,7 +215,7 @@ export function renderComments(lead) {
                 <span style="font-size: 11px; font-weight: 600; color: var(--apple-blue);">${authorName}</span>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 11px; color: var(--apple-secondary);">${getTimeAgo(c.timestamp)}</span>
-                    <button onclick="deleteComment(${index})" style="background: none; border: none; color: var(--apple-red, #ff453a); font-size: 11px; cursor: pointer; padding: 0; opacity: 0.7;">✕</button>
+                    <button onclick="deleteComment(${index})" style="background: none; border: none; color: var(--apple-red, #ff453a); font-size: 11px; cursor: pointer; padding: 0; opacity: 0.7;">âœ•</button>
                 </div>
             </div>
             <div style="font-size: 13px; line-height: 1.4; color: white; white-space: pre-wrap;">${c.text}</div>
@@ -403,7 +403,7 @@ export function renderOfferTypes() {
     container.innerHTML = (s.offerTypes || []).map(offer => `
         <div style="background: rgba(255,255,255,0.08); border: 1px solid var(--apple-border); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 8px; font-size: 13px;">
             <span>${offer}</span>
-            <button onclick="deleteOfferType('${offer}')" style="background: none; border: none; color: var(--apple-red); cursor: pointer; padding: 0 2px; font-weight: 700;">✕</button>
+            <button onclick="deleteOfferType('${offer}')" style="background: none; border: none; color: var(--apple-red); cursor: pointer; padding: 0 2px; font-weight: 700;">âœ•</button>
         </div>
     `).join('');
 }
@@ -474,7 +474,7 @@ export function renderNicheTypes() {
         return `
             <div style="background: ${nColor.bg}; color: ${nColor.text}; border: 1px solid ${nColor.text}44; padding: 6px 12px; border-radius: 8px; display: flex; align-items: center; gap: 8px; font-size: 13px;">
                 <span>${niche}</span>
-                <button onclick="deleteNicheType('${niche}')" style="background: none; border: none; color: ${nColor.text}; cursor: pointer; padding: 0 2px; font-weight: 700;">✕</button>
+                <button onclick="deleteNicheType('${niche}')" style="background: none; border: none; color: ${nColor.text}; cursor: pointer; padding: 0 2px; font-weight: 700;">âœ•</button>
             </div>
         `;
     }).join('');
@@ -619,14 +619,14 @@ export async function testGemini() {
         const result = await tryModel(item.m, item.v);
         if (result === true) {
             const source = (keyToTry === masterKey) ? " (Master Key)" : "";
-            resEl.innerHTML = `<span class="text-accent">✓ Success: ${item.m}${source}</span>`;
+            resEl.innerHTML = `<span class="text-accent">âœ“ Success: ${item.m}${source}</span>`;
             return;
         } else if (result === "429") {
             break;
         }
     }
     
-    resEl.innerHTML = `<span class="text-red">✗ Failed: ${lastError}</span>`;
+    resEl.innerHTML = `<span class="text-red">âœ— Failed: ${lastError}</span>`;
 }
 
 export async function testGroq() {
@@ -649,14 +649,14 @@ export async function testGroq() {
             })
         });
         if (res.ok) {
-            resEl.innerHTML = '<span class="text-accent">✓ Success</span>';
+            resEl.innerHTML = '<span class="text-accent">âœ“ Success</span>';
         } else {
             const err = await res.json();
-            resEl.innerHTML = `<span class="text-red">✗ Failed</span>`;
+            resEl.innerHTML = `<span class="text-red">âœ— Failed</span>`;
             console.error("Groq Test Failed:", err);
         }
     } catch(e) {
-        resEl.innerHTML = `<span class="text-red">✗ Error</span>`;
+        resEl.innerHTML = `<span class="text-red">âœ— Error</span>`;
         console.error(e);
     }
 }
@@ -668,8 +668,8 @@ export async function testWebhook() {
     resEl.innerText = "Testing...";
     try {
         await fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify({action:'test'})});
-        resEl.innerHTML = '<span class="text-accent">✓ Sent</span>';
-    } catch(e) { resEl.innerHTML = '<span class="text-red">✗ Failed</span>'; }
+        resEl.innerHTML = '<span class="text-accent">âœ“ Sent</span>';
+    } catch(e) { resEl.innerHTML = '<span class="text-red">âœ— Failed</span>'; }
 }
 
 // --- Team Management ---

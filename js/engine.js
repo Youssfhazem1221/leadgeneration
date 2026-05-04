@@ -1,6 +1,6 @@
-import { DataStore } from './datastore.js?v=36';
-import { showToast, switchView } from './ui_v23.js?v=36';
-import { normalizePhone } from './table.js?v=36';
+﻿import { DataStore } from './datastore.js?v=37';
+import { showToast, switchView } from './ui_v23.js?v=37';
+import { normalizePhone } from './table.js?v=37';
 
 
 let tempEngineResults = [];
@@ -48,7 +48,7 @@ Schema:
   "pain": "One specific pain point for this business type",
   "channel": "WhatsApp OR LinkedIn OR Instagram",
   "en_message": "4-line English message",
-  "ar_message": "4-line Egyptian Arabic (عامية) message"
+  "ar_message": "4-line Egyptian Arabic (Ø¹Ø§Ù…ÙŠØ©) message"
 }]
 `;
 
@@ -154,10 +154,10 @@ export function renderEngineResults(type) {
         <div class="result-card">
             <input type="checkbox" class="result-checkbox" data-idx="${i}" checked>
             <div class="result-content">
-                <div class="font-semibold">${l.name} <span class="pill-source ${l.source==='places'?'source-real':'source-ai'}">${l.source==='places'?'Real 🟢':'AI ⚪'}</span></div>
+                <div class="font-semibold">${l.name} <span class="pill-source ${l.source==='places'?'source-real':'source-ai'}">${l.source==='places'?'Real ðŸŸ¢':'AI âšª'}</span></div>
                 <div class="text-xs text-muted mt-2">
-                    ${l.phone} • ${l.address || l.area} 
-                    ${l.rating ? `• ★ ${l.rating}` : ''}
+                    ${l.phone} â€¢ ${l.address || l.area} 
+                    ${l.rating ? `â€¢ â˜… ${l.rating}` : ''}
                 </div>
                 <div class="message-preview truncate">${l.en_message.split('\n')[0]}</div>
             </div>
