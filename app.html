@@ -936,7 +936,10 @@
 
             <!-- AI Outreach Message -->
             <div>
-                <div style="font-size: 11px; font-weight: 600; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;">Outreach Message</div>
+                <div class="flex justify-between items-center mb-10">
+                    <div style="font-size: 11px; font-weight: 600; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.06em;">Outreach Message</div>
+                    <button id="btn-regen-msg" class="hidden" onclick="generateOutreachWithGroq()" style="background: none; border: none; color: var(--apple-blue); font-size: 11px; font-weight: 600; cursor: pointer; padding: 0;">🪄 Regenerate with Groq</button>
+                </div>
                 <div class="drawer-tabs" style="margin-bottom: 8px;">
                     <div class="drawer-tab active" onclick="switchMessageTab('en')" id="drawer-tab-en">English</div>
                     <div class="drawer-tab" onclick="switchMessageTab('ar')" id="drawer-tab-ar">Arabic</div>
@@ -1004,7 +1007,7 @@
             loadSettingsToUI, saveSettings, toggleVisibility, 
             testGemini, testGroq, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
             showModal, setUserInfo, handleDeleteFromDrawer, deleteLead, addComment, deleteComment, checkHashAndOpenDrawer,
-            updateLeadNiche, applyMassNiche, clearSelection, toggleSelectAll, updateActiveNiche, addOfferType, deleteOfferType, updateSelectedCount
+            updateLeadNiche, applyMassNiche, clearSelection, toggleSelectAll, updateActiveNiche, addOfferType, deleteOfferType, updateSelectedCount, generateOutreachWithGroq
         } from './js/ui_v23.js?v=36';
         import { renderPipeline, renderStats } from './js/pipeline.js?v=36';
         import { renderTable, sortTable, exportCSV, handleFileSelect } from './js/table.js?v=36';
@@ -1033,7 +1036,7 @@
             switchMessageTab, updateLeadStatus, saveFollowUp,
             loadSettingsToUI, saveSettings, toggleVisibility,
             testGemini, testGroq, testWebhook, renderTeamTable, inviteUser, removeUserAccess,
-            showModal, setUserInfo, handleDeleteFromDrawer, updateLeadNiche, applyMassNiche, clearSelection, toggleSelectAll, updateActiveNiche, addOfferType, deleteOfferType, updateSelectedCount,
+            showModal, setUserInfo, handleDeleteFromDrawer, updateLeadNiche, applyMassNiche, clearSelection, toggleSelectAll, updateActiveNiche, addOfferType, deleteOfferType, updateSelectedCount, generateOutreachWithGroq,
             DataStore, renderPipeline, renderStats, renderTable, sortTable,
             deleteLead, exportCSV, handleFileSelect, findRealLeads, importRealLeads,
             syncToSheets, syncAllToSheets, refreshUI, clearAllData, switchEngineTab,

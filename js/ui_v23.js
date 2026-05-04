@@ -132,9 +132,15 @@ export function openDrawer(id) {
         document.getElementById('drawer-rating-row').classList.add('hidden');
     }
 
-    const messages = lead.ai_messages || { en: 'Generating...', ar: 'جاري الإنشاء...' };
-    document.getElementById('drawer-msg-text-en').innerText = messages.en;
-    document.getElementById('drawer-msg-text-ar').innerText = messages.ar;
+    const enMsg = lead.en_message || lead.ai_messages?.en || 'No message generated';
+    const arMsg = lead.ar_message || lead.ai_messages?.ar || 'لم يتم إنشاء رسالة';
+    
+    document.getElementById('drawer-msg-text-en').innerText = enMsg;
+    document.getElementById('drawer-msg-text-ar').innerText = arMsg;
+
+    // Show/hide regenerate button based on if we have a niche
+    const regenBtn = document.getElementById('btn-regen-msg');
+    if (regenBtn) regenBtn.classList.remove('hidden');
 
     const logContainer = document.getElementById('drawer-activity');
     logContainer.innerHTML = (lead.activity_log || []).slice().reverse().map(log => `
@@ -286,6 +292,71 @@ export function saveFollowUp() {
     DataStore.saveLead(lead);
     openDrawer(lead.id);
     showToast("Follow-up saved");
+}
+
+export async function generateOutreachWithGroq() {
+    if (!currentLeadId) return;
+    const leads = DataStore.getLeads();
+    const lead = leads.find(l => l.id === currentLeadId);
+    if (!lead) return;
+
+    const s = DataStore.getSettings();
+    const groqKey = document.getElementById('set-groq')?.value.trim() || s.groqKey;
+    
+    if (!groqKey) return showToast("Please set Groq API Key in Settings", "error");
+
+    const btn = document.getElementById('btn-regen-msg');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span> Generating...';
+    btn.disabled = true;
+
+    try {
+        const prompt = `
+Generate a personalized Hormozi-style outreach message for this business:
+Name: ${lead.name}
+Niche: ${lead.niche || 'General Business'}
+Area: ${lead.area || 'Egypt'}
+Offer: ${s.offerTypes?.[0] || 'AI Automation Services'}
+
+Format:
+Line 1: Specific observation about their problem.
+Line 2: What we do (done-for-you AI automation).
+Line 3: A concrete result (number-based).
+Line 4: One soft yes/no question.
+
+Return ONLY JSON: {"en": "English message", "ar": "Egyptian Arabic message"}
+`;
+
+        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${groqKey}`
+            },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [{ role: "user", content: prompt }],
+                response_format: { type: "json_object" }
+            })
+        });
+
+        if (!res.ok) throw new Error("Groq API failed");
+        const data = await res.json();
+        const content = JSON.parse(data.choices[0].message.content);
+
+        lead.en_message = content.en;
+        lead.ar_message = content.ar;
+        
+        await DataStore.saveLead(lead);
+        openDrawer(lead.id); // Refresh drawer
+        showToast("Message regenerated with Groq");
+    } catch (e) {
+        console.error(e);
+        showToast("AI Generation failed. Check your Groq key.", "error");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
 }
 
 export function addActivity(lead, action) {
