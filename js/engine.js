@@ -1,6 +1,6 @@
-﻿import { DataStore } from './datastore.js?v=38';
-import { showToast, switchView } from './ui_v23.js?v=38';
-import { normalizePhone } from './table.js?v=38';
+﻿import { DataStore } from './datastore.js?v=39';
+import { showToast, switchView } from './ui_v23.js?v=39';
+import { normalizePhone } from './table.js?v=39';
 
 
 let tempEngineResults = [];
@@ -154,10 +154,10 @@ export function renderEngineResults(type) {
         <div class="result-card">
             <input type="checkbox" class="result-checkbox" data-idx="${i}" checked>
             <div class="result-content">
-                <div class="font-semibold">${l.name} <span class="pill-source ${l.source==='places'?'source-real':'source-ai'}">${l.source==='places'?'Real ðŸŸ¢':'AI âšª'}</span></div>
+                <div class="font-semibold">${l.name} <span class="pill-source ${l.source==='places'?'source-real':'source-ai'}">${l.source==='places'?'Real Ã°Å¸Å¸Â¢':'AI Ã¢Å¡Âª'}</span></div>
                 <div class="text-xs text-muted mt-2">
-                    ${l.phone} â€¢ ${l.address || l.area} 
-                    ${l.rating ? `â€¢ â˜… ${l.rating}` : ''}
+                    ${l.phone} Ã¢â‚¬Â¢ ${l.address || l.area} 
+                    ${l.rating ? `Ã¢â‚¬Â¢ Ã¢Ëœâ€¦ ${l.rating}` : ''}
                 </div>
                 <div class="message-preview truncate">${l.en_message.split('\n')[0]}</div>
             </div>

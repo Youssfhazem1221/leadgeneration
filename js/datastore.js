@@ -1,4 +1,4 @@
-﻿import { database, ref, set, get, onValue, remove, child } from './firebase-config.js?v=38';
+﻿import { database, ref, set, get, onValue, remove, child } from './firebase-config.js?v=39';
 
 let localLeads = [];
 let localSettings = {

@@ -1,5 +1,5 @@
-﻿import { DataStore } from './datastore.js?v=38';
-import { getTimeAgo, openDrawer, addActivity, deleteLead } from './ui_v23.js?v=38';
+﻿import { DataStore } from './datastore.js?v=39';
+import { getTimeAgo, openDrawer, addActivity, deleteLead } from './ui_v23.js?v=39';
 
 export function renderStats() {
     const leads = DataStore.getLeads();

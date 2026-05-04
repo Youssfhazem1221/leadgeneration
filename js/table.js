@@ -1,5 +1,5 @@
-import { DataStore } from './datastore.js?v=38';
-import { showToast, openDrawer, addActivity, showModal, deleteLead, getNicheColor } from './ui_v23.js?v=38';
+﻿import { DataStore } from './datastore.js?v=39';
+import { showToast, openDrawer, addActivity, showModal, deleteLead, getNicheColor } from './ui_v23.js?v=39';
 
 let currentSortCol = '';
 let sortAsc = true;
